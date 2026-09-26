@@ -1,0 +1,90 @@
+@import "@fontsource-variable/manrope";
+@import "@fontsource/instrument-serif/latin-400-italic.css";
+@import "@rainbow-me/rainbowkit/styles.css";
+@import "tailwindcss";
+@import "@thenamespace/uikit/styles.css";
+
+@theme {
+  --font-sans: "Manrope Variable", ui-sans-serif, system-ui, sans-serif;
+  --color-midnight: #093c52;
+}
+
+@layer base {
+  [data-theme="ens"] {
+    color-scheme: light;
+    --white: #ffffff;
+    --black: #000000;
+    --snow: #f6f6f6;
+    --eclipse: #191919;
+    --radius: 0.25rem;
+    --field-radius: 0.25rem;
+    --field-border-width: 1px;
+    --background: #ffffff;
+    --foreground: var(--eclipse);
+    --surface: #ffffff;
+    --surface-foreground: var(--foreground);
+    --overlay: #ffffff;
+    --overlay-foreground: var(--foreground);
+    --muted: #737373;
+    --default: #f6f6f6;
+    --default-foreground: var(--eclipse);
+    --accent: #0080bc;
+    --accent-foreground: #ffffff;
+    --success: #007c23;
+    --success-foreground: #ffffff;
+    --warning: #fccf57;
+    --warning-foreground: var(--eclipse);
+    --danger: #c82e1f;
+    --danger-foreground: #ffffff;
+    --field-background: #ffffff;
+    --field-foreground: var(--eclipse);
+    --field-placeholder: #737373;
+    --field-border: #e1e1e0;
+    --border: #e5e5e5;
+    --separator: #e5e5e5;
+    --focus: var(--accent);
+    --link: var(--accent);
+    --surface-shadow: 0 2px 6px rgb(0 0 0 / 6%);
+    --overlay-shadow: 0 4px 16px rgb(1 26 37 / 10%);
+    --field-shadow: 0 1px 4px rgb(0 0 0 / 8%);
+  }
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+  }
+  * {
+    letter-spacing: 0;
+  }
+  button,
+  a,
+  input {
+    touch-action: manipulation;
+  }
+}
+
+@layer components {
+  [data-theme="ens"] .button {
+    border-radius: 0.25rem;
+  }
+  .font-display {
+    font-family: "Instrument Serif", ui-serif, Georgia, serif;
+  }
+  .hero-field {
+    background: #fafafa url("/bg.svg") repeat;
+    background-size: 48px 48px;
+  }
+  .hero-title {
+    font-size: 3rem;
+    line-height: 1.08;
+  }
+  @media (min-width: 640px) {
+    .hero-title {
+      font-size: 5rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .hero-title {
+      font-size: 6rem;
+    }
+  }
+}
