@@ -121,12 +121,12 @@ describe("Telegram OIDC validation", () => {
       expect(String(error)).not.toContain("123456");
     }
   });
-  it.each([undefined, ""])(
+  it.each([undefined, "", null])(
     "accepts a signed ID-token-only response with access_token=%s",
     async (accessToken) => {
       const transport = mockToken(telegram.token(telegram.nonce(verifier)), {
         access_token: accessToken,
-        token_type: undefined,
+        token_type: accessToken,
       });
       await expect(exchange()).resolves.toMatchObject({ provider: "telegram", value: "Alice" });
       expect(transport).toHaveBeenCalledTimes(2);
@@ -151,7 +151,30 @@ describe("Telegram OIDC validation", () => {
   });
   it("rejects an empty token response instead of inventing an identity", async () => {
     mockToken(undefined, { access_token: "", token_type: undefined });
-    await expect(exchange()).rejects.toThrow("access_token");
+    await expect(exchange()).rejects.toThrow(
+      "telegram-envelope=unchanged;access_token:empty,id_token:missing,token_type:missing,error:missing",
+    );
+  });
+  it("reports nested response field types without exposing their contents", async () => {
+    mockToken(undefined, {
+      access_token: null,
+      data: { id_token: "private-jwt", access_token: "private-access", email: "private-email" },
+      result: { error: "private-error" },
+      unexpected: "private-value",
+    });
+    try {
+      await exchange();
+      expect.fail("Expected exchange failure");
+    } catch (error) {
+      expect(String(error)).toContain("access_token:null,id_token:missing");
+      expect(String(error)).toContain("data:object{access_token:string,id_token:string");
+      expect(String(error)).toContain(
+        "result:object{access_token:missing,id_token:missing,token_type:missing,error:string}",
+      );
+      expect(String(error)).not.toContain("private-");
+      expect(String(error)).not.toContain("email");
+      expect(String(error)).not.toContain("unexpected");
+    }
   });
   it("reports rejected credentials without leaking the provider error description", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(

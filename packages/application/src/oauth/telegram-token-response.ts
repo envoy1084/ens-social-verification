@@ -1,22 +1,31 @@
 /** Adapt Telegram's ID-token-only response to openid-client's token envelope. */
-export async function telegramTokenResponse(response: Response): Promise<Response> {
-  if (response.status !== 200) return response;
+export async function telegramTokenResponse(response: Response) {
+  if (response.status !== 200) return { response, diagnostic: "not-200" };
   let body: unknown;
   try {
     body = await response.clone().json();
   } catch {
     // Let openid-client report malformed JSON using its normal diagnostics.
-    return response;
+    return { response, diagnostic: "invalid-json" };
   }
-  if (!body || typeof body !== "object" || Array.isArray(body)) return response;
+  if (!body || typeof body !== "object" || Array.isArray(body))
+    return { response, diagnostic: "not-object" };
   const token = body as Record<string, unknown>;
+  let diagnostic = tokenFieldTypes(token);
+  for (const wrapper of ["data", "result"]) {
+    if (!(wrapper in token)) continue;
+    const nested = token[wrapper];
+    diagnostic += `;${wrapper}:${fieldType(nested)}`;
+    if (nested && typeof nested === "object" && !Array.isArray(nested))
+      diagnostic += `{${tokenFieldTypes(nested as Record<string, unknown>)}}`;
+  }
   if (
     "error" in token ||
     typeof token.id_token !== "string" ||
     !token.id_token ||
-    (token.access_token !== undefined && token.access_token !== "")
+    (token.access_token !== undefined && token.access_token !== null && token.access_token !== "")
   )
-    return response;
+    return { response, diagnostic: `unchanged;${diagnostic}` };
 
   // This is a parser sentinel, never a credential. The Telegram branch returns only
   // verified ID-token claims and never persists tokens or calls a protected resource.
@@ -25,13 +34,30 @@ export async function telegramTokenResponse(response: Response): Promise<Respons
   headers.delete("content-length");
   headers.delete("content-encoding");
   headers.set("content-type", "application/json");
-  return new Response(
+  const adapted = new Response(
     JSON.stringify({
       ...token,
       access_token: "telegram-id-token-only",
       token_type:
-        token.token_type === undefined || token.token_type === "" ? "Bearer" : token.token_type,
+        token.token_type === undefined || token.token_type === null || token.token_type === ""
+          ? "Bearer"
+          : token.token_type,
     }),
     { status: response.status, headers },
   );
+  return { response: adapted, diagnostic: `adapted;${diagnostic}` };
+}
+
+function tokenFieldTypes(token: Record<string, unknown>) {
+  return ["access_token", "id_token", "token_type", "error"]
+    .map((field) => `${field}:${fieldType(token[field])}`)
+    .join(",");
+}
+
+function fieldType(value: unknown) {
+  if (value === undefined) return "missing";
+  if (value === null) return "null";
+  if (value === "") return "empty";
+  if (Array.isArray(value)) return "array";
+  return typeof value;
 }

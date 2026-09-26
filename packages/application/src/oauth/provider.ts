@@ -76,14 +76,18 @@ const make = Effect.gen(function* () {
       callback.search = new URLSearchParams({ state, code }).toString();
       let endpoint = "token";
       let status: number | undefined;
+      let telegramEnvelope: string | undefined;
       oauth[client.customFetch] = async (url, options) => {
         endpoint = String(url) === provider.jwksUri ? "jwks" : "token";
         status = undefined;
         const response = await fetch(url, { ...options, body: options.body ?? null });
         status = response.status;
-        return id === "telegram" && String(url) === provider.tokenEndpoint
-          ? telegramTokenResponse(response)
-          : response;
+        if (id === "telegram" && String(url) === provider.tokenEndpoint) {
+          const adapted = await telegramTokenResponse(response);
+          telegramEnvelope = adapted.diagnostic;
+          return adapted.response;
+        }
+        return response;
       };
       const tokens = yield* Effect.tryPromise({
         try: async () =>
@@ -100,7 +104,7 @@ const make = Effect.gen(function* () {
         catch: (error) =>
           new OAuthError({
             code: "UNAVAILABLE",
-            message: `${oauthExchangeFailure(error)} [provider=${id === "telegram" ? "telegram" : "discord"}; endpoint=${endpoint}; HTTP=${status ?? "no response"}; code=${oauthExchangeDiagnostic(error)}]`,
+            message: `${oauthExchangeFailure(error)} [provider=${id === "telegram" ? "telegram" : "discord"}; endpoint=${endpoint}; HTTP=${status ?? "no response"}; code=${oauthExchangeDiagnostic(error)}${telegramEnvelope ? `; telegram-envelope=${telegramEnvelope}` : ""}]`,
           }),
       });
       // OIDC permits omitted scope when unchanged; the required signed profile claims are checked below.
