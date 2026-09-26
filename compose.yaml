@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_DB: ens_social
       POSTGRES_USER: ens_social
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in apps/server/.env}
     ports:
       - "127.0.0.1:5432:5432"
     healthcheck:
