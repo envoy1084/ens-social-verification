@@ -26,7 +26,7 @@ The browser calls this server directly through `VITE_SERVER_URL`. No browser Alc
 ## Authentication
 
 The backend is ready for RainbowKit's [custom authentication adapter](https://rainbowkit.com/docs/custom-authentication).
-Frontend adapter wiring is separate. Call `${VITE_SERVER_URL}/auth/...` with
+The frontend adapter is wired in `apps/web/src/auth`. It calls `${VITE_SERVER_URL}/auth/...` with
 `credentials: "include"`. CORS permits only `APP_ORIGIN`. Use localhost for both local
 hosts and same-site HTTPS sibling domains in production; no frontend proxy is needed.
 

@@ -6,6 +6,7 @@ import { EnsforgeProvider } from "@ensforge/react";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
 
+import { AuthenticationProvider } from "./auth/provider";
 import { rainbowKitTheme, wagmiConfig } from "./wallet";
 
 const ensforgeConfig = {
@@ -30,7 +31,9 @@ export function AppProviders({ children }: PropsWithChildren) {
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={client}>
         <EnsforgeProvider config={ensforgeConfig}>
-          <RainbowKitProvider theme={rainbowKitTheme}>{children}</RainbowKitProvider>
+          <AuthenticationProvider>
+            <RainbowKitProvider theme={rainbowKitTheme}>{children}</RainbowKitProvider>
+          </AuthenticationProvider>
         </EnsforgeProvider>
       </QueryClientProvider>
     </WagmiProvider>

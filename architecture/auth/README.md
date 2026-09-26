@@ -50,7 +50,26 @@ using the database clock when consuming the challenge.
 See the [table catalog](../database/README.md) and
 [application flow](../../packages/application/src/auth/index.ts).
 
-## Main Tests
+## Frontend
+
+`apps/web/src/auth/client.ts` generates an Effect HttpApi client from the API package,
+with credentialed requests and bounded timeouts. React Query holds the public session
+DTO in memory; it is not a second credential store. A missing/expired session (401)
+is unauthenticated, while transport failures display a retry action.
+
+The RainbowKit adapter requests server-generated messages and signs them verbatim.
+Every signing retry uses a fresh challenge. Success requires both verification and a
+cookie-backed session read. Its provider restores on mount/focus/reconnect, refreshes
+once per minute while visible, and clears state at the session deadline. Authentication
+is shown only when the session address and Sepolia chain match the connected wallet.
+
+Account/chain/connector changes and disconnect invalidate pending sign-in results.
+Logout waits for an in-flight verification before revoking the cookie it may set;
+duplicate logout callbacks share that request. A failed logout blocks new sign-in and
+session restoration until the user retries successfully. These guards coordinate one
+tab; the backend remains the authority across tabs and requests.
+
+## Verification
 
 Real Postgres tests cover sign-in/session/logout, cookie flags, origin/browser binding,
 wrong chain/message/signature, concurrent replay, rotation, attempts, expiry, rollback,
@@ -59,8 +78,8 @@ test suite is added. A live Alchemy smoke check is separate from deterministic t
 
 ## Pending
 
-RainbowKit adapter wiring, ENS write authorization and social verification are separate
-features. Undeployed ERC-6492 accounts are unsupported. Existing contract-wallet sessions
+ENS write authorization and social verification are separate features.
+Undeployed ERC-6492 accounts are unsupported. Existing contract-wallet sessions
 are not invalidated by onchain owner changes; future sensitive operations need revalidation.
 Before public deployment add gateway limits and expired-row cleanup. No user/account table
 is necessary until identities beyond a single wallet session are introduced.

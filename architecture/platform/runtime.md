@@ -18,8 +18,8 @@ Unbundled builds preserve the migration module's relative path to committed SQL 
 
 The server listens on 8080 and Vite on 3000. The browser calls `VITE_SERVER_URL`
 directly; neither Vite nor the static Nginx host proxies API requests. The server's
-CORS policy permits credentials only from `APP_ORIGIN`. Future auth fetches must
-include credentials. Use `localhost` for both local origins, not a mix of localhost
+CORS policy permits credentials only from `APP_ORIGIN`. The auth client includes
+credentials. Use `localhost` for both local origins, not a mix of localhost
 and 127.0.0.1. Production web/API hosts must be same-site HTTPS sibling domains;
 cross-site cookie authentication is intentionally unsupported.
 

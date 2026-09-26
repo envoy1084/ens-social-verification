@@ -32,8 +32,8 @@ or dependency on a running backend container to start Nginx. `/healthz` checks N
 the backend image health check calls `/health`. Neither proves upstream readiness.
 
 `VITE_SERVER_URL` is a required public build argument, not a runtime variable. Rebuild
-the image when changing it. The browser calls this URL directly for RPC and future
-auth requests. Auth requests must use `credentials: "include"`. The backend permits
+the image when changing it. The browser calls this URL directly for RPC and
+auth requests. The auth client uses `credentials: "include"`. The backend permits
 credentialed CORS only from its configured `APP_ORIGIN` (never wildcard origins).
 
 Use same-site HTTPS hosts, for example frontend `https://app.example.com` and backend
