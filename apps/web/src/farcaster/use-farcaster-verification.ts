@@ -45,7 +45,7 @@ export function useFarcasterVerification(name: string) {
   const account = useAccount();
   const sdk = useEnsforge();
   const sign = useSignTypedData();
-  const sendCalls = useRecordCalls(name);
+  const sendCalls = useRecordCalls(name, farcasterRecordKey);
   const queryClient = useQueryClient();
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<string | null>(null);

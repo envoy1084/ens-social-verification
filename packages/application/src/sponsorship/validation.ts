@@ -12,6 +12,9 @@ import {
 } from "../verification/snapshot.js";
 import { validateSponsoredCalls } from "./calls.js";
 import { verifyHcaAtSnapshot } from "./hca-cache.js";
+import { createSponsorshipValidationCache } from "./validation-cache.js";
+
+const validationCaches = new WeakMap<object, ReturnType<typeof createSponsorshipValidationCache>>();
 
 const quantity = Schema.String.check(Schema.isPattern(/^0x(?:0|[1-9a-f][0-9a-f]*)$/i));
 const bytes = Schema.String.check(Schema.isPattern(/^0x(?:[0-9a-f]{2})*$/i));
@@ -81,6 +84,23 @@ export const validateSponsorshipRequest = Effect.fn("validateSponsorshipRequest"
     return yield* Effect.fail(new Error("Fee limit exceeded"));
   const sdk = yield* VerificationClient;
   const snapshot = yield* createVerificationSnapshot();
+  let cache = validationCaches.get(sdk);
+  if (!cache) {
+    cache = createSponsorshipValidationCache();
+    validationCaches.set(sdk, cache);
+  }
+  const identity = {
+    snapshot,
+    name,
+    owner,
+    sender: op.sender,
+    nonce: op.nonce,
+    callData: op.callData,
+  };
+  if (cache.has(identity)) {
+    yield* assertVerificationSnapshot(snapshot);
+    return;
+  }
   const authority = yield* resolveEnsV2Authority(name, snapshot);
   if (!isAddressEqual(authority.authority, owner))
     return yield* Effect.fail(new Error("Not the name owner"));
@@ -107,4 +127,5 @@ export const validateSponsorshipRequest = Effect.fn("validateSponsorshipRequest"
       throw new Error("HCA is not authorized");
   });
   yield* assertVerificationSnapshot(snapshot);
+  cache.remember(identity, authority.authorityValidUntil);
 });

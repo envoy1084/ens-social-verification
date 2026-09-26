@@ -34,7 +34,7 @@ export function useOAuthVerification(
   const attemptId = search.oauthProvider === provider ? callbackAttemptId : undefined;
   const account = useAccount();
   const sdk = useEnsforge();
-  const sendCalls = useRecordCalls(name);
+  const sendCalls = useRecordCalls(name, recordKey);
   const sign = useSignTypedData();
   const queryClient = useQueryClient();
   const [phase, setPhase] = useState<

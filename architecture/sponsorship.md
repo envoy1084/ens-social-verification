@@ -13,7 +13,11 @@ localStorage and synchronizes hook instances and tabs. Updates resuming after
 proof signing read the current preference, not the value when signing started.
 With it off, updates
 use normal wallet-paid batching without HCA lookups. With it on, each record update
-checks HCA deployment and permissions on demand. Missing deployment or permissions
+checks HCA deployment and permissions for the updated social record and its
+verification companion only. Readiness query keys include that record key, so one
+provider cannot reuse another provider's permissions. After address prediction,
+deployment and permission reads run concurrently through the batched RPC transport.
+Missing deployment or permissions
 triggers a setup confirmation, wallet-paid setup, then the sponsored update. The
 confirmation explains that permissions may cover the whole name or resolver; wallet
 control and ENS ownership do not change. Cancelling or failed setup stops the write
@@ -44,7 +48,7 @@ calls locally rather than repeating resolver discovery for every grant. Public
 resolver delegation uses the SDK preparer. Grants are combined into one resolver
 multicall, simulated as the owner, then sent as one wallet transaction.
 Already-authorized records are omitted, including after partially completed setup.
-This avoids twelve separate permission transactions on wallets without batching.
+Only missing permissions for the current pair are granted, in one transaction.
 Deployment remains a separate transaction when needed; record publication remains
 a sponsored UserOperation after setup confirms. The
 setup confirmation appears only when needed. Completion requires a fresh successful
@@ -92,8 +96,14 @@ This lock is wallet-wide, so an unresolved update blocks other providers too.
 - Canonical address derivation is checked by `verifyHca` with the expected owner
   and salt zero, without a redundant `predictHcaAddress` deployment-wiring check.
   HCA, resolver and permission reads use the authority snapshot's block number;
-  canonicality is checked again at the end. Ownership and record permission results
-  are never cached. Successful HCA deployment verification is reused only for an
+  canonicality is checked again at the end. Successful chain authorization is cached
+  per SDK client, exact block hash/number, name, owner, HCA, nonce and calldata hash.
+  Gas, fees, signatures and method parameters are checked on every request; these
+  changing fields do not affect the cached chain authorization. Cache hits still
+  acquire a fresh snapshot and perform the final canonicality check. Entries live
+  for at most 30 seconds or until ENS registration expiry, whichever comes first,
+  with a 64-entry limit. Failures are not stored. New blocks, reorgs and changed
+  execution identities miss the cache. Successful HCA deployment verification is reused only for an
   identical block hash, block number, HCA, owner and SDK client (salt zero). In-flight
   checks are shared; failures are evicted. Each client retains at most 64 entries for
   30 seconds. New blocks and reorgs miss the cache; the final canonicality check stays

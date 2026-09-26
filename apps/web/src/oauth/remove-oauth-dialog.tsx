@@ -41,7 +41,7 @@ export function RemoveOAuthDialog({
   const [error, setError] = useState<string | null>(null);
   const running = useRef(false);
   const sdk = useEnsforge();
-  const sendCalls = useRecordCalls(name);
+  const sendCalls = useRecordCalls(name, recordKey);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const onOpenChange = useCallback(

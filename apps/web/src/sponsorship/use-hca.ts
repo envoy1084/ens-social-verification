@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { sponsoredRecords } from "@ens-social-verification/protocol/schema";
+import { sponsoredRecordKeys } from "@ens-social-verification/protocol/schema";
 import { multicallResolverAbi } from "@ensforge/contracts";
 import { sepoliaHcaDeployment } from "@ensforge/contracts/deployments";
 import { permissionedResolverV2Abi } from "@ensforge/contracts/v2";
@@ -14,7 +14,7 @@ import { getAccount, getWalletClient } from "wagmi/actions";
 import { env } from "../env";
 import { wagmiConfig } from "../wallet";
 
-export function useHca(name: string) {
+export function useHca(name: string, recordKey?: string) {
   const sdk = useEnsforge();
   const account = useAccount();
   const [sponsored, setSponsored] = useLocalStorage("ens-sponsored-updates", false);
@@ -34,17 +34,26 @@ export function useHca(name: string) {
     retry: false,
   });
   const state = useQuery({
-    queryKey: ["sponsorship", "hca", account.address, name],
+    queryKey: ["sponsorship", "hca", account.address, name, recordKey],
     enabled: false,
     retry: false,
     staleTime: 60_000,
     queryFn: async () => {
       if (!account.address) throw new Error("Connect your wallet");
+      if (!recordKey || !sponsoredRecordKeys.some((key) => key === recordKey))
+        throw new Error("Unsupported sponsored record.");
+      const records = [recordKey, `verification[text][${recordKey}]`].map((key) => ({
+        type: "text" as const,
+        key,
+      }));
       let stage = "HCA address";
       try {
         const hca = await sdk.hca.predictHcaAddress({ owner: account.address, salt: 0n });
-        stage = "HCA deployment";
-        const deployment = await sdk.hca.getHca({ hca });
+        stage = "HCA deployment or permissions";
+        const [deployment, permissions] = await Promise.all([
+          sdk.hca.getHca({ hca }),
+          sdk.capabilities.getRecordPermissions({ name, account: hca, records }),
+        ]);
         // The server verifies full deployment wiring before sponsorship.
         if (
           deployment.status === "deployed" &&
@@ -56,14 +65,8 @@ export function useHca(name: string) {
             deployment.accountId !== sepoliaHcaDeployment.generation.accountId)
         )
           throw new Error("Unsupported HCA deployment");
-        stage = "HCA permissions";
-        const permissions = await sdk.capabilities.getRecordPermissions({
-          name,
-          account: hca,
-          records: sponsoredRecords,
-        });
         if (
-          permissions.records.length !== sponsoredRecords.length ||
+          permissions.records.length !== records.length ||
           permissions.records.some((record) => !record.supported)
         )
           throw new Error("Resolver does not support the required permissions.");

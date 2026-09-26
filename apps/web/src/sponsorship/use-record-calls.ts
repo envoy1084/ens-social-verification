@@ -20,12 +20,12 @@ import {
 } from "./pending-operation";
 import { useHca } from "./use-hca";
 
-export function useRecordCalls(name: string) {
+export function useRecordCalls(name: string, recordKey: string) {
   const normal = useSendCalls();
   const sdk = useEnsforge();
   const account = useAccount();
   const sign = useSignMessage();
-  const hca = useHca(name);
+  const hca = useHca(name, recordKey);
   return {
     mutateAsync: async (input: Parameters<typeof normal.mutateAsync>[0]) => {
       const address = account.address;

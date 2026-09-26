@@ -26,7 +26,7 @@ type Phase = "idle" | "connecting" | "signing" | "creating" | "writing" | "check
 export function useGithubVerification(name: string, attemptId?: string) {
   const account = useAccount();
   const sdk = useEnsforge();
-  const sendCalls = useRecordCalls(name);
+  const sendCalls = useRecordCalls(name, githubRecordKey);
   const sign = useSignTypedData();
   const queryClient = useQueryClient();
   const [phase, setPhase] = useState<Phase>("idle");
