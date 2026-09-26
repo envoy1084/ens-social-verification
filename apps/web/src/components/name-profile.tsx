@@ -23,6 +23,7 @@ import NetworkEthereum from "@web3icons/react/icons/networks/NetworkEthereum";
 import { formatEnsDate } from "../data/ens-name";
 import { FarcasterVerification } from "../farcaster/farcaster-verification";
 import { GithubVerification } from "../github/github-verification";
+import { XVerification } from "../x/x-verification";
 import { CopyButton } from "./copy-button";
 import { NameAvatar } from "./name-avatar";
 import { OwnerIdentity } from "./owner-identity";
@@ -30,9 +31,11 @@ import { OwnerIdentity } from "./owner-identity";
 export function NameProfile({
   name,
   githubAttempt,
+  xAttempt,
 }: {
   name: string;
   githubAttempt?: string | undefined;
+  xAttempt?: string | undefined;
 }) {
   const owner = useOwner({ name });
   const expiry = useExpiry({ name });
@@ -202,6 +205,7 @@ export function NameProfile({
           </h2>
           <GithubVerification name={name} owner={ownerAddress} attemptId={githubAttempt} />
           <FarcasterVerification key={name} name={name} owner={ownerAddress} />
+          <XVerification name={name} owner={ownerAddress} attemptId={xAttempt} />
         </section>
         {email.isInitial || (!email.isFailure && Boolean(email.data?.value?.trim())) ? (
           <section className="mt-12" aria-labelledby="contact-heading">

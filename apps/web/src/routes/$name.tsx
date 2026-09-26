@@ -4,7 +4,14 @@ import { NameProfileGate } from "../components/name-profile-gate";
 import { normalizeEnsInput } from "../data/ens-name";
 
 export const Route = createFileRoute("/$name")({
-  validateSearch: (search: Record<string, unknown>): { githubAttempt?: string | undefined } => ({
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { githubAttempt?: string | undefined; xAttempt?: string | undefined } => ({
+    xAttempt:
+      typeof search.xAttempt === "string" &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(search.xAttempt)
+        ? search.xAttempt
+        : undefined,
     githubAttempt:
       typeof search.githubAttempt === "string" &&
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(
@@ -22,6 +29,8 @@ export const Route = createFileRoute("/$name")({
 
 function NamePage() {
   const { name } = Route.useParams();
-  const { githubAttempt } = Route.useSearch();
-  return <NameProfileGate key={name} name={name} githubAttempt={githubAttempt} />;
+  const { githubAttempt, xAttempt } = Route.useSearch();
+  return (
+    <NameProfileGate key={name} name={name} githubAttempt={githubAttempt} xAttempt={xAttempt} />
+  );
 }

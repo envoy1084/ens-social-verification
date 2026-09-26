@@ -31,6 +31,11 @@ During Vite development with a loopback `VITE_SERVER_URL`, the signed-proof link
 opens on that local API origin. The on-chain descriptor retains its public HTTPS URL;
 production builds link directly to that public URL.
 
+X uses OAuth followed by an explicit post preview and wallet signature. A public
+post commits to the signed claim, and both ENS records are saved atomically.
+Published proofs can be reused after a rejected transaction while the attempt is
+unexpired. Owner removal optionally deletes the X post. See [X flow](../../architecture/x.md).
+
 RainbowKit custom authentication is wired through `src/auth/`: `client.ts` uses the
 shared API contracts, `adapter.ts` coordinates sign-in/logout, and `provider.tsx`
 restores session state. Connecting a wallet prompts for the server-generated SIWE
