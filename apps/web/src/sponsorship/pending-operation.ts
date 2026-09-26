@@ -8,6 +8,7 @@ export interface PendingOperation {
   hash: Hex;
   hca: Address;
   name: string;
+  nonce?: Hex;
 }
 const key = (owner: Address) => `ens-sponsored-operation:11155111:${owner.toLowerCase()}`;
 const changedEvent = "ens-sponsored-operation-changed";
@@ -72,10 +73,27 @@ export async function reconcileOperation(owner: Address, client: PublicClient) {
   if (!saved) return false;
   const pending = JSON.parse(saved) as PendingOperation;
   const result = await sponsorshipRpc(pending.name, "eth_getUserOperationReceipt", [pending.hash]);
-  if (!result?.receipt?.transactionHash)
+  if (!result?.receipt?.transactionHash) {
+    if (pending.nonce && /^0x[0-9a-f]+$/i.test(pending.nonce)) {
+      const nonce = BigInt(pending.nonce);
+      const current = await client.readContract({
+        address: sepoliaHcaDeployment.infrastructure.entryPoint,
+        abi: entryPoint07Abi,
+        functionName: "getNonce",
+        args: [pending.hca, nonce >> 64n],
+        blockTag: "finalized",
+      });
+      if (current > nonce) {
+        forgetOperation(owner, pending.hash);
+        throw new Error(
+          "The earlier operation's nonce was consumed. Refresh this profile before retrying.",
+        );
+      }
+    }
     throw new Error(
-      "A sponsored update is pending. Check again before sending another transaction.",
+      `An earlier sponsored update for ${pending.name} is still unresolved. Use Check pending above before another update.`,
     );
+  }
   const receipt = await client.getTransactionReceipt({ hash: result.receipt.transactionHash });
   const entryPoint = sepoliaHcaDeployment.infrastructure.entryPoint;
   const event = parseEventLogs({

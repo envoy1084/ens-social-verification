@@ -52,7 +52,15 @@ export function useRecordCalls(name: string) {
                 request: async ({ method, params }) => {
                   if (method === "eth_sendUserOperation") {
                     if (!signedHash) throw new Error("Missing signed operation hash");
-                    rememberOperation(address, { hash: signedHash, hca: hcaAddress, name });
+                    const operation = (params as [{ nonce?: Hex }] | undefined)?.[0];
+                    if (!operation?.nonce || !/^0x[0-9a-f]+$/i.test(operation.nonce))
+                      throw new Error("Missing operation nonce");
+                    rememberOperation(address, {
+                      hash: signedHash,
+                      hca: hcaAddress,
+                      name,
+                      nonce: operation.nonce,
+                    });
                   }
                   try {
                     return await sponsorshipRpc(name, method, (params ?? []) as unknown[]);

@@ -40,11 +40,18 @@ All six verification providers and their removal flows use `useRecordCalls`.
 Sponsored writes are atomic owner-signed UserOperations. Failures do not silently
 fall back to paid transactions. A wallet-scoped Web Lock prevents simultaneous
 submissions across tabs. Immediately before submission, the operation hash, HCA,
-and name are stored in localStorage (never signatures or credentials). A pending
+name and nonce are stored in localStorage (never signatures or credentials). A pending
 operation blocks further writes, even wallet-paid writes, until its receipt and
 EntryPoint event are checked against the chain. Unknown outcomes remain blocked;
 clearing browser storage loses this local recovery guard. A dropped operation needs
 manual investigation/replacement, not blind resubmission.
+
+Correlated ERC-7769 validation rejections clear the matching pending hash immediately.
+Unknown errors, malformed replies and transport timeouts do not. If the bundler has
+no receipt, a finalized EntryPoint nonce greater than the saved nonce also releases
+the lock because the operation can no longer execute; the user must refresh before
+retrying. Older journals without a nonce remain guarded until a receipt is found.
+This lock is wallet-wide, so an unresolved update blocks other providers too.
 
 ## Server Boundary
 

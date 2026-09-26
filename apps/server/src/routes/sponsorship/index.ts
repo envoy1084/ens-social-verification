@@ -20,6 +20,7 @@ import { ServerConfig } from "../../config.js";
 import { readAuthBody } from "../../helpers/auth-body.js";
 import { authCookies } from "../../helpers/auth-cookie.js";
 import { RecordVerificationLive } from "../../layers/services.js";
+import { isDefinitiveRejection } from "./rejection.js";
 
 const headers = { "cache-control": "no-store", "x-content-type-options": "nosniff" };
 const rejected = (status: number, message: string, notSubmitted = true) =>
@@ -99,6 +100,9 @@ export const SponsorshipRoutes = Layer.unwrap(
                   id: input.id,
                   error: {
                     code: -32000,
+                    notSubmitted:
+                      input.method === "eth_sendUserOperation" &&
+                      isDefinitiveRejection(response, input.id),
                     message:
                       "Pimlico rejected the operation. Check your sponsorship policy and account compatibility.",
                   },
