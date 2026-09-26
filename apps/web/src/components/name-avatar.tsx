@@ -16,7 +16,7 @@ export function NameAvatar({
   const source = src && src !== failedSource ? src : fallback;
   const handleError = useCallback(() => setFailedSource(src), [src]);
   return (
-    <Avatar className={`${className} shrink-0 rounded-lg`}>
+    <Avatar className={`${className} shrink-0 overflow-hidden !rounded-2xl [&>img]:!rounded-2xl`}>
       <Avatar.Image alt={`${name} avatar`} src={source} onError={handleError} />
       <Avatar.Fallback className="bg-[#e8f6fb] font-semibold text-accent">
         {name.slice(0, 2).toUpperCase()}

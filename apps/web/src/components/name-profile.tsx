@@ -1,7 +1,5 @@
 import { useCallback } from "react";
 
-import { Link } from "@tanstack/react-router";
-
 import {
   useAddress,
   useAvatar,
@@ -12,7 +10,6 @@ import {
 } from "@ensforge/react";
 import { Button } from "@thenamespace/uikit/button";
 import {
-  ArrowLeft01Icon,
   ArrowUpRight01Icon,
   Calendar03Icon,
   Clock01Icon,
@@ -26,6 +23,7 @@ import { Skeleton } from "@thenamespace/uikit/skeleton";
 import { formatEnsDate } from "../data/ens-name";
 import { CopyButton } from "./copy-button";
 import { NameAvatar } from "./name-avatar";
+import { OwnerIdentity } from "./owner-identity";
 
 export function NameProfile({ name }: { name: string }) {
   const owner = useOwner({ name });
@@ -71,14 +69,11 @@ export function NameProfile({ name }: { name: string }) {
         />
         <div className="absolute inset-x-0 bottom-0 h-28 bg-linear-to-b from-transparent to-[#fafafa]" />
       </div>
-      <div className="relative mx-auto -mt-20 w-[90%] max-w-6xl">
-        <div className="mb-4 flex items-center justify-between gap-4">
-          <Link
-            to="/"
-            className="inline-flex min-h-10 items-center gap-2 rounded-sm bg-white/95 px-3 text-sm font-semibold text-midnight hover:underline"
-          >
-            <HugeiconsIcon icon={ArrowLeft01Icon} size={18} /> Back to search
-          </Link>
+      <div className="relative mx-auto -mt-8 w-[90%] max-w-5xl">
+        <div className="flex items-center justify-between gap-4">
+          <h1 className="inline-block min-w-0 max-w-full rounded-sm bg-accent px-4 py-2 text-3xl font-semibold break-all text-accent-foreground shadow-sm sm:text-4xl">
+            {name}
+          </h1>
           <div className="rounded-lg bg-white">
             <CopyButton
               label="Copy profile link"
@@ -87,9 +82,6 @@ export function NameProfile({ name }: { name: string }) {
             />
           </div>
         </div>
-        <h1 className="inline-block max-w-full rounded-sm bg-accent px-4 py-2 text-3xl font-semibold break-all text-accent-foreground shadow-sm sm:text-4xl">
-          {name}
-        </h1>
 
         <dl className="mt-5 flex flex-wrap items-center gap-x-7 gap-y-3 text-sm">
           <div className="flex min-h-10 items-center gap-2">
@@ -101,12 +93,7 @@ export function NameProfile({ name }: { name: string }) {
               ) : owner.isFailure ? (
                 "Unavailable"
               ) : ownerAddress ? (
-                <>
-                  <span title={ownerAddress}>
-                    {ownerAddress.slice(0, 6)}...{ownerAddress.slice(-4)}
-                  </span>
-                  <CopyButton value={ownerAddress} label="Copy owner address" />
-                </>
+                <OwnerIdentity address={ownerAddress} />
               ) : (
                 "Unowned"
               )}
@@ -158,7 +145,7 @@ export function NameProfile({ name }: { name: string }) {
         >
           <div className="size-40 sm:size-48 lg:size-56">
             {avatar.isInitial ? (
-              <Skeleton className="size-full rounded-lg" />
+              <Skeleton className="size-full rounded-2xl" />
             ) : (
               <NameAvatar
                 name={name}
