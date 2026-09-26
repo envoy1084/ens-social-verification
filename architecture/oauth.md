@@ -111,3 +111,6 @@ Live consent and wallet transactions require a manual smoke test with the config
 Callback diagnostics log cookie-presence flags for pre-exchange rejection and fixed,
 sanitized credential/code/ID-token failure messages after exchange. Provider response
 descriptions, authorization codes, tokens, cookies and private claims are never logged.
+Exchange errors include the last endpoint category (token or JWKS), HTTP status,
+and allowlisted library/network codes, never raw exception messages or responses.
+The Telegram verifier remains pinned to RS256; configure the same algorithm in BotFather.

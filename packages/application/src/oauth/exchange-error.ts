@@ -1,5 +1,41 @@
 import * as client from "openid-client";
 
+const diagnosticCodes = new Set([
+  "OAUTH_INVALID_RESPONSE",
+  "OAUTH_RESPONSE_IS_NOT_JSON",
+  "OAUTH_RESPONSE_IS_NOT_CONFORM",
+  "OAUTH_PARSE_ERROR",
+  "OAUTH_UNSUPPORTED_OPERATION",
+  "OAUTH_KEY_SELECTION_FAILED",
+  "OAUTH_TIMEOUT",
+  "OAUTH_ABORT",
+  "OAUTH_JWT_CLAIM_COMPARISON_FAILED",
+  "OAUTH_JWT_TIMESTAMP_CHECK_FAILED",
+  "OAUTH_JSON_ATTRIBUTE_COMPARISON_FAILED",
+  "OAUTH_RESPONSE_BODY_ERROR",
+  "OAUTH_WWW_AUTHENTICATE_CHALLENGE",
+  "ENOTFOUND",
+  "EAI_AGAIN",
+  "ECONNRESET",
+  "ECONNREFUSED",
+  "ETIMEDOUT",
+  "UND_ERR_CONNECT_TIMEOUT",
+  "CERT_HAS_EXPIRED",
+  "UNABLE_TO_VERIFY_LEAF_SIGNATURE",
+]);
+
+export function oauthExchangeDiagnostic(error: unknown) {
+  const codes = new Set<string>();
+  let current = error;
+  for (let depth = 0; depth < 5 && current && typeof current === "object"; depth++) {
+    if ("code" in current && typeof current.code === "string" && diagnosticCodes.has(current.code))
+      codes.add(current.code);
+    if (current instanceof TypeError) codes.add("TypeError");
+    current = "cause" in current ? current.cause : undefined;
+  }
+  return [...codes].join(", ") || "unclassified";
+}
+
 export function oauthExchangeFailure(error: unknown) {
   if (error instanceof client.ResponseBodyError) {
     if (error.error === "invalid_client")
@@ -8,6 +44,14 @@ export function oauthExchangeFailure(error: unknown) {
       return "OAuth code exchange was rejected. Check the exact redirect URI and start a new login attempt.";
   }
   if (error instanceof client.ClientError) {
+    if (error.code === "OAUTH_TIMEOUT")
+      return "OAuth provider request timed out. Check outbound HTTPS connectivity from the backend.";
+    if (
+      error.code === "OAUTH_INVALID_RESPONSE" &&
+      error.cause instanceof Error &&
+      error.cause.message === 'unexpected JWT "alg" header parameter'
+    )
+      return "OIDC signing algorithm mismatch. Set Telegram Login Widget > Advanced to RS256.";
     if (
       error.code === "OAUTH_INVALID_RESPONSE" &&
       error.cause instanceof Error &&

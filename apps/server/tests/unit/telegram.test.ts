@@ -98,4 +98,34 @@ describe("Telegram OIDC validation", () => {
     );
     await expect(exchange()).rejects.toThrow("OAuth client credentials were rejected.");
   });
+  it("identifies a rejected signing algorithm", async () => {
+    const token = telegram.token(telegram.nonce(verifier)).split(".");
+    token[0] = Buffer.from(JSON.stringify({ alg: "ES256", kid: "telegram-test" })).toString(
+      "base64url",
+    );
+    mockToken(token.join("."));
+    await expect(exchange()).rejects.toThrow("OIDC signing algorithm mismatch");
+  });
+  it("reports HTTP status without exposing a provider response body", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response("private-provider-body", { status: 502 }),
+    );
+    await expect(exchange()).rejects.toThrow(
+      "endpoint=token; HTTP=502; code=OAUTH_RESPONSE_IS_NOT_CONFORM",
+    );
+  });
+  it("reports network failure codes without exposing URLs or credentials", async () => {
+    vi.spyOn(globalThis, "fetch").mockRejectedValue(
+      new TypeError("private-url-with-secret", {
+        cause: Object.assign(new Error("private-details"), { code: "ENOTFOUND" }),
+      }),
+    );
+    try {
+      await exchange();
+      expect.fail("Expected exchange failure");
+    } catch (error) {
+      expect(String(error)).toContain("HTTP=no response; code=TypeError, ENOTFOUND");
+      expect(String(error)).not.toContain("private-");
+    }
+  });
 });

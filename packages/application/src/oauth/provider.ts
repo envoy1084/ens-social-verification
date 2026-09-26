@@ -4,7 +4,7 @@ import { OAuthError } from "@ens-social-verification/protocol/errors";
 import * as client from "openid-client";
 
 import { OAuthConfig } from "./config.js";
-import { oauthExchangeFailure } from "./exchange-error.js";
+import { oauthExchangeDiagnostic, oauthExchangeFailure } from "./exchange-error.js";
 import { oauthProvider } from "./providers.js";
 
 const make = Effect.gen(function* () {
@@ -73,6 +73,15 @@ const make = Effect.gen(function* () {
       const { provider, oauth, credentials } = yield* configuration(id);
       const callback = new URL(credentials.redirectUri);
       callback.search = new URLSearchParams({ state, code }).toString();
+      let endpoint = "token";
+      let status: number | undefined;
+      oauth[client.customFetch] = async (url, options) => {
+        endpoint = String(url) === provider.jwksUri ? "jwks" : "token";
+        status = undefined;
+        const response = await fetch(url, { ...options, body: options.body ?? null });
+        status = response.status;
+        return response;
+      };
       const tokens = yield* Effect.tryPromise({
         try: async () =>
           client.authorizationCodeGrant(oauth, callback, {
@@ -88,7 +97,7 @@ const make = Effect.gen(function* () {
         catch: (error) =>
           new OAuthError({
             code: "UNAVAILABLE",
-            message: oauthExchangeFailure(error),
+            message: `${oauthExchangeFailure(error)} [provider=${id === "telegram" ? "telegram" : "discord"}; endpoint=${endpoint}; HTTP=${status ?? "no response"}; code=${oauthExchangeDiagnostic(error)}]`,
           }),
       });
       // OIDC permits omitted scope when unchanged; the required signed profile claims are checked below.
