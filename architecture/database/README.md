@@ -93,3 +93,15 @@ Schema reorganization preserves SQL table names and does not require a new migra
 Server startup and the migration CLI use the same advisory lock and apply only pending
 migrations. The HTTP listener starts only after migration success. Keep the committed
 `migrations/` directory beside the built database package in deployment artifacts.
+
+## email_attempts
+
+`email_attempts` stores a UUID, session digest, immutable email/ENS intent,
+optional DKIM evidence and claim, optional published envelope, and timestamps.
+Claim and evidence transition together; published envelopes are immutable.
+Private reads require the creating session and a live 30-minute deadline.
+Only the envelope is publicly retrievable after consent and wallet authorization.
+Expired unpublished rows are deleted every five minutes. Published proofs remain
+until the current owner clears both ENS records and requests deletion.
+Raw messages are sensitive even before publication; database backups and Resend
+retention require the same operational care as an inbox.

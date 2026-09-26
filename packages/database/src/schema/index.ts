@@ -4,3 +4,4 @@ export * from "./github/publication.js";
 export * from "./farcaster/attempt.js";
 export * from "./x/attempt.js";
 export * from "./x/publication.js";
+export * from "./email/attempt.js";
