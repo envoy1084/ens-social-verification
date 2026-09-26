@@ -93,6 +93,11 @@ For Telegram, set `TELEGRAM_CLIENT_ID`, `TELEGRAM_CLIENT_SECRET` and
 Login, keep RS256, and register `/verification/oauth/telegram/callback` on the local
 or production backend origin as an exact Redirect URI. Use the OIDC client secret,
 not the bot API token. Trusted Origins are unnecessary for the server-side exchange.
+Token-exchange diagnostics include the endpoint, HTTP status and allowlisted library
+error code. Malformed successful responses also identify known token fields or claim
+types using fixed messages, never raw provider bodies, JWTs or claim values. HTTP 200
+alone does not mean token validation succeeded. Unknown failures remain generic;
+do not weaken nonce, issuer, audience or signature checks to accommodate an unknown error.
 The existing attestor key signs both providers; no additional funded wallet is needed.
 
 To add another OAuth provider, register fixed HTTPS endpoints, issuer, scopes, record

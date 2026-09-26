@@ -26,7 +26,7 @@ const exchange = () =>
     }).pipe(Effect.provide(OAuthProvider.layer), Effect.provideService(OAuthConfig, config)),
   );
 
-function mockToken(idToken: string | undefined) {
+function mockToken(idToken: string | undefined, tokenFields: Record<string, unknown> = {}) {
   return vi.spyOn(globalThis, "fetch").mockImplementation(async (input, init) => {
     const url = String(input);
     if (url === "https://oauth.telegram.org/.well-known/jwks.json")
@@ -44,6 +44,7 @@ function mockToken(idToken: string | undefined) {
         access_token: "discard-this",
         token_type: "Bearer",
         id_token: idToken,
+        ...tokenFields,
       });
     }
     throw new Error("Unexpected Telegram request");
@@ -85,6 +86,40 @@ describe("Telegram OIDC validation", () => {
   it("identifies a missing nonce without exposing token claims", async () => {
     mockToken(telegram.token(telegram.nonce(verifier), { nonce: undefined }));
     await expect(exchange()).rejects.toThrow("OIDC nonce is missing or mismatched");
+  });
+  it.each([
+    ["access_token", undefined],
+    ["token_type", undefined],
+    ["id_token", ""],
+    ["scope", ["openid", "private-provider-value"]],
+    ["expires_in", -1],
+  ])(
+    "identifies malformed HTTP 200 token field %s without leaking values",
+    async (field, value) => {
+      mockToken(telegram.token(telegram.nonce(verifier)), { [field]: value });
+      try {
+        await exchange();
+        expect.fail("Expected exchange failure");
+      } catch (error) {
+        expect(String(error)).toContain(`OAuth token response`);
+        expect(String(error)).toContain(field);
+        expect(String(error)).toContain("HTTP=200; code=OAUTH_INVALID_RESPONSE");
+        expect(String(error)).not.toContain("discard-this");
+        expect(String(error)).not.toContain("private-provider-value");
+      }
+    },
+  );
+  it("identifies invalid ID-token claim types without leaking the token", async () => {
+    const token = telegram.token(telegram.nonce(verifier), { aud: 123456 });
+    mockToken(token);
+    try {
+      await exchange();
+      expect.fail("Expected exchange failure");
+    } catch (error) {
+      expect(String(error)).toContain("OIDC ID token claim aud has an invalid type.");
+      expect(String(error)).not.toContain(token);
+      expect(String(error)).not.toContain("123456");
+    }
   });
   it("reports rejected credentials without leaking the provider error description", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(

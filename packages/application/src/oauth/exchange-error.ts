@@ -1,5 +1,48 @@
 import * as client from "openid-client";
 
+// Match only library-authored messages; never print response bodies or claim values.
+const responseFailures = new Map<string, string>([
+  ['"response" body must be a top level object', "OAuth token response is not a JSON object."],
+  ["Invalid JWT", "OIDC ID token is not a valid JWT."],
+  ["JWT Header must be a top level object", "OIDC ID token header is malformed."],
+  ["JWT Payload must be a top level object", "OIDC ID token payload is malformed."],
+  ["JWT signature verification failed", "OIDC ID token signature failed verification."],
+  ['unexpected JWT "typ" header parameter value', "OIDC ID token has an unsupported token type."],
+]);
+for (const field of ["access_token", "token_type", "id_token", "refresh_token", "scope"]) {
+  for (const constraint of ["must be a string", "must not be empty"]) {
+    responseFailures.set(
+      `"response" body "${field}" property ${constraint}`,
+      `OAuth token response field ${field} is missing, empty or has an invalid type.`,
+    );
+  }
+}
+for (const constraint of ["must be a number", "must be a non-negative number"]) {
+  responseFailures.set(
+    `"response" body "expires_in" property ${constraint}`,
+    "OAuth token response expires_in is not a valid non-negative duration.",
+  );
+}
+for (const [claim, label] of [
+  ["iss", "issuer"],
+  ["aud", "audience"],
+  ["sub", "subject"],
+  ["iat", "issued at"],
+  ["exp", "expiration time"],
+  ["nbf", "not before"],
+  ["auth_time", "authentication time"],
+  ["azp", "authorized party"],
+]) {
+  responseFailures.set(
+    `JWT "${claim}" (${label}) claim missing`,
+    `OIDC ID token is missing the required ${claim} claim.`,
+  );
+  responseFailures.set(
+    `unexpected JWT "${claim}" (${label}) claim type`,
+    `OIDC ID token claim ${claim} has an invalid type.`,
+  );
+}
+
 const diagnosticCodes = new Set([
   "OAUTH_INVALID_RESPONSE",
   "OAUTH_RESPONSE_IS_NOT_JSON",
@@ -58,6 +101,10 @@ export function oauthExchangeFailure(error: unknown) {
       error.cause.message === 'JWT "nonce" (nonce) claim missing'
     )
       return "OIDC nonce is missing or mismatched in the provider's ID token.";
+    if (error.code === "OAUTH_INVALID_RESPONSE" && error.cause instanceof Error) {
+      const failure = responseFailures.get(error.cause.message);
+      if (failure) return failure;
+    }
     if (error.code === "OAUTH_JWT_CLAIM_COMPARISON_FAILED") {
       const cause = error.cause;
       const details = cause instanceof Error ? cause.cause : undefined;
