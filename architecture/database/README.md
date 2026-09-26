@@ -36,6 +36,23 @@ These transition rules are conditional queries, not database CHECK constraints.
 Index: `sessions_expiry_idx(expires_at)`. No foreign keys. Addresses and chain ID are
 validated by protocol models, not SQL CHECK constraints. No raw token is stored.
 
+## GitHub Verification
+
+`github_attempts` stores the UUID, normalized ENS name, wallet address, session/state
+digests, PKCE challenge, status, GitHub identity, prepared claim, encrypted temporary
+OAuth token, creation time and 15-minute expiry. State digests are unique; expiry is
+indexed. The `ready` CHECK requires identity, claim and encrypted token. Conditional
+updates enforce `pending -> processing -> ready -> publishing`; only one callback
+and one gist creation can win. Expired encrypted tokens are cleared each minute.
+
+`github_publications` stores one immutable result per attempt (UUID foreign key,
+name, login, unique gist ID, creation time). It does not store OAuth tokens or declare
+a profile verified. Public verification reads the live gist and ENS state independently.
+The foreign key restricts deleting an attempt with a publication. Expired attempt
+metadata and publication rows are retained; token ciphertext is not.
+
+See [signed GitHub gists](../github.md) for the remote-write failure boundary.
+
 ## Transactions And Lifecycle
 
 `TransactionService.run` installs a private transaction client in Effect context.

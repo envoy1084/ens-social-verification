@@ -5,6 +5,7 @@ Drizzle ORM/Kit RC with the Effect PostgreSQL driver. `apps/server/.env` provide
 
 - `src/schema/auth/`: one Drizzle table per file.
 - `src/repositories/auth/`: challenge and session query services with model validation.
+- `src/schema/github/` and `src/repositories/github/`: OAuth attempts and gist publications.
 - `src/core/`: PostgreSQL Layer and transaction context.
 - `src/migrations/`: advisory-locked startup/CLI migrator.
 - `src/config.ts`: redacted database configuration.

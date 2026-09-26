@@ -15,3 +15,6 @@ Root exports preserve the public schemas, but not persistence models. See
 Root exports also include record-verification descriptor, claim, hashing and typed-data
 helpers. Only the experimental Sepolia ENSv2 authority profile is supported.
 See [verification boundaries](../../architecture/verification.md).
+
+GitHub schemas and helpers define the experimental `github.gist.v1` envelope,
+canonical JSON encoding and strict gist URL parsing. No operator signature is used.
