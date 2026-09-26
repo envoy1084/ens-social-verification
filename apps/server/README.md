@@ -66,12 +66,13 @@ revoked on owner changes; add revalidation before sensitive future operations.
 
 ## Database Tests
 
-Set `TEST_DATABASE_URL` in `apps/server/.env` to a separate database ending in `_test`, then:
+Override `DATABASE_URL` for test commands with a separate database ending in `_test`.
+Do not change the development URL in `apps/server/.env`:
 
 ```sh
-docker compose --env-file apps/server/.env exec postgres createdb -U ens_social ens_social_test
-pnpm --filter @ens-social-verification/database db:migrate:test
-pnpm exec turbo run test:integration
+node scripts/compose.ts exec postgres createdb -U ens_social ens_social_test
+DATABASE_URL=postgresql://ens_social:YOUR_PASSWORD@localhost:5432/ens_social_test pnpm --filter @ens-social-verification/database db:migrate:test
+DATABASE_URL=postgresql://ens_social:YOUR_PASSWORD@localhost:5432/ens_social_test pnpm exec turbo run test:integration
 ```
 
 Tests clear auth tables only in that test database. They use real Postgres and real

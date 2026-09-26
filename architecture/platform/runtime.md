@@ -10,7 +10,8 @@ The API package generates OpenAPI at `/` and `/openapi.json`; Scalar is at `/ref
 
 `compose.yaml` runs Postgres 17 on `127.0.0.1:5432` with a dedicated project volume.
 It never mounts Namera's data. Database credentials belong in `apps/server/.env`.
-`pnpm dev:services:up` passes that file to Compose explicitly; no root env file exists.
+`pnpm dev:services:up` uses `scripts/compose.ts` to derive Compose credentials from
+`DATABASE_URL`; no separate password setting or root env file exists.
 The server runs migrations before opening its listener in both development and production.
 The migrator holds a PostgreSQL advisory lock on its dedicated single-connection pool;
 concurrent starts serialize, and a failed migration aborts startup. The CLI uses the same code.
@@ -23,15 +24,13 @@ credentials. Use `localhost` for both local origins, not a mix of localhost
 and 127.0.0.1. Production web/API hosts must be same-site HTTPS sibling domains;
 cross-site cookie authentication is intentionally unsupported.
 
-| Variable            | Owner       | Meaning                                          |
-| ------------------- | ----------- | ------------------------------------------------ |
-| `DATABASE_URL`      | database    | PostgreSQL connection URL, loaded as Redacted    |
-| `POSTGRES_PASSWORD` | Compose     | Local database password                          |
-| `APP_ORIGIN`        | application | Exact trusted web origin, no trailing slash/path |
-| `NODE_ENV`          | application | HTTP loopback allowed only in development        |
-| `ALCHEMY_API_KEY`   | server      | Sepolia reads and signature verification         |
-| `HOST`, `PORT`      | server      | Defaults: 127.0.0.1 and 8080                     |
-| `TEST_DATABASE_URL` | tests       | Separate database ending in `_test`              |
+| Variable          | Owner       | Meaning                                          |
+| ----------------- | ----------- | ------------------------------------------------ |
+| `DATABASE_URL`    | database    | PostgreSQL connection URL, loaded as Redacted    |
+| `APP_ORIGIN`      | application | Exact trusted web origin, no trailing slash/path |
+| `NODE_ENV`        | application | HTTP loopback allowed only in development        |
+| `ALCHEMY_API_KEY` | server      | Sepolia reads and signature verification         |
+| `HOST`, `PORT`    | server      | Defaults: 127.0.0.1 and 8080                     |
 
 `dev` and `start` load `apps/server/.env`. Database commands and integration tests use
 that same file; the browser has only `apps/web/.env`. Exported variables take precedence.
@@ -46,7 +45,8 @@ request budgets. Raw Alchemy/database errors, cookies, and signatures are not lo
 
 `pnpm check` runs formatting, lint, typecheck, isolated route tests, and all builds.
 `pnpm exec turbo run test:integration` builds dependencies and runs uncached real-Postgres
-auth tests. The test database is separate; its auth tables are cleared at suite startup.
+auth tests with an explicit `DATABASE_URL` override ending in `_test`. The test
+database is separate; its auth tables are cleared at suite startup.
 RPC substitution stays at the transport boundary; EOA signing/recovery is real.
 
 ## Pending

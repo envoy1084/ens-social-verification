@@ -18,10 +18,10 @@ import { authFixture, responseCookie } from "../fixtures/auth.js";
 
 const account = privateKeyToAccount(generatePrivateKey());
 const stranger = privateKeyToAccount(generatePrivateKey());
-const databaseUrl = process.env.TEST_DATABASE_URL;
+const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl || !new URL(databaseUrl).pathname.endsWith("_test")) {
-  throw new Error("TEST_DATABASE_URL must point to a dedicated database ending in _test");
+  throw new Error("DATABASE_URL must point to a dedicated database ending in _test");
 }
 
 const app = authFixture(databaseUrl);
