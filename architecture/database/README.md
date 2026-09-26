@@ -68,6 +68,15 @@ not purge valid published proofs during routine maintenance. Explicit owner remo
 deletes the entire matching attempt only after both ENS records are confirmed empty.
 The proof stops being served and the attempt cannot be republished. See [Farcaster](../farcaster.md).
 
+## X Verification
+
+`x_attempts` uses the same single-use OAuth state transitions and 15-minute encrypted
+token lifetime as GitHub, scoped to X. `x_publications` stores the immutable envelope,
+unique post ID, name and handle with an attempt foreign key. Remote post creation is
+reserved before dispatch and is never automatically retried after an ambiguous failure.
+The envelope is retained after optional post deletion, but cannot verify without
+the matching public post. See [X proof posts](../x.md).
+
 ## Transactions And Lifecycle
 
 `TransactionService.run` installs a private transaction client in Effect context.
