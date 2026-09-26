@@ -64,6 +64,13 @@ Before public deployment add gateway limits and periodic deletion of expired cha
 rows. Expired rows are already rejected on reads. Contract-wallet sessions are not automatically
 revoked on owner changes; add revalidation before sensitive future operations.
 
+## GitHub
+
+Set the GitHub OAuth credentials and token encryption key from `.env.example`.
+Routes under `/verification/github/` implement start/callback, private attempts,
+signed-gist publication and public verification status. No operator signing key or
+ENS transaction writer is needed. See [the flow and production domains](../../architecture/github.md).
+
 ## Database Tests
 
 Override `DATABASE_URL` for test commands with a separate database ending in `_test`.

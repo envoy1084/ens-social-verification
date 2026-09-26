@@ -17,15 +17,15 @@ to fetch; method-specific retrieval must add SSRF, size and timeout limits.
 
 Application owns the read-only ENSForge client, evaluation snapshots, authority
 resolution, record reads, and EOA/ERC-1271 signature checks. Server exports
-`RecordVerificationLive` for future route composition. There are no new HTTP
-routes, database tables, provider methods, proof fetchers, or transaction writers.
+`RecordVerificationLive` for server composition. GitHub-specific routes, persistence
+and retrieval are documented in [signed GitHub gists](github.md).
 Wallet signatures and record-update transactions remain frontend responsibilities.
 
 `validateRecordAuthority` accepts an already decoded envelope object and a trusted
 method implementation's target-derivation function. It validates the ENS side only;
 its result is not a verified social connection. Method evidence remains unknown.
-A future raw-envelope decoder must bound bytes and reject duplicate JSON members
-before calling the object schema. Do not treat ordinary JSON.parse as that boundary.
+Raw-envelope decoders must bound bytes and reject duplicate JSON members before
+verification. The GitHub method enforces an exact canonical JSON encoding for this.
 
 ## Authority Algorithm 2
 

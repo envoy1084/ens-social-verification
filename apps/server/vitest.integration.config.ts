@@ -6,5 +6,5 @@ if (existsSync(".env")) process.loadEnvFile(".env");
 
 export default defineConfig({
   resolve: { conditions: ["workspace-source"] },
-  test: { include: ["tests/integration/**/*.test.ts"] },
+  test: { include: ["tests/integration/**/*.test.ts"], fileParallelism: false },
 });

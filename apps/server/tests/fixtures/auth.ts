@@ -81,7 +81,7 @@ export function authFixture(databaseUrl: string, secure = false) {
       }),
     );
 
-  return { ...web, runtime, rpc, request, origin };
+  return { ...web, runtime, rpc, request, origin, auth, database };
 }
 
 export function responseCookie(response: Response, prefix: string) {

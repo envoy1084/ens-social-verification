@@ -17,6 +17,7 @@
         "DATABASE_URL",
         "APP_ORIGIN",
         "NODE_ENV",
+        "GITHUB_*",
         "VITE_*"
       ]
     },
