@@ -13,3 +13,5 @@ If the indexer is unavailable, exact-name navigation still works.
 Alchemy credentials belong only to the server. No social verification is implemented yet.
 
 Visual assets and layout follow the user's `ensip-url-verification/apps/demo` reference.
+The ENS wordmark comes from https://ens.domains/brand; follow its trademark guidance before publishing.
+Missing avatars use DiceBear shapes seeded with the public ENS name (then initials if unavailable).

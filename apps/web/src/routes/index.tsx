@@ -6,7 +6,7 @@ export const Route = createFileRoute("/")({ component: Home });
 function Home() {
   return (
     <main className="hero-field relative isolate flex min-h-[calc(100dvh-4rem)] px-4">
-      <section className="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center pt-16 text-center sm:pt-24">
+      <section className="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center pt-52 text-center sm:pt-44">
         <p className="text-accent mb-5 text-xs font-bold uppercase">ENS social verification</p>
         <h1 className="hero-title font-semibold">
           Trust the record.

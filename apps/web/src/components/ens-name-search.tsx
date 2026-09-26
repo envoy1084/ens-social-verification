@@ -11,14 +11,14 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 
 import { useSearchNames } from "@ensforge/react";
-import { Avatar } from "@thenamespace/uikit/avatar";
 import { FieldError } from "@thenamespace/uikit/field-error";
 import { SearchField } from "@thenamespace/uikit/search-field";
 import { Spinner } from "@thenamespace/uikit/spinner";
 
 import { normalizeEnsInput } from "../data/ens-name";
+import { NameAvatar } from "./name-avatar";
 
-export function EnsNameSearch() {
+export function EnsNameSearch({ compact = false }: { compact?: boolean }) {
   const navigate = useNavigate();
   const container = useRef<HTMLDivElement>(null);
   const [input, setInput] = useState("");
@@ -120,10 +120,14 @@ export function EnsNameSearch() {
         onSubmit={openName}
         value={input}
       >
-        <SearchField.Group className="h-16 bg-white shadow-[0_12px_40px_rgb(1_26_37/0.12)]">
+        <SearchField.Group
+          className={
+            compact ? "h-12 bg-white" : "h-16 bg-white shadow-[0_12px_40px_rgb(1_26_37/0.12)]"
+          }
+        >
           <SearchField.SearchIcon className="text-accent size-6" />
           <SearchField.Input
-            className="min-w-0 flex-1 text-base sm:text-lg"
+            className={compact ? "min-w-0 flex-1 text-sm" : "min-w-0 flex-1 text-base sm:text-lg"}
             placeholder="Search an ENS name"
             onFocus={handleFocus}
             onKeyDown={handleKeyDown}
@@ -149,15 +153,10 @@ export function EnsNameSearch() {
               onClick={selectSuggestion}
               onKeyDown={moveSuggestion}
             >
-              <Avatar className="shrink-0 rounded-sm" size="md">
-                <Avatar.Image
-                  alt=""
-                  src={`https://metadata.ens.domains/mainnet/avatar/${encodeURIComponent(name)}`}
-                />
-                <Avatar.Fallback className="bg-[#e8f6fb] text-xs font-semibold text-accent">
-                  ENS
-                </Avatar.Fallback>
-              </Avatar>
+              <NameAvatar
+                name={name}
+                src={`https://metadata.ens.domains/mainnet/avatar/${encodeURIComponent(name)}`}
+              />
               <span className="min-w-0 truncate font-semibold">{name}</span>
             </button>
           ))}
