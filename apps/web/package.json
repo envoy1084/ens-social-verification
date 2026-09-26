@@ -39,6 +39,7 @@
     "react-dom": "catalog:",
     "react-stately": "3.48.0",
     "scheduler": "catalog:",
+    "usehooks-ts": "catalog:",
     "viem": "catalog:",
     "wagmi": "catalog:"
   },

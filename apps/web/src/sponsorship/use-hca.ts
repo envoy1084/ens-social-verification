@@ -1,10 +1,11 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 import { sponsoredRecords } from "@ens-social-verification/protocol/schema";
 import { multicallResolverAbi } from "@ensforge/contracts";
 import { sepoliaHcaDeployment } from "@ensforge/contracts/deployments";
 import { permissionedResolverV2Abi } from "@ensforge/contracts/v2";
 import { useEnsforge } from "@ensforge/react";
+import { useEventCallback, useLocalStorage } from "usehooks-ts";
 import { encodeFunctionData, isAddressEqual, toHex } from "viem";
 import { packetToBytes, normalize } from "viem/ens";
 import { useAccount } from "wagmi";
@@ -16,7 +17,9 @@ import { wagmiConfig } from "../wallet";
 export function useHca(name: string) {
   const sdk = useEnsforge();
   const account = useAccount();
-  const client = useQueryClient();
+  const [sponsored, setSponsored] = useLocalStorage("ens-sponsored-updates", false);
+  // Record updates can resume after proof signing with an older hook result.
+  const prefersWalletGas = useEventCallback(() => sponsored !== true);
   const configuration = useQuery({
     queryKey: ["sponsorship", "configuration"],
     queryFn: async () => {
@@ -29,13 +32,6 @@ export function useHca(name: string) {
     },
     staleTime: 60_000,
     retry: false,
-  });
-  const preferenceKey = ["sponsorship", "wallet-paid", account.address, name];
-  const preference = useQuery({
-    queryKey: preferenceKey,
-    queryFn: () => false,
-    initialData: false,
-    staleTime: Infinity,
   });
   const state = useQuery({
     queryKey: ["sponsorship", "hca", account.address, name],
@@ -195,9 +191,8 @@ export function useHca(name: string) {
       return confirmed.data.hca;
     },
     enabled: configuration.data === true,
-    get walletPaid() {
-      return client.getQueryData<boolean>(preferenceKey) ?? preference.data;
-    },
-    setWalletPaid: (value: boolean) => client.setQueryData(preferenceKey, value),
+    walletPaid: sponsored !== true,
+    prefersWalletGas,
+    setWalletPaid: (value: boolean) => setSponsored(!value),
   };
 }

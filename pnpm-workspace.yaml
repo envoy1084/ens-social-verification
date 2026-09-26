@@ -3,6 +3,7 @@ packages:
   - packages/*
 
 catalog:
+  usehooks-ts: 3.1.1
   "@ensforge/hca": 0.5.0
   permissionless: 0.4.0
   openid-client: 6.8.8

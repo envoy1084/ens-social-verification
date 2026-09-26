@@ -7,7 +7,11 @@ The canonical salt-zero HCA is derived from the connected owner. Existing canoni
 accounts are reused; arbitrary salts and other smart-account implementations are not
 automatically discovered. Social proofs are still signed by the owner, not the HCA.
 
-The owner header contains only the UIKit sponsorship switch. With it off, updates
+The owner header contains only the UIKit sponsorship switch. It defaults to off.
+`usehooks-ts` persists the browser-wide opt-in under `ens-sponsored-updates` in
+localStorage and synchronizes hook instances and tabs. Updates resuming after
+proof signing read the current preference, not the value when signing started.
+With it off, updates
 use normal wallet-paid batching without HCA lookups. With it on, each record update
 checks HCA deployment and permissions on demand. Missing deployment or permissions
 triggers a setup confirmation, wallet-paid setup, then the sponsored update. The
