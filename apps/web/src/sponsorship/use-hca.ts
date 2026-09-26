@@ -40,7 +40,7 @@ export function useHca(name: string) {
       const hca = await sdk.hca.predictHcaAddress({ owner: account.address, salt: 0n });
       const deployment = await sdk.hca.getHca({ hca });
       if (deployment.status === "undeployed") return { hca, deployed: false, ready: false };
-      await sdk.hca.verifyHca({ hca, expectedOwner: account.address, salt: 0n });
+      const verified = await sdk.hca.verifyHca({ hca, expectedOwner: account.address, salt: 0n });
       const permissions = await sdk.capabilities.getRecordPermissions({
         name,
         account: hca,
@@ -49,7 +49,10 @@ export function useHca(name: string) {
       return {
         hca,
         deployed: true,
-        ready: permissions.records.every((record) => record.authorization.status === "authorized"),
+        ready:
+          verified.deployed !== false &&
+          permissions.records.length === sponsoredRecords.length &&
+          permissions.records.every((record) => record.authorization.status === "authorized"),
       };
     },
   });

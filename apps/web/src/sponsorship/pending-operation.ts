@@ -10,6 +10,25 @@ export interface PendingOperation {
   name: string;
 }
 const key = (owner: Address) => `ens-sponsored-operation:11155111:${owner.toLowerCase()}`;
+const changedEvent = "ens-sponsored-operation-changed";
+
+export function hasPendingOperation(owner: Address | undefined) {
+  return Boolean(owner && localStorage.getItem(key(owner)));
+}
+
+export function subscribePendingOperation(notify: () => void) {
+  window.addEventListener("storage", notify);
+  window.addEventListener(changedEvent, notify);
+  return () => {
+    window.removeEventListener("storage", notify);
+    window.removeEventListener(changedEvent, notify);
+  };
+}
+
+function clearOperation(owner: Address) {
+  localStorage.removeItem(key(owner));
+  window.dispatchEvent(new Event(changedEvent));
+}
 
 export class SponsorshipRejected extends Error {
   constructor(
@@ -22,13 +41,13 @@ export class SponsorshipRejected extends Error {
 
 export function forgetRejectedOperation(owner: Address, hash: Hex) {
   const saved = localStorage.getItem(key(owner));
-  if (saved && (JSON.parse(saved) as PendingOperation).hash === hash)
-    localStorage.removeItem(key(owner));
+  if (saved && (JSON.parse(saved) as PendingOperation).hash === hash) clearOperation(owner);
 }
 
 export function rememberOperation(owner: Address, pending: PendingOperation) {
   // Persist before HTTP submission. Storage failure must prevent sending.
   localStorage.setItem(key(owner), JSON.stringify(pending));
+  window.dispatchEvent(new Event(changedEvent));
 }
 
 export async function sponsorshipRpc(name: string, method: string, params: readonly unknown[]) {
@@ -67,7 +86,7 @@ export async function reconcileOperation(owner: Address, client: PublicClient) {
     (log) => log.args.userOpHash === pending.hash && isAddressEqual(log.args.sender, pending.hca),
   );
   if (!event) throw new Error("The sponsored transaction receipt could not be verified.");
-  localStorage.removeItem(key(owner));
+  clearOperation(owner);
   if (!event.args.success || receipt.status !== "success")
     throw new Error("The sponsored update failed onchain. You can retry.");
   return true;

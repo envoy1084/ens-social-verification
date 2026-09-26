@@ -1,14 +1,20 @@
-import { useCallback, useState, type ChangeEvent } from "react";
+import { useCallback, useState, useSyncExternalStore } from "react";
 
 import { sponsoredRecords } from "@ens-social-verification/protocol/schema";
 import { useEnsforge } from "@ensforge/react";
 import { AlertDialog } from "@thenamespace/uikit/alert-dialog";
 import { Button } from "@thenamespace/uikit/button";
+import { Label } from "@thenamespace/uikit/label";
+import { Switch } from "@thenamespace/uikit/switch";
 import { useAccount } from "wagmi";
 import { getAccount } from "wagmi/actions";
 
 import { wagmiConfig } from "../wallet";
-import { reconcileOperation } from "./pending-operation";
+import {
+  reconcileOperation,
+  hasPendingOperation,
+  subscribePendingOperation,
+} from "./pending-operation";
 import { useHca } from "./use-hca";
 
 export function HcaBanner({ name, owner }: { name: string; owner: string | null | undefined }) {
@@ -18,6 +24,9 @@ export function HcaBanner({ name, owner }: { name: string; owner: string | null 
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const pending = useSyncExternalStore(subscribePendingOperation, () =>
+    hasPendingOperation(account.address),
+  );
   const setup = useCallback(async () => {
     if (!account.address || busy) return;
     const address = account.address;
@@ -87,11 +96,10 @@ export function HcaBanner({ name, owner }: { name: string; owner: string | null 
   const closeSetup = useCallback(() => {
     if (!busy) setOpen(false);
   }, [busy]);
-  const changeSponsorship = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => hca.setWalletPaid(!event.target.checked),
-    [hca],
-  );
-  const useWalletGas = useCallback(() => hca.setWalletPaid(true), [hca]);
+  const changeSponsorship = useCallback((selected: boolean) => hca.setWalletPaid(!selected), [hca]);
+  const retryHca = useCallback(() => {
+    void hca.state.refetch();
+  }, [hca.state]);
   const checkPending = useCallback(() => {
     void check();
   }, [check]);
@@ -112,28 +120,48 @@ export function HcaBanner({ name, owner }: { name: string; owner: string | null 
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p>
-          {hca.state.data?.ready && !hca.walletPaid
-            ? "Record updates are sponsored."
-            : "Enable sponsored record updates with your HCA."}
+          {hca.walletPaid
+            ? "Wallet-paid updates."
+            : hca.state.isPending
+              ? "Checking HCA..."
+              : hca.state.isError
+                ? "HCA lookup unavailable."
+                : hca.state.data?.ready
+                  ? "HCA ready for sponsored updates."
+                  : "Wallet gas until HCA setup."}
         </p>
         <div className="flex flex-wrap items-center gap-3">
-          {!hca.state.data?.ready ? (
+          <Switch
+            isSelected={!hca.walletPaid}
+            onChange={changeSponsorship}
+            isDisabled={busy}
+            size="sm"
+          >
+            <Switch.Content>
+              <Switch.Control>
+                <Switch.Thumb />
+              </Switch.Control>
+              <Label>Sponsor updates</Label>
+            </Switch.Content>
+          </Switch>
+          {!hca.walletPaid && hca.state.data && !hca.state.isError && !hca.state.data.ready ? (
             <Button size="sm" onPress={openSetup} isDisabled={busy || hca.state.isPending}>
-              Set up HCA
+              {hca.state.data.deployed ? "Authorize HCA" : "Set up HCA"}
             </Button>
           ) : null}
-          {hca.state.data?.ready ? (
-            <label className="flex items-center gap-2">
-              <input type="checkbox" checked={!hca.walletPaid} onChange={changeSponsorship} />
-              Sponsor updates
-            </label>
+          {pending ? (
+            <Button variant="tertiary" size="sm" onPress={checkPending} isDisabled={busy}>
+              Check pending
+            </Button>
           ) : null}
-          <Button variant="tertiary" size="sm" onPress={checkPending} isDisabled={busy}>
-            Check pending
-          </Button>
-          {hca.state.isError ? (
-            <Button size="sm" variant="tertiary" onPress={useWalletGas}>
-              Use wallet gas
+          {!hca.walletPaid && hca.state.isError ? (
+            <Button
+              size="sm"
+              variant="tertiary"
+              onPress={retryHca}
+              isDisabled={busy || hca.state.isFetching}
+            >
+              Retry lookup
             </Button>
           ) : null}
         </div>

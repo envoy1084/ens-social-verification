@@ -11,6 +11,12 @@ permissions may cover a name or resolver, not only the social records. Ownership
 does not transfer. A deployed account must pass SDK verification and live record
 permission checks before sponsored execution. Owners can switch to wallet gas.
 Without setup, existing wallet-paid batching remains available.
+The UIKit sponsorship switch is always available to the owner. When enabled, a
+missing HCA shows "Set up HCA" and a deployed but unauthorized HCA shows "Authorize
+HCA". Neither blocks normal wallet-paid writes before setup. "Check pending" appears
+only while the wallet has a locally tracked operation, with updates synchronized
+across tabs and components. Readiness requires a complete permission result, not an
+empty list.
 
 All six verification providers and their removal flows use `useRecordCalls`.
 Sponsored writes are atomic owner-signed UserOperations. Failures do not silently
