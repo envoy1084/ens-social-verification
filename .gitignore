@@ -1,0 +1,52 @@
+# Dependencies and package-manager state
+node_modules/
+.pnpm-store/
+*.tsbuildinfo
+
+# Build, task, and test outputs
+.turbo/
+dist/
+build/
+coverage/
+.vite/
+.next/
+.output/
+.cache/
+test-results/
+playwright-report/
+blob-report/
+
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+
+# Logs, crash reports, and temporary files
+*.log
+npm-debug.log*
+pnpm-debug.log*
+report.*.json
+tmp/
+temp/
+*.tmp
+*.swp
+*.swo
+*~
+
+# Local OS, editor, and hosting state
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.vercel/
+.netlify/
+lefthook-local.yml
+lefthook-local.yaml
+
+# Private planning notes; intentionally not part of repository history
+/research/

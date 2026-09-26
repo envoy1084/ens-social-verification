@@ -1,0 +1,22 @@
+packages:
+  - apps/*
+  - packages/*
+
+catalog:
+  "@commitlint/cli": 21.2.3
+  "@commitlint/config-conventional": 21.2.3
+  "@types/node": 24.19.0
+  klarity: 0.2.0
+  lefthook: 2.1.14
+  oxfmt: 0.70.0
+  oxlint: 1.85.0
+  turbo: 2.11.4
+  typescript: 7.0.2
+
+allowBuilds:
+  lefthook: true
+
+autoInstallPeers: false
+strictPeerDependencies: true
+minimumReleaseAgeExclude:
+  - "@types/node@24.19.0"

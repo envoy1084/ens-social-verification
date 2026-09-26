@@ -1,0 +1,35 @@
+{
+  "name": "ens-social-verification",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "pnpm lint:root && turbo run lint",
+    "lint:root": "oxlint --deny-warnings *.config.ts",
+    "lint:fix": "oxlint --fix *.config.ts && turbo run lint:fix",
+    "typecheck": "pnpm typecheck:root && turbo run typecheck",
+    "typecheck:root": "tsc --project tsconfig.json --noEmit",
+    "test": "turbo run test",
+    "format": "oxfmt --write .",
+    "format:check": "oxfmt --check .",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+    "prepare": "lefthook install"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "catalog:",
+    "@commitlint/config-conventional": "catalog:",
+    "@types/node": "catalog:",
+    "klarity": "catalog:",
+    "lefthook": "catalog:",
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:"
+  },
+  "engines": {
+    "node": ">=24.18.0 <25",
+    "pnpm": ">=11.10.0 <12"
+  },
+  "packageManager": "pnpm@11.10.0"
+}

@@ -1,0 +1,7 @@
+extends:
+  - node_modules/klarity/src/lefthook/monorepo.yml
+
+pre-push:
+  commands:
+    root-check:
+      run: pnpm format:check && pnpm lint:root && pnpm typecheck:root && pnpm build
