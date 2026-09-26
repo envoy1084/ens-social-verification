@@ -74,7 +74,7 @@ export function NameProfile({ name }: { name: string }) {
           <h1 className="inline-block min-w-0 max-w-full rounded-sm bg-accent px-4 py-2 text-3xl font-semibold break-all text-accent-foreground shadow-sm sm:text-4xl">
             {name}
           </h1>
-          <div className="rounded-lg bg-white">
+          <div className="shrink-0">
             <CopyButton
               label="Copy profile link"
               value={`${window.location.origin}/${encodeURIComponent(name)}`}

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { Button } from "@thenamespace/uikit/button";
 import {
   CheckmarkCircle02Icon,
   Copy01Icon,
@@ -8,6 +7,7 @@ import {
   Share08Icon,
 } from "@thenamespace/uikit/icons";
 import { Tooltip } from "@thenamespace/uikit/tooltip";
+import { Focusable } from "react-aria-components";
 
 export function CopyButton({
   value,
@@ -37,18 +37,19 @@ export function CopyButton({
   return (
     <span className="relative inline-flex shrink-0">
       <Tooltip delay={200}>
-        <Button
-          isIconOnly
-          aria-label={message}
-          variant="tertiary"
-          className="size-10"
-          onPress={copy}
-        >
-          <HugeiconsIcon
-            icon={status === "copied" ? CheckmarkCircle02Icon : share ? Share08Icon : Copy01Icon}
-            size={20}
-          />
-        </Button>
+        <Focusable>
+          <button
+            type="button"
+            aria-label={message}
+            className="inline-flex size-10 cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent p-0 text-muted shadow-none transition-colors hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            onClick={copy}
+          >
+            <HugeiconsIcon
+              icon={status === "copied" ? CheckmarkCircle02Icon : share ? Share08Icon : Copy01Icon}
+              size={20}
+            />
+          </button>
+        </Focusable>
         <Tooltip.Content>{message}</Tooltip.Content>
       </Tooltip>
       <output className="sr-only">{status !== "idle" ? message : ""}</output>
