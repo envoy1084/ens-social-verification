@@ -7,6 +7,26 @@
       "workspace-source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./schema": {
+      "workspace-source": "./src/schema/index.ts",
+      "types": "./dist/schema/index.d.ts",
+      "default": "./dist/schema/index.js"
+    },
+    "./model": {
+      "workspace-source": "./src/model/index.ts",
+      "types": "./dist/model/index.d.ts",
+      "default": "./dist/model/index.js"
+    },
+    "./dto": {
+      "workspace-source": "./src/dto/index.ts",
+      "types": "./dist/dto/index.d.ts",
+      "default": "./dist/dto/index.js"
+    },
+    "./errors": {
+      "workspace-source": "./src/errors/index.ts",
+      "types": "./dist/errors/index.d.ts",
+      "default": "./dist/errors/index.js"
     }
   },
   "scripts": {
