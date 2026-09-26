@@ -15,6 +15,7 @@
     "lint": "oxlint --deny-warnings ."
   },
   "dependencies": {
+    "@ens-social-verification/protocol": "workspace:*",
     "effect": "catalog:"
   },
   "devDependencies": {

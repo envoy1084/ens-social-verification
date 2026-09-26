@@ -14,7 +14,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "oxlint --deny-warnings .",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
+    "db:migrate": "tsx --env-file-if-exists=../../apps/server/.env --conditions=workspace-source src/migrations/run.ts",
+    "db:migrate:test": "AUTH_INTEGRATION=1 pnpm db:migrate",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
@@ -22,14 +23,16 @@
     "@ens-social-verification/protocol": "workspace:*",
     "drizzle-orm": "catalog:",
     "effect": "catalog:",
-    "pg": "^8.23.0"
+    "pg": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",
+    "@types/pg": "catalog:",
     "drizzle-kit": "catalog:",
     "klarity": "catalog:",
     "oxlint": "catalog:",
     "tsdown": "catalog:",
+    "tsx": "catalog:",
     "typescript": "catalog:"
   }
 }

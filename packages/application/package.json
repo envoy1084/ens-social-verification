@@ -17,9 +17,11 @@
   "dependencies": {
     "@ens-social-verification/database": "workspace:*",
     "@ens-social-verification/protocol": "workspace:*",
-    "effect": "catalog:"
+    "effect": "catalog:",
+    "viem": "catalog:"
   },
   "devDependencies": {
+    "@types/node": "catalog:",
     "klarity": "catalog:",
     "oxlint": "catalog:",
     "tsdown": "catalog:",
