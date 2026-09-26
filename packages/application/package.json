@@ -17,6 +17,9 @@
   "dependencies": {
     "@ens-social-verification/database": "workspace:*",
     "@ens-social-verification/protocol": "workspace:*",
+    "@ensforge/contracts": "catalog:",
+    "@ensforge/core": "catalog:",
+    "@ensforge/sdk": "catalog:",
     "effect": "catalog:",
     "viem": "catalog:"
   },

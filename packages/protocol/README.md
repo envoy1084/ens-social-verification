@@ -11,3 +11,7 @@ session tokens and persistence details never enter these DTOs.
 
 Root exports preserve the public schemas, but not persistence models. See
 [package boundaries](../../architecture/engineering/repository.md).
+
+Root exports also include record-verification descriptor, claim, hashing and typed-data
+helpers. Only the experimental Sepolia ENSv2 authority profile is supported.
+See [verification boundaries](../../architecture/verification.md).

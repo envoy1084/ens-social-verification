@@ -35,7 +35,9 @@
     "lint": "oxlint --deny-warnings ."
   },
   "dependencies": {
-    "effect": "catalog:"
+    "@ensforge/core": "catalog:",
+    "effect": "catalog:",
+    "viem": "catalog:"
   },
   "devDependencies": {
     "klarity": "catalog:",
