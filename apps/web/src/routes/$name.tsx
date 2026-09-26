@@ -10,7 +10,12 @@ export const Route = createFileRoute("/$name")({
     githubAttempt?: string | undefined;
     xAttempt?: string | undefined;
     oauthAttempt?: string | undefined;
+    oauthProvider?: "discord" | "telegram" | undefined;
   } => ({
+    oauthProvider:
+      search.oauthProvider === "discord" || search.oauthProvider === "telegram"
+        ? search.oauthProvider
+        : undefined,
     oauthAttempt:
       typeof search.oauthAttempt === "string" &&
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(
@@ -31,8 +36,15 @@ export const Route = createFileRoute("/$name")({
         ? search.githubAttempt
         : undefined,
   }),
-  beforeLoad: ({ params }) => {
+  beforeLoad: ({ params, search }) => {
     const name = normalizeEnsInput(params.name);
+    if (search.oauthAttempt && !search.oauthProvider)
+      throw redirect({
+        to: "/$name",
+        params: { name },
+        search: { ...search, oauthAttempt: undefined, oauthProvider: undefined },
+        replace: true,
+      });
     if (name !== params.name) throw redirect({ to: "/$name", params: { name }, replace: true });
   },
   component: NamePage,

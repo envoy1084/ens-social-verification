@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSearch } from "@tanstack/react-router";
 
 import { Effect } from "effect";
 
@@ -17,6 +18,7 @@ import { useAccount, useSignTypedData } from "wagmi";
 import { getAccount } from "wagmi/actions";
 
 import { authClient } from "../auth/client";
+import { useClearVerificationAttempt } from "../hooks/use-clear-verification-attempt";
 import { wagmiConfig } from "../wallet";
 import { oauthClient } from "./client";
 import { oauthProviders, type OAuthProviderId } from "./providers";
@@ -25,8 +27,10 @@ export function useOAuthVerification(
   provider: OAuthProviderId,
   recordKey: string,
   name: string,
-  attemptId?: string,
+  callbackAttemptId?: string,
 ) {
+  const search = useSearch({ from: "/$name" });
+  const attemptId = search.oauthProvider === provider ? callbackAttemptId : undefined;
   const account = useAccount();
   const sdk = useEnsforge();
   const sendCalls = useSendCalls();
@@ -63,9 +67,14 @@ export function useOAuthVerification(
   const attempt = useQuery({
     queryKey: ["oauth", "attempt", attemptId, account.address],
     queryFn: ({ signal }) => oauthClient.attempt(attemptId ?? "", signal),
-    enabled: Boolean(attemptId && account.address),
+    enabled: Boolean(attemptId && account.address && status.data?.status !== "verified"),
     retry: false,
   });
+  useClearVerificationAttempt(
+    "oauthAttempt",
+    attemptId,
+    phase === "idle" && !status.isError && status.data?.status === "verified",
+  );
   const validUntil = status.data?.validUntil;
   useEffect(() => {
     if (!validUntil) return;
@@ -225,5 +234,16 @@ export function useOAuthVerification(
     sign,
     refreshRecords,
   ]);
-  return { configuration, status, attempt, records, phase, error, start, publish, check };
+  return {
+    configuration,
+    status,
+    attempt,
+    attemptId,
+    records,
+    phase,
+    error,
+    start,
+    publish,
+    check,
+  };
 }

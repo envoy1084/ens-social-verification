@@ -49,6 +49,9 @@ copies already downloaded or recorded in chain history.
    the session and ENS authority before preparing an immutable claim.
 4. The frontend explains what becomes public. The wallet signs the claim; the backend
    validates it and publishes its signed attestation. Publication is idempotent.
+   The callback URL identifies the provider so only its card resumes the attempt.
+   Attempt errors never override a verified attestation; successful saves clear the
+   callback parameters. Legacy URLs without a provider require reconnecting.
 5. ENSForge `useSendCalls` submits one resolver `setTexts` call containing the provider
    record (`com.discord` or `org.telegram`) and its `verification[text][...]` companion.
    Only the connected wallet sends transactions.

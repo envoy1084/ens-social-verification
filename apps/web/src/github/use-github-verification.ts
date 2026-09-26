@@ -16,6 +16,7 @@ import { useAccount, useSignTypedData } from "wagmi";
 import { getAccount } from "wagmi/actions";
 
 import { authClient } from "../auth/client";
+import { useClearVerificationAttempt } from "../hooks/use-clear-verification-attempt";
 import { wagmiConfig } from "../wallet";
 import { githubClient } from "./client";
 
@@ -55,7 +56,7 @@ export function useGithubVerification(name: string, attemptId?: string) {
   const attempt = useQuery({
     queryKey: ["github", "attempt", attemptId, account.address],
     queryFn: ({ signal }) => githubClient.attempt(attemptId ?? "", signal),
-    enabled: Boolean(attemptId && account.address),
+    enabled: Boolean(attemptId && account.address && status.data?.status !== "verified"),
     retry: false,
   });
   const publication = useQuery({
@@ -65,6 +66,11 @@ export function useGithubVerification(name: string, attemptId?: string) {
     retry: false,
   });
   const validUntil = status.data?.validUntil;
+  useClearVerificationAttempt(
+    "githubAttempt",
+    attemptId,
+    phase === "idle" && !status.isError && status.data?.status === "verified",
+  );
   const recordsSaved = Boolean(
     publication.data &&
     records.data?.find((record) => record.key === githubRecordKey)?.value ===

@@ -40,6 +40,11 @@ Discord and Telegram share `OAuthVerification`, with provider-specific icons, re
 keys and authorization destinations. Both disclose attestor trust and public identity
 fields before signing, batch record updates, and revoke proofs after removal. Telegram
 requires a public username. See [OAuth flow](../../architecture/oauth.md).
+Callback attempts are scoped by provider and removed from the URL after a successful
+save. A stale setup attempt does not override a live verified attestation.
+GitHub, X and OAuth callback parameters are also cleared when a reload or manual
+recheck confirms verification. Unrelated search parameters are preserved; incomplete
+attempts remain resumable. Farcaster and email do not use callback query parameters.
 
 RainbowKit custom authentication is wired through `src/auth/`: `client.ts` uses the
 shared API contracts, `adapter.ts` coordinates sign-in/logout, and `provider.tsx`

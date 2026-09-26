@@ -117,7 +117,9 @@ describe("generic OAuth identity attestations", () => {
     });
     expect(mixed.headers.get("location")).toContain("error=authorization");
     const callback = await app.request(pending.callback, { cookie: pending.cookies });
-    expect(callback.headers.get("location")).toContain(`oauthAttempt=${pending.id}`);
+    expect(callback.headers.get("location")).toBe(
+      `http://localhost:3000/alice.eth?oauthAttempt=${pending.id}&oauthProvider=telegram`,
+    );
     const ready = Schema.decodeUnknownSync(OAuthAttemptResponse)(
       await (await app.request(`attempts/${pending.id}`, { cookie })).json(),
     );
@@ -169,7 +171,7 @@ describe("generic OAuth identity attestations", () => {
     expect(tokenExchanges).toBe(exchangesBefore);
     const callback = await app.request(pending.callback, { cookie: pending.cookies });
     expect(callback.headers.get("location")).toBe(
-      `http://localhost:3000/alice.eth?oauthAttempt=${pending.id}`,
+      `http://localhost:3000/alice.eth?oauthAttempt=${pending.id}&oauthProvider=discord`,
     );
     expect(
       (await app.request(pending.callback, { cookie: pending.cookies })).headers.get("location"),

@@ -101,7 +101,7 @@ export const OAuthConnectionRoutes = Layer.unwrap(
                 request.cookies[cookies.session],
               );
               return HttpServerResponse.redirect(
-                `${config.origin}/${encodeURIComponent(attempt.name)}?oauthAttempt=${attempt.id}`,
+                `${config.origin}/${encodeURIComponent(attempt.name)}?oauthAttempt=${attempt.id}&oauthProvider=${provider}`,
               );
             }).pipe(
               Effect.catch((error) =>

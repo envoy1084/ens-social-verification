@@ -68,7 +68,9 @@ function OAuthAccount({
   const issue =
     oauth.error ??
     oauth.status.error?.message ??
-    oauth.attempt.error?.message ??
+    (!verified && oauth.attemptId && oauth.attempt.error
+      ? `${definition.label} connection attempt: ${oauth.attempt.error.message}`
+      : null) ??
     oauth.configuration.error?.message;
   const { start, publish, check } = oauth;
   const connect = useCallback(() => {
@@ -163,7 +165,7 @@ function OAuthAccount({
             <div className="flex flex-wrap gap-3">
               <Button
                 onPress={ready ? (published ? confirm : review) : connect}
-                isDisabled={busy || Boolean(attemptId && oauth.attempt.isPending)}
+                isDisabled={busy || Boolean(oauth.attemptId && oauth.attempt.isPending)}
               >
                 {busy
                   ? labels[oauth.phase]
