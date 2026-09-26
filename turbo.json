@@ -6,7 +6,11 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", "build/**"]
     },
-    "dev": { "cache": false, "persistent": true },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "passThroughEnv": ["HOST", "PORT", "ALCHEMY_API_KEY"]
+    },
     "lint": { "outputs": [] },
     "lint:fix": { "cache": false },
     "typecheck": { "dependsOn": ["^typecheck"], "outputs": [] },

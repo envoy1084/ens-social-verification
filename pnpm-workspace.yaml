@@ -3,6 +3,11 @@ packages:
   - packages/*
 
 catalog:
+  "@effect/platform-node": 4.0.0-rc.117
+  effect: 4.0.0-rc.117
+  tsdown: 0.23.0
+  tsx: 4.23.15
+  vitest: 4.1.11
   "@commitlint/cli": 21.2.3
   "@commitlint/config-conventional": 21.2.3
   "@types/node": 24.19.0
@@ -14,9 +19,14 @@ catalog:
   typescript: 7.0.2
 
 allowBuilds:
+  esbuild: true
   lefthook: true
 
 autoInstallPeers: false
 strictPeerDependencies: true
+peerDependencyRules:
+  # Redis is only used by the platform's Redis adapter, which this server does not import.
+  ignoreMissing:
+    - redis
 minimumReleaseAgeExclude:
   - "@types/node@24.19.0"

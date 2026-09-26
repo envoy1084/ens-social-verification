@@ -2,8 +2,8 @@
 
 ## Scope and workflow
 
-- This is an intentionally empty pnpm/Turborepo scaffold. Do not create applications
-  or packages until a feature requires them.
+- Keep the hackathon workspace minimal: server and web apps, with api, application,
+  protocol and database packages only as features require them.
 - Inspect Git status, relevant code, configuration, tests, and package READMEs first.
 - Preserve pre-existing changes and commit them separately before implementation.
 - Make focused changes and commit each meaningful unit using Conventional Commits.
