@@ -1,5 +1,6 @@
 import { useAvatar, usePrimaryName } from "@ensforge/react";
 import { Button } from "@thenamespace/uikit/button";
+import NetworkEthereum from "@web3icons/react/icons/networks/NetworkEthereum";
 import { getAddress } from "viem";
 
 import { NameAvatar } from "./name-avatar";
@@ -24,6 +25,9 @@ export function WalletIdentity({ address, onPress }: { address: string; onPress:
         title={name ? `${name}\n${address}` : address}
       >
         {label}
+      </span>
+      <span title="Ethereum Sepolia" className="shrink-0">
+        <NetworkEthereum size={18} variant="branded" aria-label="Ethereum Sepolia" />
       </span>
     </Button>
   );

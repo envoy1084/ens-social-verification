@@ -69,6 +69,9 @@ catalogs:
     '@vitejs/plugin-react':
       specifier: 6.1.1
       version: 6.1.1
+    '@web3icons/react':
+      specifier: 4.1.22
+      version: 4.1.22
     drizzle-kit:
       specifier: 1.0.0-rc.4
       version: 1.0.0-rc.4
@@ -270,6 +273,9 @@ importers:
       '@thenamespace/uikit':
         specifier: 'catalog:'
         version: 0.3.0(@floating-ui/dom@1.8.0)(@heroui/react@3.2.2(@react-spectrum/provider@3.11.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(tailwindcss@4.3.3))(@heroui/styles@3.2.2(tailwind-merge@3.4.0)(tailwindcss@4.3.3))(@internationalized/date@3.12.2)(@react-aria/utils@3.34.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@react-stately/data@3.16.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@react-types/shared@3.36.0(react@19.2.8))(@tiptap/extensions@3.31.3(@tiptap/core@3.31.3(@tiptap/pm@3.31.3))(@tiptap/pm@3.31.3))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-aria-components@1.19.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-aria@3.50.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react-is@16.13.1)(react-stately@3.48.0(react@19.2.8))(react@19.2.8)(redux@5.0.1)(tailwindcss@4.3.3)
+      '@web3icons/react':
+        specifier: 'catalog:'
+        version: 4.1.22(react@19.2.8)
       effect:
         specifier: 'catalog:'
         version: 4.0.0-rc.117
@@ -3284,6 +3290,14 @@ packages:
 
   '@walletconnect/window-metadata@1.0.1':
     resolution: {integrity: sha512-9koTqyGrM2cqFRW517BPY/iEtUDx2r1+Pwwu5m7sJ7ka79wi3EyqhqcICk/yDmv6jAS1rjKgTKXlEhanYjijcA==}
+
+  '@web3icons/common@0.11.51':
+    resolution: {integrity: sha512-ZXaTW/P6ReLHmkYQcxP8OcPoUrSmgPlsFKVboiG/cVSIkz0mHNP1tIFhf9zPOQaQm20yqTc+uuNuXb2ywHzI1A==}
+
+  '@web3icons/react@4.1.22':
+    resolution: {integrity: sha512-GpcNQGKImC7UeVwI9U0HX++m0jb5WXYV18SSEkDMANQdcz1EzgboKQg2ZWg1G4TKVToguNBgrtDISo7Sx5rINw==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
 
   '@yuku-codegen/binding-android-arm64@0.10.2':
     resolution: {integrity: sha512-Oc2KInVkPfUjEB4PeV6X0NvIoyYTzDe/WmqFrTwBqKs6YKnz4A7XwWQvJTb7M0rLz9a6WgpUUiiS5QKaCi4O/g==}
@@ -10901,6 +10915,13 @@ snapshots:
     dependencies:
       '@walletconnect/window-getters': 1.0.1
       tslib: 1.14.1
+
+  '@web3icons/common@0.11.51': {}
+
+  '@web3icons/react@4.1.22(react@19.2.8)':
+    dependencies:
+      '@web3icons/common': 0.11.51
+      react: 19.2.8
 
   '@yuku-codegen/binding-android-arm64@0.10.2':
     optional: true

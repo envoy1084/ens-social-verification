@@ -27,6 +27,7 @@
     "@tanstack/react-query": "catalog:",
     "@tanstack/react-router": "catalog:",
     "@thenamespace/uikit": "catalog:",
+    "@web3icons/react": "catalog:",
     "effect": "catalog:",
     "react": "catalog:",
     "react-aria": "3.50.0",

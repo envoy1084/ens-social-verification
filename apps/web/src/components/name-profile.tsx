@@ -16,9 +16,9 @@ import {
   HugeiconsIcon,
   Key01Icon,
   Mail01Icon,
-  Wallet01Icon,
 } from "@thenamespace/uikit/icons";
 import { Skeleton } from "@thenamespace/uikit/skeleton";
+import NetworkEthereum from "@web3icons/react/icons/networks/NetworkEthereum";
 
 import { formatEnsDate } from "../data/ens-name";
 import { GithubVerification } from "../github/github-verification";
@@ -226,11 +226,19 @@ export function NameProfile({
           <article className="record-card mt-4 max-w-2xl">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <span className="flex size-10 items-center justify-center rounded-lg bg-[#e8f6fb] text-accent">
-                  <HugeiconsIcon icon={Wallet01Icon} size={22} />
-                </span>
+                <NetworkEthereum
+                  size={40}
+                  variant="branded"
+                  aria-hidden="true"
+                  className="shrink-0"
+                />
                 <div>
-                  <h3 className="font-semibold">Ethereum</h3>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="font-semibold">Ethereum</h3>
+                    <span className="rounded-sm bg-[#eef0ff] px-1.5 py-0.5 text-[11px] font-medium text-[#414c86]">
+                      Sepolia
+                    </span>
+                  </div>
                   <p className="mt-0.5 text-xs text-muted">Main receiving address</p>
                 </div>
               </div>

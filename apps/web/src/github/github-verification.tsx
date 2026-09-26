@@ -3,7 +3,6 @@ import { useCallback } from "react";
 import { useText } from "@ensforge/react";
 import { Button } from "@thenamespace/uikit/button";
 import {
-  GithubIcon,
   HugeiconsIcon,
   CheckmarkCircle02Icon,
   ArrowUpRight01Icon,
@@ -68,7 +67,13 @@ export function GithubVerification({
       <article className="record-card mt-4 max-w-2xl">
         <div className="flex items-start justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
-            <HugeiconsIcon icon={GithubIcon} size={28} />
+            <img
+              src="/brands/github.svg"
+              alt=""
+              width={32}
+              height={32}
+              className="size-8 shrink-0"
+            />
             <div className="min-w-0">
               <h3 className="font-semibold">GitHub</h3>
               {record.isInitial ? (
@@ -155,7 +160,13 @@ export function GithubVerification({
                     onPress={connect}
                     isDisabled={busy || Boolean(attemptId && github.attempt.isPending)}
                   >
-                    <HugeiconsIcon icon={GithubIcon} size={18} />
+                    <img
+                      src="/brands/github.svg"
+                      alt=""
+                      width={18}
+                      height={18}
+                      className="size-[18px] shrink-0 brightness-0 invert"
+                    />
                     {busy ? phaseLabels[github.phase] : "Connect GitHub"}
                   </Button>
                 )}

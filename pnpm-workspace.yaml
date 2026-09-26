@@ -19,6 +19,7 @@ catalog:
   "@tanstack/react-router": 1.170.39
   "@tanstack/router-plugin": 1.168.40
   "@thenamespace/uikit": 0.3.0
+  "@web3icons/react": 4.1.22
   "@tailwindcss/vite": 4.3.3
   "@vitejs/plugin-react": 6.1.1
   "@types/react": 19.3.0
