@@ -55,6 +55,7 @@ export const RecordVerificationLive = Layer.effect(
         chain: sepolia,
         ccipRead: false,
         transport: http(`https://eth-sepolia.g.alchemy.com/v2/${encodeURIComponent(key)}`, {
+          batch: { batchSize: 20, wait: 8 },
           retryCount: 0,
           timeout: 10_000,
         }),

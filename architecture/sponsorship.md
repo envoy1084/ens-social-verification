@@ -22,8 +22,9 @@ HCA readiness is shared across cards for 60 seconds and reused when choosing the
 write path. It is not an authorization cache: the adapter and server still validate
 the actual operation against current chain state. Returning from wallet prompts
 does not trigger a page-wide query refresh; explicit refreshes and verification
-intervals remain active. Sponsored receipt polling backs off from 4 to 12 seconds,
-and the batched browser RPC transport permits only one retry per failed request.
+intervals remain active. Sponsored receipt polling runs every four seconds,
+and the batched browser RPC transport does not automatically retry failed requests.
+Rate-limit errors return immediately rather than waiting for a retry window.
 ENSForge Effect atoms also have a 60-second stale window, a five-minute idle TTL,
 and no focus refresh, interval refresh or retries. Direct SDK HCA calls are instead
 deduplicated by the shared TanStack readiness query.
@@ -52,6 +53,10 @@ manual investigation/replacement, not blind resubmission.
 - Only Sepolia Pimlico methods needed by the adapter are accepted; no RPC batches.
 - Before estimates, sponsorship or submission, verify active ENSv2 ownership,
   the canonical deployed HCA and current resolver permissions.
+- Canonical address derivation is checked by `verifyHca` with the expected owner
+  and salt zero, without a redundant `predictHcaAddress` deployment-wiring check.
+  HCA, resolver and permission reads use the authority snapshot's block number;
+  canonicality is checked again at the end. No authorization results are cached.
 - Decode HCA execution: one zero-value resolver multicall containing exactly one
   supported social text key and its verification companion for the same name.
   Both permissioned DNS-name and public-resolver node encodings are supported.
@@ -67,3 +72,7 @@ across server restarts/replicas. No new tables or server wallet key are required
 Pimlico must accept the pinned HCA implementation and EntryPoint 0.7; network and
 EntryPoint checks alone do not prove full bundler compatibility. Deployment,
 permission grants and end-to-end sponsorship require a real wallet test.
+
+After ENSForge returns a successful canonical receipt and verified EntryPoint event,
+the matching local pending hash is cleared directly. The recovery path still checks
+receipts independently for interrupted or ambiguous submissions.

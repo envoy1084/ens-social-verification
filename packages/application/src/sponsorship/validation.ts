@@ -6,7 +6,10 @@ import { isAddressEqual, type Address, type Hex } from "viem";
 
 import { resolveEnsV2Authority } from "../verification/authority.js";
 import { VerificationClient } from "../verification/client.js";
-import { createVerificationSnapshot } from "../verification/snapshot.js";
+import {
+  assertVerificationSnapshot,
+  createVerificationSnapshot,
+} from "../verification/snapshot.js";
 import { validateSponsoredCalls } from "./calls.js";
 
 const quantity = Schema.String.check(Schema.isPattern(/^0x(?:0|[1-9a-f][0-9a-f]*)$/i));
@@ -76,23 +79,31 @@ export const validateSponsorshipRequest = Effect.fn("validateSponsorshipRequest"
   )
     return yield* Effect.fail(new Error("Fee limit exceeded"));
   const sdk = yield* VerificationClient;
-  const authority = yield* resolveEnsV2Authority(name, yield* createVerificationSnapshot());
+  const snapshot = yield* createVerificationSnapshot();
+  const authority = yield* resolveEnsV2Authority(name, snapshot);
   if (!isAddressEqual(authority.authority, owner))
     return yield* Effect.fail(new Error("Not the name owner"));
   yield* Effect.tryPromise(async () => {
-    const hca = await sdk.hca.predictHcaAddress({ owner, salt: 0n });
-    if (!isAddressEqual(hca, op.sender as Address)) throw new Error("Wrong HCA");
-    const account = await sdk.hca.verifyHca({ hca, expectedOwner: owner, salt: 0n });
+    const hca = op.sender as Address;
+    // verifyHca already checks canonical derivation, salt, owner and implementation.
+    const [account, resolver] = await Promise.all([
+      sdk.hca.verifyHca({ hca, expectedOwner: owner, salt: 0n, blockNumber: snapshot.number }),
+      sdk.resolution.getResolver({ name, blockNumber: snapshot.number }),
+    ]);
     if (account.deployed === false) throw new Error("Deploy HCA first");
-    const resolver = await sdk.resolution.getResolver({ name });
     if (!resolver) throw new Error("Missing resolver");
     const records = validateSponsoredCalls(op.callData as Hex, name, resolver);
     const permissions = await sdk.capabilities.getRecordPermissions({
       name,
       account: hca,
       records,
+      blockNumber: snapshot.number,
     });
-    if (!permissions.records.every((record) => record.authorization.status === "authorized"))
+    if (
+      permissions.records.length !== records.length ||
+      !permissions.records.every((record) => record.authorization.status === "authorized")
+    )
       throw new Error("HCA is not authorized");
   });
+  yield* assertVerificationSnapshot(snapshot);
 });

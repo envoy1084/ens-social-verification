@@ -12,6 +12,7 @@ import { RpcRoutes } from "../../src/routes/rpc.js";
 const disposals: Array<() => Promise<void>> = [];
 afterEach(async () => {
   await Promise.all(disposals.splice(0).map((dispose) => dispose()));
+  vi.restoreAllMocks();
 });
 
 function setup(key = "test-key", status = 200) {
@@ -142,12 +143,20 @@ describe("server routes", () => {
   });
 
   it("limits public requests per process", async () => {
+    const now = Date.now();
+    const clock = vi.spyOn(Date, "now").mockReturnValue(now);
     const app = setup();
     for (let index = 0; index < 120; index++) await app.post(call);
     const limited = await app.post(call);
     expect(limited.status).toBe(429);
     expect(Number(limited.headers.get("retry-after"))).toBeGreaterThan(0);
-    expect(Number(limited.headers.get("retry-after"))).toBeLessThanOrEqual(60);
+    expect(limited.headers.get("retry-after")).toBe("1");
     expect(app.upstream).toHaveBeenCalledTimes(120);
+    clock.mockReturnValue(now + 500);
+    expect((await app.post(call)).status).toBe(200);
+    expect((await app.post(call)).status).toBe(429);
+    clock.mockReturnValue(now + 60_000);
+    for (let index = 0; index < 119; index++) expect((await app.post(call)).status).toBe(200);
+    expect((await app.post(call)).status).toBe(429);
   });
 });

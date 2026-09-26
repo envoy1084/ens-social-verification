@@ -30,8 +30,8 @@ export const RpcRoutes = Layer.unwrap(
   Effect.gen(function* () {
     const config = yield* ServerConfig;
     const client = yield* HttpClient.HttpClient;
-    let windowStart = 0;
-    let requests = 0;
+    let lastRefill = 0;
+    let tokens = 120;
     let active = 0;
 
     return HttpRouter.add("POST", "/rpc/:chainId", (request) =>
@@ -47,18 +47,12 @@ export const RpcRoutes = Layer.unwrap(
           return failure(415, "Expected application/json");
         }
         const now = yield* Clock.currentTimeMillis;
-        if (now - windowStart >= 60_000) {
-          windowStart = now;
-          requests = 0;
-        }
-        if (requests >= 120)
-          return failure(
-            429,
-            "RPC request limit reached",
-            Math.max(1, Math.ceil((windowStart + 60_000 - now) / 1000)),
-          );
+        // Preserve 120/minute sustained throughput without a minute-long window lockout.
+        tokens = Math.min(120, tokens + Math.max(0, now - lastRefill) / 500);
+        lastRefill = now;
+        if (tokens < 1) return failure(429, "RPC request limit reached", 1);
         if (active >= 10) return failure(429, "RPC request limit reached", 1);
-        requests++;
+        tokens--;
         active++;
 
         return yield* Effect.gen(function* () {

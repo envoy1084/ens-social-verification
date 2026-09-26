@@ -13,7 +13,7 @@ import {
   rememberOperation,
   sponsorshipRpc,
   SponsorshipRejected,
-  forgetRejectedOperation,
+  forgetOperation,
 } from "./pending-operation";
 import { useHca } from "./use-hca";
 
@@ -63,7 +63,7 @@ export function useRecordCalls(name: string) {
                       error instanceof SponsorshipRejected &&
                       error.notSubmitted
                     )
-                      forgetRejectedOperation(address, signedHash);
+                      forgetOperation(address, signedHash);
                     throw error;
                   }
                 },
@@ -103,13 +103,14 @@ export function useRecordCalls(name: string) {
             timeout: 120_000,
             confirmations: 1,
             pollingInterval: 4_000,
-            maxPollingInterval: 12_000,
+            maxPollingInterval: 4_000,
           });
           if (result.status !== "succeeded")
             throw new Error(
               "Sponsored update is not confirmed. Check again before sending another transaction.",
             );
-          await reconcileOperation(address, sdk.config.publicClient);
+          // ENSForge has already checked the canonical receipt and matching EntryPoint event.
+          if (signedHash) forgetOperation(address, signedHash);
           return { mode: "sequential" as const, status: "completed" as const };
         },
       );

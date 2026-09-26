@@ -39,7 +39,7 @@ export class SponsorshipRejected extends Error {
   }
 }
 
-export function forgetRejectedOperation(owner: Address, hash: Hex) {
+export function forgetOperation(owner: Address, hash: Hex) {
   const saved = localStorage.getItem(key(owner));
   if (saved && (JSON.parse(saved) as PendingOperation).hash === hash) clearOperation(owner);
 }
