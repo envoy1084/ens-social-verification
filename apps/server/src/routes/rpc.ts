@@ -31,7 +31,7 @@ export const RpcRoutes = Layer.unwrap(
     const config = yield* ServerConfig;
     const client = yield* HttpClient.HttpClient;
     let lastRefill = 0;
-    let tokens = 120;
+    let tokens = 240;
     let active = 0;
 
     return HttpRouter.add("POST", "/rpc/:chainId", (request) =>
@@ -47,8 +47,8 @@ export const RpcRoutes = Layer.unwrap(
           return failure(415, "Expected application/json");
         }
         const now = yield* Clock.currentTimeMillis;
-        // Preserve 120/minute sustained throughput without a minute-long window lockout.
-        tokens = Math.min(120, tokens + Math.max(0, now - lastRefill) / 500);
+        // Allow a full HCA execution burst while retaining 120/minute sustained throughput.
+        tokens = Math.min(240, tokens + Math.max(0, now - lastRefill) / 500);
         lastRefill = now;
         if (tokens < 1) return failure(429, "RPC request limit reached", 1);
         if (active >= 10) return failure(429, "RPC request limit reached", 1);

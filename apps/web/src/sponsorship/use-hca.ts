@@ -1,9 +1,12 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { sponsoredRecords } from "@ens-social-verification/protocol/schema";
+import { multicallResolverAbi } from "@ensforge/contracts";
 import { sepoliaHcaDeployment } from "@ensforge/contracts/deployments";
+import { permissionedResolverV2Abi } from "@ensforge/contracts/v2";
 import { useEnsforge } from "@ensforge/react";
-import { isAddressEqual } from "viem";
+import { encodeFunctionData, isAddressEqual, toHex } from "viem";
+import { packetToBytes, normalize } from "viem/ens";
 import { useAccount } from "wagmi";
 import { getAccount, getWalletClient } from "wagmi/actions";
 
@@ -46,15 +49,15 @@ export function useHca(name: string) {
         const hca = await sdk.hca.predictHcaAddress({ owner: account.address, salt: 0n });
         stage = "HCA deployment";
         const deployment = await sdk.hca.getHca({ hca });
-        if (deployment.status === "undeployed") return { hca, deployed: false, ready: false };
         // The execution adapter and server also verify full deployment wiring.
         if (
-          !isAddressEqual(deployment.owner, account.address) ||
-          !isAddressEqual(
-            deployment.implementation,
-            sepoliaHcaDeployment.contracts.standaloneImplementation,
-          ) ||
-          deployment.accountId !== sepoliaHcaDeployment.generation.accountId
+          deployment.status === "deployed" &&
+          (!isAddressEqual(deployment.owner, account.address) ||
+            !isAddressEqual(
+              deployment.implementation,
+              sepoliaHcaDeployment.contracts.standaloneImplementation,
+            ) ||
+            deployment.accountId !== sepoliaHcaDeployment.generation.accountId)
         )
           throw new Error("Unsupported HCA deployment");
         stage = "HCA permissions";
@@ -63,12 +66,19 @@ export function useHca(name: string) {
           account: hca,
           records: sponsoredRecords,
         });
+        if (
+          permissions.records.length !== sponsoredRecords.length ||
+          permissions.records.some((record) => !record.supported)
+        )
+          throw new Error("Resolver does not support the required permissions.");
+        const missing = permissions.records
+          .filter((record) => record.authorization.status !== "authorized")
+          .map((record) => record.record);
         return {
           hca,
-          deployed: true,
-          ready:
-            permissions.records.length === sponsoredRecords.length &&
-            permissions.records.every((record) => record.authorization.status === "authorized"),
+          deployed: deployment.status === "deployed",
+          missing,
+          ready: deployment.status === "deployed" && missing.length === 0,
         };
       } catch (cause) {
         throw new Error(
@@ -111,24 +121,72 @@ export function useHca(name: string) {
           confirmation: { type: "confirmed", confirmations: 1, timeout: 120_000 },
         });
       assertAccount();
-      const result = await sdk.permissions.setRecordPermissions({
-        walletAccount: address,
-        walletClient,
-        name,
-        account: readiness.hca,
-        records: sponsoredRecords,
-        approved: true,
-        allowScopeWidening: true,
-        mode: "auto",
-        atomicity: "preferred",
-        confirmation: { type: "confirmed", confirmations: 1, timeout: 120_000 },
-      });
-      if (
-        result.execution.mode === "sequential"
-          ? result.execution.status !== "completed"
-          : result.execution.status !== "confirmed"
-      )
-        throw new Error("Permission transaction is not confirmed yet.");
+      if (readiness.missing.length > 0) {
+        const [resolver, protocol] = await Promise.all([
+          sdk.capabilities.getResolverCapabilities({ name }),
+          sdk.name.getProtocol({ name }),
+        ]);
+        if (!resolver.address || resolver.inherited)
+          throw new Error("A directly attached resolver is required.");
+        const resolverAddress = resolver.address;
+        if (protocol !== "v2") throw new Error("Sponsored setup requires an ENSv2 name.");
+        const grants =
+          resolver.authorization === "owner-delegate"
+            ? (
+                await sdk.batch.prepareCalls({
+                  account: address,
+                  walletClient,
+                  calls: [
+                    sdk.permissions.setResolverDelegateApproval.call({
+                      name,
+                      delegate: readiness.hca,
+                      approved: true,
+                    }),
+                  ],
+                })
+              ).map((call) => {
+                if (!isAddressEqual(call.to, resolverAddress) || call.value !== 0n || !call.data)
+                  throw new Error("Permission calls do not match the resolver.");
+                return call.data;
+              })
+            : resolver.authorization === "role"
+              ? readiness.missing.map((record) => {
+                  if (record.type !== "text")
+                    throw new Error("Only text permissions are supported.");
+                  const setter = encodeFunctionData({
+                    abi: permissionedResolverV2Abi,
+                    functionName: "setText",
+                    args: [toHex(packetToBytes(normalize(name))), record.key, ""],
+                  });
+                  return encodeFunctionData({
+                    abi: permissionedResolverV2Abi,
+                    functionName: "grantSetterRoles",
+                    args: [setter, readiness.hca],
+                  });
+                })
+              : [];
+        if (grants.length === 0) throw new Error("Unsupported resolver permission model.");
+        // Resolver multicall preserves the owner sender even without wallet batching support.
+        const data = encodeFunctionData({
+          abi: multicallResolverAbi,
+          functionName: "multicall",
+          args: [grants],
+        });
+        assertAccount();
+        await sdk.config.publicClient.call({ account: address, to: resolver.address, data });
+        assertAccount();
+        const hash = await walletClient.sendTransaction({
+          account: address,
+          to: resolver.address,
+          data,
+        });
+        const receipt = await sdk.config.publicClient.waitForTransactionReceipt({
+          hash,
+          confirmations: 1,
+          timeout: 120_000,
+        });
+        if (receipt.status !== "success") throw new Error("Permission transaction reverted.");
+      }
       assertAccount();
       const confirmed = await state.refetch({ cancelRefetch: false });
       if (confirmed.error) throw confirmed.error;

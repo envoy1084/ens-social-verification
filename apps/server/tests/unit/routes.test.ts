@@ -146,12 +146,12 @@ describe("server routes", () => {
     const now = Date.now();
     const clock = vi.spyOn(Date, "now").mockReturnValue(now);
     const app = setup();
-    for (let index = 0; index < 120; index++) await app.post(call);
+    for (let index = 0; index < 240; index++) await app.post(call);
     const limited = await app.post(call);
     expect(limited.status).toBe(429);
     expect(Number(limited.headers.get("retry-after"))).toBeGreaterThan(0);
     expect(limited.headers.get("retry-after")).toBe("1");
-    expect(app.upstream).toHaveBeenCalledTimes(120);
+    expect(app.upstream).toHaveBeenCalledTimes(240);
     clock.mockReturnValue(now + 500);
     expect((await app.post(call)).status).toBe(200);
     expect((await app.post(call)).status).toBe(429);

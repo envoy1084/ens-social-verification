@@ -32,10 +32,25 @@ deduplicated by the shared TanStack readiness query.
 
 Setup uses the update's fresh readiness, skips already authorized accounts, and passes the connected
 Sepolia wallet client explicitly. Deployment waits for one confirmation before
-permission grants; grants prefer wallet batching with sequential fallback. The
+permission grants. ENSForge checks the resolver and missing permissions. For a
+permissioned resolver, the pinned ENSForge ABI encodes exact `grantSetterRoles`
+calls locally rather than repeating resolver discovery for every grant. Public
+resolver delegation uses the SDK preparer. Grants are combined into one resolver
+multicall, simulated as the owner, then sent as one wallet transaction.
+Already-authorized records are omitted, including after partially completed setup.
+This avoids twelve separate permission transactions on wallets without batching.
+Deployment remains a separate transaction when needed; record publication remains
+a sponsored UserOperation after setup confirms. The
 setup confirmation appears only when needed. Completion requires a fresh successful
 readiness check before continuing to Pimlico. Wallet and network are checked between
 setup stages. Setup and submission share the same wallet-scoped Web Lock.
+
+The public RPC proxy permits a 240-request burst with the same 120/minute sustained
+refill and ten concurrent requests. This accommodates ENSForge's repeated execution
+checks without rejecting a single flow at the old 120-request burst boundary.
+This does not reduce upstream usage or remove provider limits. Nested HTTP 429
+errors are surfaced as rate limits instead of only a generic HCA revalidation error;
+no automatic retries are added.
 
 All six verification providers and their removal flows use `useRecordCalls`.
 Sponsored writes are atomic owner-signed UserOperations. Failures do not silently
