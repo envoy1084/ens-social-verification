@@ -78,7 +78,7 @@ export function NameProfile({
       </div>
       <div className="relative mx-auto -mt-16 w-[90%] max-w-4xl">
         <div className="flex items-center justify-between gap-4">
-          <h1 className="inline-block min-w-0 max-w-full rounded-sm bg-accent px-4 py-2 text-3xl font-semibold break-all text-accent-foreground shadow-sm sm:text-4xl">
+          <h1 className="inline-block min-w-0 max-w-full rounded-lg bg-accent px-4 py-2 text-3xl font-semibold break-all text-accent-foreground shadow-sm sm:text-4xl">
             {name}
           </h1>
           <div className="shrink-0">
@@ -233,12 +233,7 @@ export function NameProfile({
                   className="shrink-0"
                 />
                 <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-semibold">Ethereum</h3>
-                    <span className="rounded-sm bg-[#eef0ff] px-1.5 py-0.5 text-[11px] font-medium text-[#414c86]">
-                      Sepolia
-                    </span>
-                  </div>
+                  <h3 className="font-semibold">Ethereum</h3>
                   <p className="mt-0.5 text-xs text-muted">Main receiving address</p>
                 </div>
               </div>

@@ -65,8 +65,8 @@ export function GithubVerification({
       <h2 id="social-heading" className="text-lg font-semibold">
         Social accounts
       </h2>
-      <article className="record-card mt-4 max-w-2xl">
-        <div className="flex items-start justify-between gap-4">
+      <article className="record-card mt-4 flex min-h-28 max-w-2xl flex-col justify-center">
+        <div className="flex items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
             <img
               src="/brands/github.svg"
@@ -192,12 +192,6 @@ export function GithubVerification({
               </p>
             )}
           </div>
-        ) : !verified ? (
-          <p className="mt-5 text-sm text-muted">
-            {account.isConnected
-              ? "Only the ENS name owner can add a verified GitHub account."
-              : "Connect the owner's wallet to verify GitHub."}
-          </p>
         ) : null}
 
         {issue ? (
