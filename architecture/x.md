@@ -7,6 +7,11 @@ authorship and current account identity, not a cryptographic signature from X.
 
 ## Flow
 
+Before authorization, the UI explains read/write access, the public proof post and
+the need to keep it public and unchanged. Cancel does not start OAuth. Publication
+still requires a separate post preview and wallet signature; deletion/editing breaks
+verification, and the preview repeats this requirement.
+
 1. The authenticated current ENS owner starts a 15-minute OAuth attempt at
    `POST /verification/x/start`. Random state and PKCE are bound to that exact
    wallet session. An HttpOnly cookie carries the verifier; one pending X flow per

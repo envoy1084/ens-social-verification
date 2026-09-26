@@ -13,6 +13,7 @@ import { Skeleton } from "@thenamespace/uikit/skeleton";
 import { Tooltip } from "@thenamespace/uikit/tooltip";
 import { useAccount } from "wagmi";
 
+import { ConnectXDialog } from "./connect-x-dialog";
 import { xProofLink } from "./proof-link";
 import { RemoveXDialog } from "./remove-x-dialog";
 import { useXVerification } from "./use-x-verification";
@@ -58,6 +59,7 @@ function XAccount({
   const account = useAccount();
   const x = useXVerification(name, attemptId);
   const [publishOpen, setPublishOpen] = useState(false);
+  const [connectOpen, setConnectOpen] = useState(false);
   const record = useText({ name, key: "com.twitter" });
   const isOwner = Boolean(
     owner && account.address?.toLowerCase() === owner.toLowerCase() && account.chainId === 11155111,
@@ -71,8 +73,11 @@ function XAccount({
     x.error || x.status.error?.message || x.attempt.error?.message || x.publication.error?.message;
   const { start, publish: publishProof } = x;
   const connect = useCallback(() => {
+    setConnectOpen(false);
     void start();
   }, [start]);
+  const reviewAccess = useCallback(() => setConnectOpen(true), []);
+  const closeAccess = useCallback(() => setConnectOpen(false), []);
   const publish = useCallback(() => {
     setPublishOpen(false);
     void publishProof();
@@ -172,14 +177,14 @@ function XAccount({
                 </Button>
               ) : (
                 <Button
-                  onPress={connect}
+                  onPress={reviewAccess}
                   isDisabled={busy || Boolean(attemptId && x.attempt.isPending)}
                 >
                   {busy ? phaseLabels[x.phase] : "Connect X"}
                 </Button>
               )}
               {(ready || published) && !busy ? (
-                <Button variant="tertiary" onPress={connect}>
+                <Button variant="tertiary" onPress={reviewAccess}>
                   Change X account
                 </Button>
               ) : null}
@@ -215,6 +220,14 @@ function XAccount({
           {phaseLabels[x.phase]}
         </output>
       ) : null}
+      <ConnectXDialog
+        name={name}
+        isOpen={connectOpen}
+        onOpenChange={setConnectOpen}
+        onCancel={closeAccess}
+        onContinue={connect}
+        busy={busy}
+      />
       <AlertDialog isOpen={publishOpen} onOpenChange={setPublishOpen}>
         <AlertDialog.Backdrop>
           <AlertDialog.Container size="sm">
@@ -232,6 +245,10 @@ function XAccount({
                 <blockquote className="whitespace-pre-wrap break-all border-l-2 border-border pl-4 font-mono text-xs">
                   {x.attempt.data?.claim ? xProofPost(x.attempt.data.claim) : ""}
                 </blockquote>
+                <p>
+                  Keep this post public and unchanged for verification to work. Deleting or editing
+                  it breaks verification.
+                </p>
               </AlertDialog.Body>
               <AlertDialog.Footer>
                 <Button variant="tertiary" onPress={closePreview}>
