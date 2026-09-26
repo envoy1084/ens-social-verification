@@ -72,6 +72,13 @@ Routes under `/verification/github/` implement start/callback, private attempts,
 signed-gist publication and public verification status. No operator signing key or
 ENS transaction writer is needed. See [the flow and production domains](../../architecture/github.md).
 
+## Farcaster
+
+Farcaster routes under `/verification/farcaster/` provide start, completion,
+publication, public proof retrieval and live status. Set `PUBLIC_SERVER_URL` to the
+public HTTPS API origin and enable Optimism Mainnet for `ALCHEMY_API_KEY`. The
+browser RPC proxy remains Sepolia-only. See [Farcaster](../../architecture/farcaster.md).
+
 ## Database Tests
 
 Override `DATABASE_URL` for test commands with a separate database ending in `_test`.

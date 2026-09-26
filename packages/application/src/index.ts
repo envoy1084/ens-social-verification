@@ -9,3 +9,8 @@ export * from "./github/proofs.js";
 export * from "./github/provider.js";
 export * from "./github/token.js";
 export * from "./github/removal.js";
+export * from "./farcaster/authority.js";
+export * from "./farcaster/config.js";
+export * from "./farcaster/connection.js";
+export * from "./farcaster/provider.js";
+export * from "./farcaster/proofs.js";

@@ -9,6 +9,7 @@ import { DatabaseMigration } from "@ens-social-verification/database";
 
 import { ServerConfig } from "../config.js";
 import { Routes } from "../routes/index.js";
+import { FarcasterLive } from "./farcaster.js";
 import { GithubLive } from "./services.js";
 
 export const ServerLive = Layer.unwrap(
@@ -16,7 +17,7 @@ export const ServerLive = Layer.unwrap(
     yield* DatabaseMigration;
     const config = yield* ServerConfig;
     return HttpRouter.serve(Routes, { disableLogger: true }).pipe(
-      Layer.provide(GithubLive),
+      Layer.provide(Layer.mergeAll(GithubLive, FarcasterLive)),
       Layer.provide(NodeHttpClient.layerUndici),
       Layer.provide(NodeHttpServer.layer(createServer, { host: config.host, port: config.port })),
     );

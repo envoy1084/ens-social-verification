@@ -16,6 +16,7 @@
         "ALCHEMY_API_KEY",
         "DATABASE_URL",
         "APP_ORIGIN",
+        "PUBLIC_SERVER_URL",
         "NODE_ENV",
         "GITHUB_*",
         "VITE_*"

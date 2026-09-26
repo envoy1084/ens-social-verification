@@ -12,6 +12,7 @@ commands; these documents explain cross-package flows, persistence, and security
 5. [Container deployment](platform/deployment.md): Node backend and Nginx frontend images.
 6. [Record verification](verification.md): experimental ENSv2 authority and claim helpers.
 7. [Signed GitHub gists](github.md): OAuth, wallet signatures, gist publication and ENS batching.
+8. [Farcaster verification](farcaster.md): SIWF, FID/handle checks and public signed proofs.
 
 The web app reads ENSv2 names on Sepolia. The authentication backend verifies wallet
 control and issues browser sessions through the RainbowKit adapter. Read-only record
