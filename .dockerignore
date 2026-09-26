@@ -1,0 +1,15 @@
+.git
+.turbo
+**/.turbo
+**/node_modules
+**/dist
+**/.env*
+**/coverage
+**/test-results
+**/playwright-report
+research
+out
+tmp
+temp
+*.log
+.DS_Store
