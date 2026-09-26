@@ -19,7 +19,7 @@ export function WalletIdentity({ address, onPress }: { address: string; onPress:
       onPress={onPress}
       aria-label={`Open wallet account for ${label}`}
     >
-      <NameAvatar name={label} seed={address.toLowerCase()} src={avatarUrl} className="size-8" />
+      <NameAvatar name={label} seed={name ?? address} src={avatarUrl} className="size-8" />
       <span
         className="min-w-0 flex-1 truncate text-left"
         title={name ? `${name}\n${address}` : address}

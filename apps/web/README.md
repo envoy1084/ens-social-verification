@@ -45,12 +45,15 @@ chain and connector changes revoke the session, as does disconnecting. Failed lo
 shows a retry action instead of silently restoring the old session. No credentials are
 stored in localStorage. Vite resolves workspace source exports for live contract updates.
 The connected button resolves its primary name and avatar through ENSForge on Sepolia.
-It falls back to a shortened address and address-seeded DiceBear image, with initials
-if images cannot load. Its fixed width keeps long names from moving the navbar.
+It falls back to a shortened address and a locally generated avatar. Its fixed width
+keeps long names from moving the navbar.
 
 Visual assets and layout follow the user's `ensip-url-verification/apps/demo` reference.
 The ENS wordmark comes from https://ens.domains/brand; follow its trademark guidance before publishing.
-Missing avatars use DiceBear 10.x disco seeded with the public ENS name (then initials if unavailable).
+Missing or failed avatars use `DeterministicAvatar`, an ENS-style blue bar pattern
+seeded by the normalized ENS namehash (or a hash of the lowercase wallet address).
+Search, profiles and named wallets share the same pattern. SVGs are generated locally
+without external image requests; this is not the official ENS avatar algorithm.
 
 Build the Nginx image from the repository root with
 `docker build -f apps/web/Dockerfile --build-arg VITE_SERVER_URL=https://api.example.com -t ens-social-web .`.
