@@ -9,6 +9,7 @@ const transports = {
   [sepolia.id]: http(`${env.serverUrl}/rpc/${sepolia.id}`, {
     // Match the proxy's 20-call limit and coalesce concurrent profile/HCA reads.
     batch: { batchSize: 20, wait: 16 },
+    retryCount: 1,
   }),
 };
 export const wagmiConfig = env.walletConnectProjectId

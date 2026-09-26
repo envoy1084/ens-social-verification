@@ -40,11 +40,9 @@ export function useRecordCalls(name: string) {
               "Your previous update is confirmed. Refresh this profile before continuing.",
             );
           if (!hca.enabled || hca.walletPaid) return normal.mutateAsync(input);
-          const fresh = await hca.state.refetch();
-          if (fresh.error)
-            throw new Error("Could not check sponsorship. Choose wallet-paid updates to continue.");
-          if (!fresh.data?.ready) return normal.mutateAsync(input);
-          const hcaAddress = fresh.data.hca;
+          const readiness = await hca.getReadiness();
+          if (!readiness?.ready) return normal.mutateAsync(input);
+          const hcaAddress = readiness.hca;
           let signedHash: Hex | undefined;
           const client = createPimlicoClient({
             chain: sepolia,
@@ -104,6 +102,8 @@ export function useRecordCalls(name: string) {
             execution,
             timeout: 120_000,
             confirmations: 1,
+            pollingInterval: 4_000,
+            maxPollingInterval: 12_000,
           });
           if (result.status !== "succeeded")
             throw new Error(

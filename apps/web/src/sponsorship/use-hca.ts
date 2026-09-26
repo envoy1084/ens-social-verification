@@ -34,7 +34,7 @@ export function useHca(name: string) {
     queryKey: ["sponsorship", "hca", account.address, name],
     enabled: Boolean(configuration.data && account.address && account.chainId === 11155111),
     retry: false,
-    staleTime: 15_000,
+    staleTime: 60_000,
     queryFn: async () => {
       if (!account.address) throw new Error("Connect your wallet");
       const hca = await sdk.hca.predictHcaAddress({ owner: account.address, salt: 0n });
@@ -58,6 +58,14 @@ export function useHca(name: string) {
   });
   return {
     state,
+    getReadiness: async () => {
+      // This selects the execution path; the adapter and server revalidate authorization.
+      if (state.data && !state.isStale && Date.now() - state.dataUpdatedAt < 60_000)
+        return state.data;
+      const fresh = await state.refetch({ cancelRefetch: false });
+      if (fresh.error) throw fresh.error;
+      return fresh.data;
+    },
     enabled: configuration.data === true,
     walletPaid: preference.data,
     setWalletPaid: (value: boolean) => client.setQueryData(preferenceKey, value),

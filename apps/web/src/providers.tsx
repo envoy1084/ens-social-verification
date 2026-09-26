@@ -33,7 +33,15 @@ const ensforgeConfig = {
   },
 };
 export function AppProviders({ children }: PropsWithChildren) {
-  const [client] = useState(() => new QueryClient());
+  const [client] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          // Returning from a wallet prompt must not recheck every social proof at once.
+          queries: { refetchOnWindowFocus: false },
+        },
+      }),
+  );
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={client}>

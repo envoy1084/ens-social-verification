@@ -18,6 +18,13 @@ only while the wallet has a locally tracked operation, with updates synchronized
 across tabs and components. Readiness requires a complete permission result, not an
 empty list.
 
+HCA readiness is shared across cards for 60 seconds and reused when choosing the
+write path. It is not an authorization cache: the adapter and server still validate
+the actual operation against current chain state. Returning from wallet prompts
+does not trigger a page-wide query refresh; explicit refreshes and verification
+intervals remain active. Sponsored receipt polling backs off from 4 to 12 seconds,
+and the batched browser RPC transport permits only one retry per failed request.
+
 All six verification providers and their removal flows use `useRecordCalls`.
 Sponsored writes are atomic owner-signed UserOperations. Failures do not silently
 fall back to paid transactions. A wallet-scoped Web Lock prevents simultaneous
