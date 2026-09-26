@@ -19,7 +19,10 @@ across tabs and components. Readiness requires a complete permission result, not
 empty list.
 
 HCA readiness is shared across cards for 60 seconds and reused when choosing the
-write path. It is not an authorization cache: the adapter and server still validate
+write path. The banner derives the canonical address and inspects deployment owner,
+implementation, account ID and record permissions; it does not repeat the full
+deployment-wiring verification. Lookup failures identify the failed stage.
+It is not an authorization cache: the adapter and server still validate
 the actual operation against current chain state. Returning from wallet prompts
 does not trigger a page-wide query refresh; explicit refreshes and verification
 intervals remain active. Sponsored receipt polling runs every four seconds,

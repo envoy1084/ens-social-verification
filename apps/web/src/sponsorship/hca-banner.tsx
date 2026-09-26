@@ -141,7 +141,7 @@ export function HcaBanner({ name, owner }: { name: string; owner: string | null 
             : hca.state.isPending
               ? "Checking HCA..."
               : hca.state.isError
-                ? "HCA lookup unavailable."
+                ? hca.state.error.message
                 : hca.state.data?.ready
                   ? "HCA ready for sponsored updates."
                   : "Wallet gas until HCA setup."}

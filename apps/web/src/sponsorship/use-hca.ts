@@ -1,7 +1,9 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { sponsoredRecords } from "@ens-social-verification/protocol/schema";
+import { sepoliaHcaDeployment } from "@ensforge/contracts/deployments";
 import { useEnsforge } from "@ensforge/react";
+import { isAddressEqual } from "viem";
 import { useAccount } from "wagmi";
 
 import { env } from "../env";
@@ -37,23 +39,41 @@ export function useHca(name: string) {
     staleTime: 60_000,
     queryFn: async () => {
       if (!account.address) throw new Error("Connect your wallet");
-      const hca = await sdk.hca.predictHcaAddress({ owner: account.address, salt: 0n });
-      const deployment = await sdk.hca.getHca({ hca });
-      if (deployment.status === "undeployed") return { hca, deployed: false, ready: false };
-      const verified = await sdk.hca.verifyHca({ hca, expectedOwner: account.address, salt: 0n });
-      const permissions = await sdk.capabilities.getRecordPermissions({
-        name,
-        account: hca,
-        records: sponsoredRecords,
-      });
-      return {
-        hca,
-        deployed: true,
-        ready:
-          verified.deployed !== false &&
-          permissions.records.length === sponsoredRecords.length &&
-          permissions.records.every((record) => record.authorization.status === "authorized"),
-      };
+      let stage = "HCA address";
+      try {
+        const hca = await sdk.hca.predictHcaAddress({ owner: account.address, salt: 0n });
+        stage = "HCA deployment";
+        const deployment = await sdk.hca.getHca({ hca });
+        if (deployment.status === "undeployed") return { hca, deployed: false, ready: false };
+        // Display-only readiness. The execution adapter and server verify full deployment wiring.
+        if (
+          !isAddressEqual(deployment.owner, account.address) ||
+          !isAddressEqual(
+            deployment.implementation,
+            sepoliaHcaDeployment.contracts.standaloneImplementation,
+          ) ||
+          deployment.accountId !== sepoliaHcaDeployment.generation.accountId
+        )
+          throw new Error("Unsupported HCA deployment");
+        stage = "HCA permissions";
+        const permissions = await sdk.capabilities.getRecordPermissions({
+          name,
+          account: hca,
+          records: sponsoredRecords,
+        });
+        return {
+          hca,
+          deployed: true,
+          ready:
+            permissions.records.length === sponsoredRecords.length &&
+            permissions.records.every((record) => record.authorization.status === "authorized"),
+        };
+      } catch (cause) {
+        throw new Error(
+          `${stage} lookup failed. Retry lookup or turn off sponsorship to use wallet gas.`,
+          { cause },
+        );
+      }
     },
   });
   return {
