@@ -284,6 +284,33 @@ describe("wallet authentication with PostgreSQL", () => {
     app.rpc.code = "0x";
   });
 
+  it("authenticates delegated accounts with own-key or ERC-1271 approval", async () => {
+    const flow = await challenge();
+    app.rpc.code = `0xef0100${stranger.address.slice(2)}`;
+    app.rpc.magicValue = "0xffffffff";
+    const wrong = await stranger.signMessage({ message: flow.message });
+    expect(
+      (
+        await app.request("verify", {
+          body: { ...flow, signature: wrong },
+          cookie: flow.cookie,
+        })
+      ).status,
+    ).toBe(401);
+    expect((await app.request("verify", { body: flow, cookie: flow.cookie })).status).toBe(200);
+    const custom = await challenge();
+    app.rpc.magicValue = "0x1626ba7e";
+    expect(
+      (
+        await app.request("verify", {
+          body: { ...custom, signature: "0x1234" },
+          cookie: custom.cookie,
+        })
+      ).status,
+    ).toBe(200);
+    app.rpc.code = "0x";
+  });
+
   it("sets host-only Secure cookies for HTTPS deployments", async () => {
     const response = await secureApp.request("nonce");
     expect(response.status).toBe(200);

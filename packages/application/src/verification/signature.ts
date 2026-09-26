@@ -56,58 +56,58 @@ export const verifyAuthoritySignature = Effect.fn("verifyAuthoritySignature")(fu
       }),
   });
   const hash = hashVerificationClaim(claim);
-  if (!code || code === "0x") {
+  const delegated = code !== undefined && /^0xef0100[0-9a-f]{40}$/i.test(code);
+  if (!code || code === "0x" || delegated) {
     const recovered = yield* Effect.tryPromise({
       try: () => recoverAddress({ hash, signature }),
       catch: () =>
         new VerificationError({ code: "INVALID_SIGNATURE", message: "Invalid EOA signature" }),
-    });
-    if (!isAddressEqual(recovered, authority)) {
+    }).pipe(Effect.catchTag("VerificationError", () => Effect.succeed(null)));
+    // Delegation preserves the account's own key; custom signatures use its ERC-1271 code.
+    if (recovered && isAddressEqual(recovered, authority)) {
+      yield* assertVerificationSnapshot(snapshot);
+      return;
+    }
+    if (!delegated) {
       return yield* new VerificationError({
         code: "INVALID_SIGNATURE",
         message: "Signature does not match authority",
       });
     }
-  } else {
-    if (code.toLowerCase().startsWith("0xef0100")) {
-      return yield* new VerificationError({
-        code: "UNSUPPORTED_AUTHORITY",
-        message: "Delegated-code accounts are not supported in this profile",
+  }
+
+  const magic = yield* Effect.tryPromise({
+    try: () =>
+      client.readContract({
+        address: authority,
+        abi: signatureAbi,
+        functionName: "isValidSignature",
+        args: [hash, signature],
+        blockNumber: snapshot.number,
+      }),
+    catch: (error) => {
+      const rejected =
+        error instanceof BaseError &&
+        error.walk(
+          (cause) =>
+            cause instanceof ContractFunctionRevertedError ||
+            cause instanceof ContractFunctionZeroDataError,
+        );
+      return new VerificationError({
+        code:
+          rejected instanceof ContractFunctionRevertedError ||
+          rejected instanceof ContractFunctionZeroDataError
+            ? "INVALID_SIGNATURE"
+            : "DEPENDENCY_UNAVAILABLE",
+        message: "Contract authority signature could not be validated",
       });
-    }
-    const magic = yield* Effect.tryPromise({
-      try: () =>
-        client.readContract({
-          address: authority,
-          abi: signatureAbi,
-          functionName: "isValidSignature",
-          args: [hash, signature],
-          blockNumber: snapshot.number,
-        }),
-      catch: (error) => {
-        const rejected =
-          error instanceof BaseError &&
-          error.walk(
-            (cause) =>
-              cause instanceof ContractFunctionRevertedError ||
-              cause instanceof ContractFunctionZeroDataError,
-          );
-        return new VerificationError({
-          code:
-            rejected instanceof ContractFunctionRevertedError ||
-            rejected instanceof ContractFunctionZeroDataError
-              ? "INVALID_SIGNATURE"
-              : "DEPENDENCY_UNAVAILABLE",
-          message: "Contract authority signature could not be validated",
-        });
-      },
+    },
+  });
+  if (magic !== "0x1626ba7e") {
+    return yield* new VerificationError({
+      code: "INVALID_SIGNATURE",
+      message: "Contract authority rejected signature",
     });
-    if (magic !== "0x1626ba7e") {
-      return yield* new VerificationError({
-        code: "INVALID_SIGNATURE",
-        message: "Contract authority rejected signature",
-      });
-    }
   }
   yield* assertVerificationSnapshot(snapshot);
 });

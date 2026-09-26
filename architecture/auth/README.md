@@ -16,7 +16,9 @@ control; it does not authorize ENS record writes or prove social account ownersh
 3. The wallet signs those exact bytes. `POST /auth/verify` accepts `{ message, signature }`.
    The server matches the stored message, reserves one of five attempts, and checks
    account code on Sepolia. EOAs use message recovery; deployed contracts must return
-   the ERC-1271 magic value for the message hash and signature.
+   the ERC-1271 magic value for the message hash and signature. Exact EIP-7702
+   delegation indicators permit own-key recovery first, then ERC-1271 at the
+   account address. The delegate implementation address is never treated as signer.
 4. After verification, an application-owned transaction conditionally consumes the
    challenge, inserts the new session, and revokes the browser's previous session.
    Repositories resolve the same transaction context. Concurrent replay loses the

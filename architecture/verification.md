@@ -52,8 +52,12 @@ trusted to serve coherent canonical reads; hash rechecks are not a light client.
 Authority expiry is registration expiry, never grace-period end. Live time must
 remain below authority and claim expiry; issuedAt permits at most 300 seconds of
 future skew. A final method verifier must repeat freshness/expiry checks after
-network evidence retrieval. ERC-1271 rejection never falls back to EOA recovery.
-Undeployed smart accounts and EIP-7702 delegated code are not supported.
+network evidence retrieval. Ordinary deployed contracts require ERC-1271 approval;
+rejection never falls back to EOA recovery. EIP-7702 accounts with the exact 23-byte
+delegation indicator accept recovery to the authority address first, then ERC-1271
+at that same address for custom signatures. The implementation address is not an
+ENS authority. Both paths retain snapshot checks and reject RPC failures.
+Undeployed smart accounts (ERC-6492) remain unsupported.
 
 Transfers invalidate old-owner claims. Routine token regeneration does not invalidate
 an otherwise matching claim. Returning to a previous owner can reactivate an

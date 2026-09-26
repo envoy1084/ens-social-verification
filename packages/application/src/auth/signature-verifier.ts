@@ -33,15 +33,16 @@ const make = Effect.gen(function* () {
         catch: () => new AuthUnavailable(),
       });
 
-      if (!code || code === "0x") {
+      const delegated = code !== undefined && /^0xef0100[0-9a-f]{40}$/i.test(code);
+      if (!code || code === "0x" || delegated) {
         const recovered = yield* Effect.tryPromise({
           try: () => recoverMessageAddress({ message, signature }),
           catch: () => new InvalidSignature(),
-        });
+        }).pipe(Effect.catchTag("InvalidSignature", () => Effect.succeed(null)));
 
-        if (recovered.toLowerCase() !== address.toLowerCase()) return yield* new InvalidSignature();
+        if (recovered?.toLowerCase() === address.toLowerCase()) return;
 
-        return;
+        if (!delegated) return yield* new InvalidSignature();
       }
 
       const result = yield* Effect.tryPromise({

@@ -56,7 +56,8 @@ Only credential hashes are stored (the public nonce also appears in the stored S
 Cookies are HttpOnly, SameSite=Lax, host-only and path `/`. HTTPS deployments use Secure
 `__Host-` cookie names. HTTP is accepted only for localhost in development. All auth
 responses are `no-store`; errors never include provider credentials or database details.
-Alchemy is used to distinguish EOAs from deployed ERC-1271 wallets on Sepolia. Undeployed
+Alchemy is used to distinguish EOAs, EIP-7702 accounts and deployed ERC-1271 wallets
+on Sepolia. Delegated accounts support both own-key and ERC-1271 signatures. Undeployed
 ERC-6492 wallets are not supported. Provider outages return 503 rather than invalid-signature errors.
 
 Authentication proves wallet control, not ENS ownership or permission to edit records.

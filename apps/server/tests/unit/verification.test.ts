@@ -63,6 +63,7 @@ function fixture() {
     magic: "0x1626ba7e",
     hash: blockHash,
     unavailable: false,
+    signatureUnavailable: false,
     chainId: 11155111,
   };
   const abi = parseAbi([
@@ -83,7 +84,7 @@ function fixture() {
             return { number: "0x64", hash: rpc.hash, timestamp: `0x${timestamp.toString(16)}` };
           if (method === "eth_getCode") return rpc.code;
           if (method === "eth_call") {
-            const [call, block] = params as [{ data: string }, string];
+            const [call, block] = params as [{ data: string; to: string }, string];
             calls.push(block);
             const selector = call.data.slice(0, 10);
             if (selector === toFunctionSelector("getSubregistry(string)"))
@@ -96,12 +97,15 @@ function fixture() {
               return encodeFunctionResult({ abi, functionName: "getState", result: rpc.state });
             if (selector === toFunctionSelector("ownerOf(uint256)"))
               return encodeFunctionResult({ abi, functionName: "ownerOf", result: rpc.owner });
-            if (selector === toFunctionSelector("isValidSignature(bytes32,bytes)"))
+            if (selector === toFunctionSelector("isValidSignature(bytes32,bytes)")) {
+              expect(call.to.toLowerCase()).toBe(owner.address.toLowerCase());
+              if (rpc.signatureUnavailable) throw new Error("RPC unavailable");
               return encodeFunctionResult({
                 abi,
                 functionName: "isValidSignature",
                 result: rpc.magic as `0x${string}`,
               });
+            }
           }
           throw new Error(`Unexpected RPC method: ${method}`);
         },
@@ -256,7 +260,35 @@ describe("experimental ENSv2 authority 2", () => {
     await expect(run()).resolves.toBeUndefined();
     rpc.magic = "0xffffffff";
     await expect(run()).rejects.toThrow();
+  });
+  it("accepts delegated own-key and ERC-1271 signatures without trusting the delegate key", async () => {
+    const { sdk, rpc, calls } = fixture();
+    const claim = await Effect.runPromise(createVerificationClaim(draft));
+    const signature = await owner.signTypedData(getVerificationTypedData(claim));
+    const wrong = await stranger.signTypedData(getVerificationTypedData(claim));
+    const run = (proofSignature: string) =>
+      Effect.runPromise(
+        verifyAuthoritySignature(claim, proofSignature, owner.address, snapshot).pipe(
+          Effect.provideService(VerificationClient, sdk),
+        ),
+      );
     rpc.code = `0xef0100${stranger.address.slice(2)}`;
-    await expect(run()).rejects.toThrow("Delegated-code");
+    rpc.magic = "0xffffffff";
+    await expect(run(signature)).resolves.toBeUndefined();
+    expect(calls).toEqual([]);
+    await expect(run(wrong)).rejects.toThrow("rejected signature");
+    await expect(run("0x1234")).rejects.toThrow("rejected signature");
+    rpc.magic = "0x1626ba7e";
+    await expect(run("0x1234")).resolves.toBeUndefined();
+    expect(calls.every((block) => block === "0x64")).toBe(true);
+    rpc.signatureUnavailable = true;
+    await expect(run(wrong)).rejects.toMatchObject({ code: "DEPENDENCY_UNAVAILABLE" });
+    rpc.signatureUnavailable = false;
+    rpc.hash = `0x${"22".repeat(32)}`;
+    await expect(run(signature)).rejects.toThrow();
+    rpc.hash = blockHash;
+    rpc.code += "00";
+    rpc.magic = "0xffffffff";
+    await expect(run(signature)).rejects.toThrow("rejected signature");
   });
 });
