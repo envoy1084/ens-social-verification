@@ -30,7 +30,7 @@ if images cannot load. Its fixed width keeps long names from moving the navbar.
 
 Visual assets and layout follow the user's `ensip-url-verification/apps/demo` reference.
 The ENS wordmark comes from https://ens.domains/brand; follow its trademark guidance before publishing.
-Missing avatars use DiceBear shapes seeded with the public ENS name (then initials if unavailable).
+Missing avatars use DiceBear 10.x disco seeded with the public ENS name (then initials if unavailable).
 
 Build the Nginx image from the repository root with
 `docker build -f apps/web/Dockerfile --build-arg VITE_SERVER_URL=https://api.example.com -t ens-social-web .`.

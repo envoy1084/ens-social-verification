@@ -14,7 +14,7 @@ export function NameAvatar({
   className?: string;
 }) {
   const [failedSource, setFailedSource] = useState<string>();
-  const fallback = `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURIComponent(seed)}`;
+  const fallback = `https://api.dicebear.com/10.x/disco/svg?seed=${encodeURIComponent(seed)}`;
   const source = src && src !== failedSource ? src : fallback;
   const handleError = useCallback(() => setFailedSource(src), [src]);
   return (
