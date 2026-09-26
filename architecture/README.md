@@ -18,8 +18,15 @@ commands; these documents explain cross-package flows, persistence, and security
 11. [OAuth attestations](oauth.md): Discord OAuth, Telegram OIDC, attestor trust and revocation.
 12. [Sponsored updates](sponsorship.md): optional HCA setup, Pimlico policy and transaction recovery.
 
-The web app reads ENSv2 names on Sepolia. The authentication backend verifies wallet
-control and issues browser sessions through the RainbowKit adapter. Read-only record
+The web app reads ENSv2 names on Sepolia.
+Search performs a normalized exact-name indexer lookup alongside bounded prefix
+suggestions, placing the exact match first and deduplicating results. Both lookups
+require reachable v2 names; prefix ordering cannot push an exact name off the page.
+If the exact entry is missing, one cached on-chain name-state lookup can include an
+active v2 name before indexing catches up. Prefix suggestions never trigger chain
+lookups. Searches are debounced and cached for one minute without polling.
+The authentication backend verifies wallet control and issues browser sessions
+through the RainbowKit adapter. Read-only record
 verification helpers validate ENSv2 authority and claims. GitHub verification publishes
 wallet-signed gists and batches the two ENS record updates in the connected wallet.
 

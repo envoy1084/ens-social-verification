@@ -10,7 +10,7 @@ import {
 
 import { useNavigate } from "@tanstack/react-router";
 
-import { useSearchNames } from "@ensforge/react";
+import { useNames, useNameState, useSearchNames } from "@ensforge/react";
 import { FieldError } from "@thenamespace/uikit/field-error";
 import { SearchField } from "@thenamespace/uikit/search-field";
 import { Spinner } from "@thenamespace/uikit/spinner";
@@ -29,6 +29,18 @@ export function EnsNameSearch({ compact = false }: { compact?: boolean }) {
     const timer = setTimeout(() => setQuery(input.trim()), 250);
     return () => clearTimeout(timer);
   }, [input]);
+  let exactName = "";
+  try {
+    if (query.length >= 2) exactName = normalizeEnsInput(query);
+  } catch {
+    // Partial input need not be a valid normalized name yet.
+  }
+  const exact = useNames({
+    enabled: Boolean(exactName),
+    filter: { name: exactName, protocol: "v2", includeUnreachable: false },
+    pageSize: 1,
+    atom: { swr: { staleTime: "1 minute" } },
+  });
   const search = useSearchNames({
     query: query.toLowerCase(),
     enabled: query.length >= 2,
@@ -39,9 +51,30 @@ export function EnsNameSearch({ compact = false }: { compact?: boolean }) {
     order: { field: "name", direction: "asc" },
     atom: { swr: { staleTime: "1 minute" } },
   });
+  const lookupExact =
+    Boolean(exactName) &&
+    query === input.trim() &&
+    !exact.isInitial &&
+    !exact.isWaiting &&
+    !exact.data?.items.length;
+  const exactState = useNameState({
+    name: exactName,
+    enabled: lookupExact,
+    atom: { swr: { staleTime: "1 minute" } },
+  });
   const suggestions = new Set<string>();
-  if (query === input.trim())
-    for (const domain of search.data?.items ?? []) {
+  if (query === input.trim()) {
+    if (
+      lookupExact &&
+      !exactState.isFailure &&
+      exactState.data?.protocol === "v2" &&
+      (exactState.data.kind === "v2-native" || exactState.data.kind === "v2-migrated") &&
+      exactState.data.status === "active" &&
+      exactState.data.owner &&
+      exactState.data.owner !== "0x0000000000000000000000000000000000000000"
+    )
+      suggestions.add(exactName);
+    for (const domain of [...(exact.data?.items ?? []), ...(search.data?.items ?? [])]) {
       try {
         if (
           domain.protocol === "v2" &&
@@ -53,7 +86,12 @@ export function EnsNameSearch({ compact = false }: { compact?: boolean }) {
         /* Ignore invalid index entries. */
       }
     }
+  }
   const names = [...suggestions].slice(0, 6);
+  const waiting =
+    search.isWaiting ||
+    (Boolean(exactName) && exact.isWaiting) ||
+    (lookupExact && (exactState.isInitial || exactState.isWaiting));
   const openName = useCallback(
     (value: string) => {
       try {
@@ -131,7 +169,7 @@ export function EnsNameSearch({ compact = false }: { compact?: boolean }) {
             onKeyDown={handleKeyDown}
           />
           <span className="mr-3 flex size-5 shrink-0 items-center justify-center">
-            {search.isWaiting ? <Spinner size="sm" /> : null}
+            {waiting ? <Spinner size="sm" /> : null}
           </span>
         </SearchField.Group>
         <FieldError>Enter a valid ENS name.</FieldError>
@@ -158,11 +196,11 @@ export function EnsNameSearch({ compact = false }: { compact?: boolean }) {
               <span className="min-w-0 truncate font-semibold">{name}</span>
             </button>
           ))}
-          {search.isFailure ? (
+          {search.isFailure || (lookupExact && exactState.isFailure) ? (
             <output className="text-muted block px-3 py-2 text-sm">Suggestions unavailable</output>
           ) : names.length === 0 ? (
             <output className="text-muted block px-3 py-3 text-sm">
-              {search.isWaiting || query !== input.trim() ? "Searching names..." : "No names found"}
+              {waiting || query !== input.trim() ? "Searching names..." : "No names found"}
             </output>
           ) : null}
         </div>
