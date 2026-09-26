@@ -62,6 +62,19 @@ const requestJson = Effect.fn("Github.requestJson")(function* (url: string, init
           message: "GitHub account or gist is no longer public",
         });
       }
+      if (
+        response.status === 429 ||
+        (response.status === 403 &&
+          (response.headers.get("x-ratelimit-remaining") === "0" ||
+            response.headers.has("retry-after")))
+      ) {
+        await response.body?.cancel();
+        throw new GithubError({
+          code: "UNAVAILABLE",
+          message:
+            "GitHub's API rate limit was reached. Wait before checking again; no ENS transaction is needed.",
+        });
+      }
       if (!response.ok || !response.body) {
         await response.body?.cancel();
         throw new Error("GitHub request failed");
@@ -118,6 +131,13 @@ export class GithubProvider extends Context.Service<
     GithubProvider,
     Effect.gen(function* () {
       const config = yield* GithubConfig;
+      const publicHeaders = Redacted.value(config.apiToken)
+        ? { authorization: `Bearer ${Redacted.value(config.apiToken)}` }
+        : config.clientId && Redacted.value(config.clientSecret)
+          ? {
+              authorization: `Basic ${Buffer.from(`${config.clientId}:${Redacted.value(config.clientSecret)}`).toString("base64")}`,
+            }
+          : undefined;
       const currentUser = Effect.fn("GithubProvider.currentUser")(function* (
         token: Redacted.Redacted<string>,
       ) {
@@ -169,6 +189,7 @@ export class GithubProvider extends Context.Service<
         lookup: Effect.fn("GithubProvider.lookup")(function* (login) {
           const response = yield* requestJson(
             `https://api.github.com/users/${encodeURIComponent(login)}`,
+            publicHeaders ? { headers: publicHeaders } : undefined,
           );
           const identity = yield* Schema.decodeUnknownEffect(userSchema)(response).pipe(
             Effect.mapError(
@@ -207,6 +228,7 @@ export class GithubProvider extends Context.Service<
         readGist: Effect.fn("GithubProvider.readGist")(function* (id) {
           const response = yield* requestJson(
             `https://api.github.com/gists/${encodeURIComponent(id)}`,
+            publicHeaders ? { headers: publicHeaders } : undefined,
           );
           return yield* Schema.decodeUnknownEffect(gistSchema)(response).pipe(
             Effect.mapError(

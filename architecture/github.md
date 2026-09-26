@@ -78,6 +78,13 @@ it is protected by the session, single-use state and PKCE cookie. All responses 
 no-store. Each server process allows 60 GitHub requests/minute and five concurrent.
 Add shared gateway limits before a wider public deployment. Unauthenticated GitHub
 API quotas also limit public status checks; outages remove the UI's verified state.
+Public gist/profile reads use the server-only `GITHUB_API_TOKEN` when supplied,
+otherwise OAuth app client credentials (or anonymous reads when unconfigured).
+Use a fine-grained PAT with public read access and no additional permissions. It
+never creates gists; publication always uses the user's temporary OAuth token.
+Rate limits are reported explicitly and do not require resending ENS transactions.
+The frontend compares both live records to the published proof, skips already-saved
+writes, and keeps retrying verification separate from sending another transaction.
 
 ## Deployment
 

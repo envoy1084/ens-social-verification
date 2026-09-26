@@ -1,6 +1,6 @@
 import { Effect, Layer, Redacted } from "effect";
 
-import { GithubConfig, GithubTokens } from "@ens-social-verification/application";
+import { GithubConfig, GithubTokens, GithubProvider } from "@ens-social-verification/application";
 import {
   createVerificationClaim,
   decodeGithubEnvelope,
@@ -8,7 +8,7 @@ import {
   serializeGithubEnvelope,
   githubMethod,
 } from "@ens-social-verification/protocol";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("signed GitHub gist boundaries", () => {
   it("rejects duplicate JSON members, unknown fields and oversized documents", async () => {
@@ -64,6 +64,7 @@ describe("signed GitHub gist boundaries", () => {
       clientSecret: Redacted.make("test"),
       redirectUri: "http://localhost/callback",
       tokenEncryptionKey: Redacted.make("12".repeat(32)),
+      apiToken: Redacted.make(""),
       enabled: true,
     });
     await Effect.runPromise(
@@ -76,4 +77,50 @@ describe("signed GitHub gist boundaries", () => {
       }).pipe(Effect.provide(GithubTokens.layer.pipe(Layer.provide(config)))),
     );
   });
+  it.each(["read-token", ""])(
+    "authenticates public reads and reports rate limits (%s)",
+    async (apiToken) => {
+      const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            id: 123,
+            login: "alice",
+            type: "User",
+          }),
+        ),
+      );
+      vi.stubGlobal("fetch", fetchMock);
+      try {
+        const config = Layer.succeed(GithubConfig, {
+          clientId: "test-app",
+          clientSecret: Redacted.make("test-secret"),
+          apiToken: Redacted.make(apiToken),
+          redirectUri: "http://localhost/callback",
+          tokenEncryptionKey: Redacted.make("12".repeat(32)),
+          enabled: true,
+        });
+        await Effect.runPromise(
+          Effect.gen(function* () {
+            const provider = yield* GithubProvider;
+            expect(yield* provider.lookup("alice")).toEqual({ id: "123", login: "alice" });
+            expect(fetchMock.mock.calls[0]?.[1]?.headers).toMatchObject({
+              authorization: apiToken
+                ? "Bearer read-token"
+                : `Basic ${Buffer.from("test-app:test-secret").toString("base64")}`,
+            });
+            expect(fetchMock.mock.calls[0]?.[0]).toBe("https://api.github.com/users/alice");
+            fetchMock.mockResolvedValue(
+              new Response("{}", { status: 403, headers: { "x-ratelimit-remaining": "0" } }),
+            );
+            const error = yield* provider.readGist("a".repeat(32)).pipe(Effect.flip);
+            expect(error.code).toBe("UNAVAILABLE");
+            expect(error.message).toContain("rate limit");
+            expect(error.message).not.toContain("test-secret");
+          }).pipe(Effect.provide(GithubProvider.layer.pipe(Layer.provide(config)))),
+        );
+      } finally {
+        vi.unstubAllGlobals();
+      }
+    },
+  );
 });

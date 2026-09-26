@@ -151,6 +151,7 @@ export function githubFixture(databaseUrl: string, owner: Address) {
     clientSecret: Redacted.make("secret"),
     redirectUri: "http://localhost:8080/verification/github/callback",
     tokenEncryptionKey: Redacted.make("34".repeat(32)),
+    apiToken: Redacted.make(""),
   });
   const services = GithubProofs.layer.pipe(
     Layer.provideMerge(GithubOAuth.layer),

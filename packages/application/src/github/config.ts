@@ -5,6 +5,7 @@ export class GithubConfig extends Context.Service<
   {
     readonly clientId: string;
     readonly clientSecret: Redacted.Redacted<string>;
+    readonly apiToken: Redacted.Redacted<string>;
     readonly redirectUri: string;
     readonly tokenEncryptionKey: Redacted.Redacted<string>;
     readonly enabled: boolean;
@@ -18,6 +19,9 @@ export class GithubConfig extends Context.Service<
         Config.withDefault(Redacted.make("")),
       );
       const redirectUri = yield* Config.String("GITHUB_REDIRECT_URI").pipe(Config.withDefault(""));
+      const apiToken = yield* Config.Redacted("GITHUB_API_TOKEN").pipe(
+        Config.withDefault(Redacted.make("")),
+      );
       const tokenEncryptionKey = yield* Config.Redacted("GITHUB_TOKEN_ENCRYPTION_KEY").pipe(
         Config.withDefault(Redacted.make("")),
       );
@@ -49,7 +53,7 @@ export class GithubConfig extends Context.Service<
           catch: () => new Error("Invalid GitHub verification configuration"),
         });
       }
-      return { clientId, clientSecret, redirectUri, tokenEncryptionKey, enabled };
+      return { clientId, clientSecret, apiToken, redirectUri, tokenEncryptionKey, enabled };
     }),
   );
 }
