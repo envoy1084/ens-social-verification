@@ -59,7 +59,8 @@ proof origin; local UI proof links use `VITE_SERVER_URL`.
 Polling is request-driven, not a perpetual mailbox worker. It stops on completion,
 error, navigation, or wallet change; retry explicitly after errors. Each scan covers
 up to 1,000 recent messages and five candidates, and reports limits instead of
-silently skipping history. Raw downloads are HTTPS-only on Resend/S3 hosts, reject
+silently skipping history. Raw downloads are HTTPS-only on Resend/S3 hosts (including
+Resend's `cdn.resend.app` original-message CDN), reject
 redirects, and enforce a streamed size cap and timeout. A dedicated inbox is expected.
 Private expired attempts are deleted every five minutes; published evidence persists
 until removal. Current in-progress UI state is not restored after a page reload.

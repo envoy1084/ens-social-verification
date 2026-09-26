@@ -55,8 +55,8 @@ const fetchEmail: typeof fetch = async (input) => {
     url.origin === "https://api.resend.com" &&
     url.pathname === "/emails/receiving/received-email"
   )
-    return Response.json({ raw: { download_url: "https://storage.resend.com/raw/test" } });
-  if (url.href === "https://storage.resend.com/raw/test") return new Response(raw);
+    return Response.json({ raw: { download_url: "https://cdn.resend.app/raw/test" } });
+  if (url.href === "https://cdn.resend.app/raw/test") return new Response(raw);
   throw new Error("Unexpected email transport request");
 };
 beforeEach(() => {

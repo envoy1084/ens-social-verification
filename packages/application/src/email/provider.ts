@@ -68,7 +68,11 @@ const make = Effect.gen(function* () {
                 url.username ||
                 url.password ||
                 url.port ||
-                !(url.hostname.endsWith(".resend.com") || url.hostname.endsWith(".amazonaws.com"))
+                !(
+                  url.hostname === "cdn.resend.app" ||
+                  url.hostname.endsWith(".resend.com") ||
+                  url.hostname.endsWith(".amazonaws.com")
+                )
               )
                 throw new Error("Unsupported download host");
               const response = await fetch(url, {
@@ -86,7 +90,11 @@ const make = Effect.gen(function* () {
                   const next = await reader.read();
                   if (next.done) break;
                   size += next.value.length;
-                  if (size > 256_000) throw new Error("Email too large");
+                  if (size > 256_000)
+                    throw new EmailError({
+                      code: "INVALID_PROOF",
+                      message: "Email exceeds 256 KB. Send a short email without attachments.",
+                    });
                   chunks.push(next.value);
                 }
               } finally {
@@ -94,12 +102,13 @@ const make = Effect.gen(function* () {
               }
               return Buffer.concat(chunks).toString("base64");
             },
-            catch: () =>
-              new EmailError({
-                code: "UNAVAILABLE",
-                message:
-                  "Cannot download the original email. Send a short email without attachments.",
-              }),
+            catch: (cause) =>
+              cause instanceof EmailError
+                ? cause
+                : new EmailError({
+                    code: "UNAVAILABLE",
+                    message: "Cannot download the original email from Resend. Please try again.",
+                  }),
           });
           const evidence = { intent, rawEmail: raw };
           const checked = yield* verifyEmailDkim(evidence, claim).pipe(Effect.result);
