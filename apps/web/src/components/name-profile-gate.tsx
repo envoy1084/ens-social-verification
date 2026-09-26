@@ -8,7 +8,13 @@ import { Skeleton } from "@thenamespace/uikit/skeleton";
 
 import { NameProfile } from "./name-profile";
 
-export function NameProfileGate({ name }: { name: string }) {
+export function NameProfileGate({
+  name,
+  githubAttempt,
+}: {
+  name: string;
+  githubAttempt?: string | undefined;
+}) {
   const state = useNameState({ name });
   const retry = useCallback(() => {
     void state.refresh();
@@ -19,7 +25,8 @@ export function NameProfileGate({ name }: { name: string }) {
     state.data.status === "active" &&
     Boolean(state.data.owner);
 
-  if (!state.isFailure && supported) return <NameProfile name={name} />;
+  if (!state.isFailure && supported)
+    return <NameProfile name={name} githubAttempt={githubAttempt} />;
 
   return (
     <main className="min-h-screen bg-[#fafafa] pb-20">

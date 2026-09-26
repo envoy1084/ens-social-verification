@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as NameRouteImport } from './routes/$name'
+import { Route as GithubCallbackRouteImport } from './routes/github.callback'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const NameRoute = NameRouteImport.update({
   path: '/$name',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GithubCallbackRoute = GithubCallbackRouteImport.update({
+  id: '/github/callback',
+  path: '/github/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$name': typeof NameRoute
+  '/github/callback': typeof GithubCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$name': typeof NameRoute
+  '/github/callback': typeof GithubCallbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$name': typeof NameRoute
+  '/github/callback': typeof GithubCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$name'
+  fullPaths: '/' | '/$name' | '/github/callback'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$name'
-  id: '__root__' | '/' | '/$name'
+  to: '/' | '/$name' | '/github/callback'
+  id: '__root__' | '/' | '/$name' | '/github/callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   NameRoute: typeof NameRoute
+  GithubCallbackRoute: typeof GithubCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NameRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/github/callback': {
+      id: '/github/callback'
+      path: '/github/callback'
+      fullPath: '/github/callback'
+      preLoaderRoute: typeof GithubCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   NameRoute: NameRoute,
+  GithubCallbackRoute: GithubCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

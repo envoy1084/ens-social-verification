@@ -21,11 +21,18 @@ import {
 import { Skeleton } from "@thenamespace/uikit/skeleton";
 
 import { formatEnsDate } from "../data/ens-name";
+import { GithubVerification } from "../github/github-verification";
 import { CopyButton } from "./copy-button";
 import { NameAvatar } from "./name-avatar";
 import { OwnerIdentity } from "./owner-identity";
 
-export function NameProfile({ name }: { name: string }) {
+export function NameProfile({
+  name,
+  githubAttempt,
+}: {
+  name: string;
+  githubAttempt?: string | undefined;
+}) {
   const owner = useOwner({ name });
   const expiry = useExpiry({ name });
   const avatar = useAvatar({ name });
@@ -188,6 +195,7 @@ export function NameProfile({ name }: { name: string }) {
           </div>
         </section>
 
+        <GithubVerification name={name} owner={ownerAddress} attemptId={githubAttempt} />
         <section className="mt-12" aria-labelledby="contact-heading">
           <h2 id="contact-heading" className="text-lg font-semibold">
             Contact

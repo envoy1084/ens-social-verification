@@ -19,7 +19,10 @@ ENSForge and wallets use Sepolia only (11155111), with ENSForge's default v2 ind
 The v1 indexer is disabled. The indexer fetch adapter removes Effect's `b3` and
 `traceparent` headers because the public endpoint's CORS policy does not allow them.
 If the indexer is unavailable, exact-name navigation still works.
-Alchemy credentials belong only to the server. No social verification is implemented yet.
+Alchemy credentials belong only to the server. GitHub verification uses OAuth to create
+a public wallet-signed gist, then ENSForge `useSendCalls` submits one resolver multicall
+for both text records. The badge requires live proof verification, not merely a receipt.
+See [GitHub flow and deployment](../../architecture/github.md).
 
 RainbowKit custom authentication is wired through `src/auth/`: `client.ts` uses the
 shared API contracts, `adapter.ts` coordinates sign-in/logout, and `provider.tsx`
