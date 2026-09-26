@@ -24,6 +24,9 @@ read succeed. Reload/focus/reconnect restores the session; expiry clears it. Acc
 chain and connector changes revoke the session, as does disconnecting. Failed logout
 shows a retry action instead of silently restoring the old session. No credentials are
 stored in localStorage. Vite resolves workspace source exports for live contract updates.
+The connected button resolves its primary name and avatar through ENSForge on Sepolia.
+It falls back to a shortened address and address-seeded DiceBear image, with initials
+if images cannot load. Its fixed width keeps long names from moving the navbar.
 
 Visual assets and layout follow the user's `ensip-url-verification/apps/demo` reference.
 The ENS wordmark comes from https://ens.domains/brand; follow its trademark guidance before publishing.

@@ -5,14 +5,16 @@ import { Avatar } from "@thenamespace/uikit/avatar";
 export function NameAvatar({
   name,
   src,
+  seed = name,
   className = "size-10",
 }: {
   name: string;
   src?: string | undefined;
+  seed?: string;
   className?: string;
 }) {
   const [failedSource, setFailedSource] = useState<string>();
-  const fallback = `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURIComponent(name)}`;
+  const fallback = `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURIComponent(seed)}`;
   const source = src && src !== failedSource ? src : fallback;
   const handleError = useCallback(() => setFailedSource(src), [src]);
   return (

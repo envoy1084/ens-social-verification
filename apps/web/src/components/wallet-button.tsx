@@ -1,8 +1,8 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { Avatar } from "@thenamespace/uikit/avatar";
 import { Button } from "@thenamespace/uikit/button";
 
 import { useAuthenticationFeedback } from "../auth/provider";
+import { WalletIdentity } from "./wallet-identity";
 
 export function WalletButton() {
   const { error, retry } = useAuthenticationFeedback();
@@ -46,13 +46,11 @@ export function WalletButton() {
             </Button>
           );
         return (
-          <Button className="min-h-11 max-w-44" variant="tertiary" onPress={openAccountModal}>
-            <Avatar className="size-6 shrink-0" size="sm">
-              {account.ensAvatar ? <Avatar.Image alt="" src={account.ensAvatar} /> : null}
-              <Avatar.Fallback>{account.address.slice(2, 4).toUpperCase()}</Avatar.Fallback>
-            </Avatar>
-            <span className="truncate">{account.displayName}</span>
-          </Button>
+          <WalletIdentity
+            key={account.address}
+            address={account.address}
+            onPress={openAccountModal}
+          />
         );
       }}
     </ConnectButton.Custom>
