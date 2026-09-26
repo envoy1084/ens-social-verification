@@ -93,8 +93,12 @@ For Telegram, set `TELEGRAM_CLIENT_ID`, `TELEGRAM_CLIENT_SECRET` and
 Login, keep RS256, and register `/verification/oauth/telegram/callback` on the local
 or production backend origin as an exact Redirect URI. Use the OIDC client secret,
 not the bot API token. Trusted Origins are unnecessary for the server-side exchange.
-The Telegram token request includes `client_id` in the form body in addition to
-HTTP Basic authentication, matching its documented exchange. Telegram HTTP 200
+The Telegram token request uses `client_secret_post`: `client_id` and `client_secret`
+are form-encoded in the HTTPS request body, without an Authorization header. This
+method is advertised by Telegram's [OIDC discovery metadata](https://oauth.telegram.org/.well-known/openid-configuration).
+It avoids the Basic-auth transport that returned `invalid_client` in deployment;
+a live login must confirm interoperability. There is no automatic authentication-method
+fallback or authorization-code retry. Telegram HTTP 200
 responses containing a nonempty `error` are treated as failures before token parsing.
 Standard OAuth error codes are allowlisted; unknown codes and descriptions are
 redacted. Diagnostics retain the original HTTP status, and no identity is issued.

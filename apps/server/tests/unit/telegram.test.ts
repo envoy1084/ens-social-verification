@@ -32,13 +32,14 @@ function mockToken(idToken: string | undefined, tokenFields: Record<string, unkn
     if (url === "https://oauth.telegram.org/.well-known/jwks.json")
       return Response.json({ keys: [telegram.jwk] });
     if (url === "https://oauth.telegram.org/token") {
-      const authorization = new Headers(init?.headers).get("authorization") ?? "";
-      expect(authorization.startsWith("Basic ")).toBe(true);
-      expect(decodeURIComponent(Buffer.from(authorization.slice(6), "base64").toString())).toBe(
-        "test-telegram:telegram-secret",
-      );
+      expect(new Headers(init?.headers).has("authorization")).toBe(false);
       const form = new URLSearchParams(String(init?.body));
       expect(form.get("client_id")).toBe(config.providers.telegram.clientId);
+      expect(form.get("client_secret")).toBe(
+        Redacted.value(config.providers.telegram.clientSecret),
+      );
+      expect(form.get("grant_type")).toBe("authorization_code");
+      expect(form.get("code")).toBe("test-code");
       expect(form.get("code_verifier")).toBe(verifier);
       expect(form.get("redirect_uri")).toBe(config.providers.telegram.redirectUri);
       return Response.json({

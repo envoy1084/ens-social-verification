@@ -34,9 +34,7 @@ const make = Effect.gen(function* () {
       },
       credentials.clientId,
       provider.jwksUri ? { id_token_signed_response_alg: "RS256" } : undefined,
-      provider.jwksUri
-        ? client.ClientSecretBasic(Redacted.value(credentials.clientSecret))
-        : client.ClientSecretPost(Redacted.value(credentials.clientSecret)),
+      client.ClientSecretPost(Redacted.value(credentials.clientSecret)),
     );
     if (provider.jwksUri) client.enableNonRepudiationChecks(oauth);
     oauth.timeout = 10;
@@ -91,27 +89,20 @@ const make = Effect.gen(function* () {
       };
       const tokens = yield* Effect.tryPromise({
         try: async () =>
-          client.authorizationCodeGrant(
-            oauth,
-            callback,
-            {
-              expectedState: state,
-              pkceCodeVerifier: verifier,
-              ...(provider.jwksUri
-                ? {
-                    expectedNonce: await client.calculatePKCECodeChallenge(
-                      `oauth-nonce:${verifier}`,
-                    ),
-                    idTokenExpected: true,
-                  }
-                : {}),
-            },
-            id === "telegram" ? { client_id: credentials.clientId } : undefined,
-          ),
+          client.authorizationCodeGrant(oauth, callback, {
+            expectedState: state,
+            pkceCodeVerifier: verifier,
+            ...(provider.jwksUri
+              ? {
+                  expectedNonce: await client.calculatePKCECodeChallenge(`oauth-nonce:${verifier}`),
+                  idTokenExpected: true,
+                }
+              : {}),
+          }),
         catch: (error) =>
           new OAuthError({
             code: "UNAVAILABLE",
-            message: `${oauthExchangeFailure(error)} [provider=${id === "telegram" ? "telegram" : "discord"}; endpoint=${endpoint}; HTTP=${status ?? "no response"}; code=${oauthExchangeDiagnostic(error)}${telegramEnvelope ? `; telegram-envelope=${telegramEnvelope}` : ""}]`,
+            message: `${oauthExchangeFailure(error)} [provider=${id === "telegram" ? "telegram" : "discord"}; auth=client_secret_post; endpoint=${endpoint}; HTTP=${status ?? "no response"}; code=${oauthExchangeDiagnostic(error)}${telegramEnvelope ? `; telegram-envelope=${telegramEnvelope}` : ""}]`,
           }),
       });
       // OIDC permits omitted scope when unchanged; the required signed profile claims are checked below.
