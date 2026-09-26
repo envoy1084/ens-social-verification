@@ -196,29 +196,29 @@ export function NameProfile({
         </section>
 
         <GithubVerification name={name} owner={ownerAddress} attemptId={githubAttempt} />
-        <section className="mt-12" aria-labelledby="contact-heading">
-          <h2 id="contact-heading" className="text-lg font-semibold">
-            Contact
-          </h2>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <article className="record-card">
-              <div className="flex items-center justify-between">
-                <HugeiconsIcon icon={Mail01Icon} size={25} className="text-accent" />
-                {email.data?.value ? (
-                  <CopyButton value={email.data.value} label="Copy email address" />
-                ) : null}
-              </div>
-              <h3 className="mt-5 text-sm text-muted">Email address</h3>
-              {email.isInitial ? (
-                <Skeleton className="mt-3 h-5 w-4/5" />
-              ) : (
-                <p className="mt-2 break-all font-medium">
-                  {email.isFailure ? "Unavailable" : email.data?.value || "No email added"}
-                </p>
-              )}
-            </article>
-          </div>
-        </section>
+        {email.isInitial || (!email.isFailure && Boolean(email.data?.value?.trim())) ? (
+          <section className="mt-12" aria-labelledby="contact-heading">
+            <h2 id="contact-heading" className="text-lg font-semibold">
+              Contact
+            </h2>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <article className="record-card">
+                <div className="flex items-center justify-between">
+                  <HugeiconsIcon icon={Mail01Icon} size={25} className="text-accent" />
+                  {email.data?.value ? (
+                    <CopyButton value={email.data.value} label="Copy email address" />
+                  ) : null}
+                </div>
+                <h3 className="mt-5 text-sm text-muted">Email address</h3>
+                {email.isInitial ? (
+                  <Skeleton className="mt-3 h-5 w-4/5" />
+                ) : (
+                  <p className="mt-2 break-all font-medium">{email.data?.value}</p>
+                )}
+              </article>
+            </div>
+          </section>
+        ) : null}
         <section className="mt-10" aria-labelledby="addresses-heading">
           <h2 id="addresses-heading" className="text-lg font-semibold">
             Addresses
