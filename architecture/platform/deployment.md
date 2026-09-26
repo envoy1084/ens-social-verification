@@ -12,6 +12,30 @@ docker build -f apps/web/Dockerfile --build-arg VITE_SERVER_URL=https://api.exam
 The optional web build argument `VITE_WALLETCONNECT_PROJECT_ID` is public browser
 configuration. Never pass Alchemy keys or database credentials as build arguments.
 
+## Dokploy
+
+Create two Applications from the same repository and branch using Dockerfile builds:
+
+| Setting             | Backend                  | Frontend              |
+| ------------------- | ------------------------ | --------------------- |
+| Build Path          | `/`                      | `/`                   |
+| Dockerfile Path     | `apps/server/Dockerfile` | `apps/web/Dockerfile` |
+| Docker Context Path | `.`                      | `.`                   |
+| Container port      | `8080`                   | `8080`                |
+
+Set the context explicitly; do not use the Dockerfile's parent directory as context.
+Turbo needs the root `package.json`, workspace manifest, lockfile, patches and shared
+packages. A "Missing packageManager" pruning error usually means Dokploy copied an
+app's package.json instead of the repository root, or deployed an outdated revision.
+Both images fail early with a root-context diagnostic. Do not fix this by adding
+`packageManager` to individual app manifests.
+
+Set backend variables in the runtime Environment section and frontend `VITE_*`
+values in Build Time Arguments. Local `.env.prod` files are excluded from Docker
+contexts and are not automatically loaded. Use Dokploy's internal PostgreSQL URL,
+not localhost. Deploy PostgreSQL first, then backend and frontend; route each HTTPS
+domain to its application's container port 8080 without publishing database ports.
+
 ## Backend
 
 The runtime is Node 24, uses the non-root `node` user, listens on 8080, and contains

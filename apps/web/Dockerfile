@@ -9,6 +9,7 @@ FROM base AS pruner
 WORKDIR /app
 RUN npm install --global turbo@2.11.4
 COPY . .
+RUN node -e "const fs = require('node:fs'); const p = require('./package.json'); if (!fs.existsSync('pnpm-workspace.yaml') || p.name !== 'ens-social-verification' || !p.packageManager) { console.error('Build context must be the repository root. In Dokploy set Build Path=/ and Docker Context Path=., not apps/web.'); process.exit(1); }"
 RUN turbo prune @ens-social-verification/web --docker
 
 FROM base AS builder
