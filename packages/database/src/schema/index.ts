@@ -5,3 +5,5 @@ export * from "./farcaster/attempt.js";
 export * from "./x/attempt.js";
 export * from "./x/publication.js";
 export * from "./email/attempt.js";
+export * from "./oauth/attempt.js";
+export * from "./oauth/attestation.js";

@@ -105,3 +105,18 @@ Expired unpublished rows are deleted every five minutes. Published proofs remain
 until the current owner clears both ENS records and requests deletion.
 Raw messages are sensitive even before publication; database backups and Resend
 retention require the same operational care as an inbox.
+
+## OAuth Attestations
+
+`oauth_attempts` stores provider, name, wallet/session binding, unique state digest,
+PKCE challenge, status, optional identity/claim, creation time and 15-minute expiry.
+Conditional updates enforce `pending -> processing -> ready`; a CHECK requires
+identity and claim together only in the ready state. Expiry is indexed. No provider
+access/refresh token or raw PKCE verifier is persisted. Expired attempts are deleted.
+
+`oauth_attestations` stores the attempt UUID as primary key, immutable public envelope,
+creation time and nullable revocation time. Publication uses a conditional INSERT SELECT
+from a live session-bound ready attempt and conflicts return the existing publication.
+Revoked publications cannot be republished. There is no foreign key to private attempts,
+so cleanup does not remove public proofs. Revocation retains a tombstone and stops public
+retrieval. See [OAuth attestations](../oauth.md).

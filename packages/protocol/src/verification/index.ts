@@ -5,3 +5,4 @@ export * from "./github.js";
 export * from "./farcaster.js";
 export * from "./x.js";
 export * from "./email.js";
+export * from "./oauth.js";
