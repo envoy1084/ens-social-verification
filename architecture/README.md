@@ -15,6 +15,7 @@ commands; these documents explain cross-package flows, persistence, and security
 8. [Farcaster verification](farcaster.md): SIWF, FID/handle checks and public signed proofs.
 9. [X proof posts](x.md): OAuth, public claim commitments, live checks and optional post deletion.
 10. [DKIM email](email.md): Resend polling, private evidence, public consent, and signed ENS records.
+11. [OAuth attestations](oauth.md): shared PKCE flow, Discord identity, attestor trust and revocation.
 
 The web app reads ENSv2 names on Sepolia. The authentication backend verifies wallet
 control and issues browser sessions through the RainbowKit adapter. Read-only record

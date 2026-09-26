@@ -19,5 +19,7 @@ export const Routes = Layer.mergeAll(
   XRoutes,
   FarcasterRoutes,
   EmailRoutes,
+  OAuthRoutes,
   Cors,
 );
+import { OAuthRoutes } from "./oauth/index.js";

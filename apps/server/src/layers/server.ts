@@ -19,9 +19,10 @@ export const ServerLive = Layer.unwrap(
     yield* DatabaseMigration;
     const config = yield* ServerConfig;
     return HttpRouter.serve(Routes, { disableLogger: true }).pipe(
-      Layer.provide(Layer.mergeAll(GithubLive, FarcasterLive, XLive, EmailLive)),
+      Layer.provide(Layer.mergeAll(GithubLive, FarcasterLive, XLive, EmailLive, OAuthLive)),
       Layer.provide(NodeHttpClient.layerUndici),
       Layer.provide(NodeHttpServer.layer(createServer, { host: config.host, port: config.port })),
     );
   }),
 ).pipe(Layer.provide(ServerConfig.layer), Layer.provide(DatabaseMigration.layer));
+import { OAuthLive } from "./oauth.js";

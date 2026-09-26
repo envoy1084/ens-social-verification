@@ -20,6 +20,8 @@
         "NODE_ENV",
         "GITHUB_*",
         "X_*",
+        "DISCORD_*",
+        "OAUTH_*",
         "RESEND_API_KEY",
         "EMAIL_VERIFICATION_RECIPIENT",
         "VITE_*"

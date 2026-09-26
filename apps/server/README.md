@@ -95,6 +95,14 @@ receipt, private raw-message preview, consent-gated publication, status, and rem
 No webhook or outbound email is used. See [DKIM email](../../architecture/email.md)
 for DNS setup, proof disclosure, supported signatures, and retention.
 
+## Generic OAuth
+
+Discord uses the shared `/verification/oauth/` routes with authorization code + S256
+PKCE and `identify` only. Configure `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`,
+`DISCORD_REDIRECT_URI` and a dedicated `OAUTH_ATTESTOR_PRIVATE_KEY`. Tokens are not
+stored. This method trusts the backend attestor, unlike the public-post flows.
+See [OAuth architecture](../../architecture/oauth.md) for trust, expiry and removal.
+
 ## Database Tests
 
 Override `DATABASE_URL` for test commands with a separate database ending in `_test`.
