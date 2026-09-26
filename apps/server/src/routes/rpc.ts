@@ -1,4 +1,4 @@
-import { ByteSize, Clock, Effect, Exit, Layer, Redacted, Result, Schema } from "effect";
+import { ByteSize, Clock, Effect, Exit, Layer, Redacted, Result, Schema, Stream } from "effect";
 import {
   HttpClient,
   HttpClientRequest,
@@ -54,7 +54,17 @@ export const RpcRoutes = Layer.unwrap(
         active++;
 
         return yield* Effect.gen(function* () {
-          const body = yield* request.text.pipe(
+          const body = yield* request.stream.pipe(
+            Stream.runFoldEffect(
+              () => ({ chunks: [] as Uint8Array[], bytes: 0 }),
+              (state, chunk) => {
+                const bytes = state.bytes + chunk.byteLength;
+                if (bytes > 64 * 1024) return Effect.fail("RequestTooLarge" as const);
+                state.chunks.push(chunk);
+                return Effect.succeed({ chunks: state.chunks, bytes });
+              },
+            ),
+            Effect.map(({ chunks }) => Buffer.concat(chunks).toString("utf8")),
             Effect.provideService(HttpIncomingMessage.MaxBodySize, ByteSize.kibibytes(64)),
             Effect.timeout("10 seconds"),
             Effect.result,
@@ -83,6 +93,8 @@ export const RpcRoutes = Layer.unwrap(
               Effect.result,
             );
           if (Result.isFailure(upstream)) return failure(502, "RPC upstream unavailable");
+          if (upstream.success.bytes.byteLength > 2 * 1024 * 1024)
+            return failure(502, "RPC upstream response too large");
           if (
             upstream.success.status >= 300 &&
             upstream.success.status < 500 &&

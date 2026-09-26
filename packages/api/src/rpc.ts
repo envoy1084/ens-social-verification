@@ -3,7 +3,7 @@ import { HttpApiEndpoint, HttpApiGroup, HttpApiSchema, OpenApi } from "effect/un
 
 export const RpcRequest = Schema.Struct({
   jsonrpc: Schema.Literal("2.0"),
-  id: Schema.Union([Schema.String, Schema.Number, Schema.Null]),
+  id: Schema.Union([Schema.String, Schema.Finite, Schema.Null]),
   method: Schema.Literals([
     "eth_chainId",
     "eth_blockNumber",
@@ -21,7 +21,7 @@ export const RpcRequest = Schema.Struct({
     "eth_feeHistory",
     "net_version",
   ]),
-  params: Schema.optional(Schema.Array(Schema.Unknown)),
+  params: Schema.optionalKey(Schema.Array(Schema.Unknown)),
 });
 
 export const RpcPayload = Schema.Union([

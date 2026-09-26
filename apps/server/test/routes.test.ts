@@ -126,6 +126,12 @@ describe("server routes", () => {
     expect((await setup("secret", 429).post(call)).status).toBe(429);
   });
 
+  it("rejects oversized requests before forwarding", async () => {
+    const app = setup();
+    expect((await app.post({ ...call, params: ["x".repeat(70_000)] })).status).toBe(413);
+    expect(app.upstream).not.toHaveBeenCalled();
+  });
+
   it("limits public requests per process", async () => {
     const app = setup();
     for (let index = 0; index < 120; index++) await app.post(call);
