@@ -55,7 +55,7 @@ export function NameProfile({ name }: { name: string }) {
       email.refresh(),
     ]);
   }, [owner, expiry, avatar, address, details, description, website, email]);
-  const failed = [owner, expiry, avatar, address, description, website, email].some(
+  const failed = [owner, expiry, avatar, address, details, description, website, email].some(
     (record) => record.isFailure,
   );
 
@@ -69,7 +69,7 @@ export function NameProfile({ name }: { name: string }) {
         />
         <div className="absolute inset-x-0 bottom-0 h-28 bg-linear-to-b from-transparent to-[#fafafa]" />
       </div>
-      <div className="relative mx-auto -mt-8 w-[90%] max-w-5xl">
+      <div className="relative mx-auto -mt-16 w-[90%] max-w-4xl">
         <div className="flex items-center justify-between gap-4">
           <h1 className="inline-block min-w-0 max-w-full rounded-sm bg-accent px-4 py-2 text-3xl font-semibold break-all text-accent-foreground shadow-sm sm:text-4xl">
             {name}
@@ -105,6 +105,12 @@ export function NameProfile({ name }: { name: string }) {
             <dd className="font-semibold">
               {details.isInitial ? (
                 <Skeleton className="h-5 w-28" />
+              ) : details.isFailure ? (
+                <span title="The Sepolia indexer could not be reached. Try again below.">
+                  Lookup failed
+                </span>
+              ) : !details.data ? (
+                "Not indexed yet"
               ) : (
                 formatEnsDate(
                   details.data?.protocol === "v1"

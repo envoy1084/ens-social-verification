@@ -10,6 +10,7 @@ in `.env.example`: WalletConnect project ID and a public ENS subgraph endpoint.
 Search uses ENSForge's `useSearchNames`; registration dates use `useIndexedName`.
 ENSForge and wallets use Sepolia only (11155111). Set `VITE_ENS_SUBGRAPH_URL` only
 to a Sepolia endpoint to override ENSForge's default Sepolia v1 indexer.
+The separate v2 staging indexer is disabled for these v1 registry profiles.
 If the indexer is unavailable, exact-name navigation still works.
 Alchemy credentials belong only to the server. No social verification is implemented yet.
 

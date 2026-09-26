@@ -13,7 +13,8 @@ const ensforgeConfig = {
   network: "sepolia" as const,
   wagmiConfig,
   indexer: {
-    ...(env.subgraphUrl ? { endpoints: { v1: env.subgraphUrl } } : {}),
+    // Current profiles use the Sepolia v1 registry, not the v2 staging deployment.
+    endpoints: { v2: null, ...(env.subgraphUrl ? { v1: env.subgraphUrl } : {}) },
     timeout: 10_000,
     retry: { attempts: 1 },
   },
