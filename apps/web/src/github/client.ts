@@ -34,6 +34,10 @@ function request<A, E>(operation: Effect.Effect<A, E>, signal?: AbortSignal) {
 }
 
 export const githubClient = {
+  removalOptions: (name: string, proofUri: string, signal?: AbortSignal) =>
+    request(client.github.removalOptions({ payload: { name, proofUri } }), signal),
+  deleteGist: (name: string, proofUri: string) =>
+    request(client.github.deleteGist({ payload: { name, proofUri } })),
   configuration: (signal?: AbortSignal) => request(client.github.configuration(), signal),
   start: (name: string) => request(client.github.start({ payload: { name } })),
   attempt: (id: string, signal?: AbortSignal) =>

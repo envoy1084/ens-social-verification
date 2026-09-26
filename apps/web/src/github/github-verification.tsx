@@ -11,6 +11,7 @@ import { Skeleton } from "@thenamespace/uikit/skeleton";
 import { Tooltip } from "@thenamespace/uikit/tooltip";
 import { useAccount } from "wagmi";
 
+import { RemoveGithubDialog } from "./remove-github-dialog";
 import { useGithubVerification } from "./use-github-verification";
 
 const phaseLabels = {
@@ -85,7 +86,14 @@ export function GithubVerification({
               )}
             </div>
           </div>
-          {verified ? (
+          {verified && isOwner && account.address && github.status.data?.proofUri && login ? (
+            <RemoveGithubDialog
+              name={name}
+              login={login}
+              proofUri={github.status.data.proofUri}
+              address={account.address}
+            />
+          ) : verified ? (
             <Tooltip>
               <Button
                 variant="tertiary"
