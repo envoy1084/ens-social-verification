@@ -40,9 +40,7 @@ export function useRecordCalls(name: string) {
               "Your previous update is confirmed. Refresh this profile before continuing.",
             );
           if (!hca.enabled || hca.walletPaid) return normal.mutateAsync(input);
-          const readiness = await hca.getReadiness();
-          if (!readiness?.ready) return normal.mutateAsync(input);
-          const hcaAddress = readiness.hca;
+          const hcaAddress = await hca.prepareForUpdate();
           let signedHash: Hex | undefined;
           const client = createPimlicoClient({
             chain: sepolia,

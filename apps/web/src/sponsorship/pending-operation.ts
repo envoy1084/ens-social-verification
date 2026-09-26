@@ -11,24 +11,9 @@ export interface PendingOperation {
   nonce?: Hex;
 }
 const key = (owner: Address) => `ens-sponsored-operation:11155111:${owner.toLowerCase()}`;
-const changedEvent = "ens-sponsored-operation-changed";
-
-export function hasPendingOperation(owner: Address | undefined) {
-  return Boolean(owner && localStorage.getItem(key(owner)));
-}
-
-export function subscribePendingOperation(notify: () => void) {
-  window.addEventListener("storage", notify);
-  window.addEventListener(changedEvent, notify);
-  return () => {
-    window.removeEventListener("storage", notify);
-    window.removeEventListener(changedEvent, notify);
-  };
-}
 
 function clearOperation(owner: Address) {
   localStorage.removeItem(key(owner));
-  window.dispatchEvent(new Event(changedEvent));
 }
 
 export class SponsorshipRejected extends Error {
@@ -48,7 +33,6 @@ export function forgetOperation(owner: Address, hash: Hex) {
 export function rememberOperation(owner: Address, pending: PendingOperation) {
   // Persist before HTTP submission. Storage failure must prevent sending.
   localStorage.setItem(key(owner), JSON.stringify(pending));
-  window.dispatchEvent(new Event(changedEvent));
 }
 
 export async function sponsorshipRpc(name: string, method: string, params: readonly unknown[]) {

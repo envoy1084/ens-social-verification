@@ -5,21 +5,18 @@ The canonical salt-zero HCA is derived from the connected owner. Existing canoni
 accounts are reused; arbitrary salts and other smart-account implementations are not
 automatically discovered. Social proofs are still signed by the owner, not the HCA.
 
-An owner-only setup banner deploys the HCA and grants resolver permissions using
-wallet-paid transactions. The confirmation explains ENSForge's scope widening:
-permissions may cover a name or resolver, not only the social records. Ownership
-does not transfer. A deployed account must pass SDK verification and live record
-permission checks before sponsored execution. Owners can switch to wallet gas.
-Without setup, existing wallet-paid batching remains available.
-The UIKit sponsorship switch is always available to the owner. When enabled, a
-missing HCA shows "Set up HCA" and a deployed but unauthorized HCA shows "Authorize
-HCA". Neither blocks normal wallet-paid writes before setup. "Check pending" appears
-only while the wallet has a locally tracked operation, with updates synchronized
-across tabs and components. Readiness requires a complete permission result, not an
-empty list.
+The owner header contains only the UIKit sponsorship switch. With it off, updates
+use normal wallet-paid batching without HCA lookups. With it on, each record update
+checks HCA deployment and permissions on demand. Missing deployment or permissions
+triggers a setup confirmation, wallet-paid setup, then the sponsored update. The
+confirmation explains that permissions may cover the whole name or resolver; wallet
+control and ENS ownership do not change. Cancelling or failed setup stops the write
+instead of silently switching to wallet-paid execution. Readiness requires a complete
+permission result, not an empty list.
 
-HCA readiness is shared across cards for 60 seconds and reused when choosing the
-write path. The banner derives the canonical address and inspects deployment owner,
+HCA readiness queries are disabled for all background triggers, including mounting,
+focus and invalidation. Only an explicit record update refreshes readiness. It
+derives the canonical address and inspects deployment owner,
 implementation, account ID and record permissions; it does not repeat the full
 deployment-wiring verification. Lookup failures identify the failed stage.
 It is not an authorization cache: the adapter and server still validate
@@ -33,12 +30,12 @@ ENSForge Effect atoms also have a 60-second stale window, a five-minute idle TTL
 and no focus refresh, interval refresh or retries. Direct SDK HCA calls are instead
 deduplicated by the shared TanStack readiness query.
 
-Setup reuses readiness, skips already authorized accounts, and passes the connected
+Setup uses the update's fresh readiness, skips already authorized accounts, and passes the connected
 Sepolia wallet client explicitly. Deployment waits for one confirmation before
 permission grants; grants prefer wallet batching with sequential fallback. The
-dialog reports preparation, deployment, authorization and final permission checks
-separately instead of claiming a wallet prompt is already open. Completion requires
-a fresh successful readiness check.
+setup confirmation appears only when needed. Completion requires a fresh successful
+readiness check before continuing to Pimlico. Wallet and network are checked between
+setup stages. Setup and submission share the same wallet-scoped Web Lock.
 
 All six verification providers and their removal flows use `useRecordCalls`.
 Sponsored writes are atomic owner-signed UserOperations. Failures do not silently
