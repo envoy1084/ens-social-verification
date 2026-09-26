@@ -11,7 +11,7 @@ import {
   hashTextRecordValue,
   githubMethod,
 } from "@ens-social-verification/protocol";
-import { useEnsforge, useSendCalls } from "@ensforge/react";
+import { useEnsforge, useSendCalls, useTexts } from "@ensforge/react";
 import { useAccount, useSignTypedData } from "wagmi";
 import { getAccount } from "wagmi/actions";
 
@@ -31,6 +31,8 @@ export function useGithubVerification(name: string, attemptId?: string) {
   const [error, setError] = useState<string | null>(null);
   const running = useRef(false);
   const mounted = useRef(true);
+  const records = useTexts({ name, keys: [githubRecordKey, "verification[text][com.github]"] });
+  const { refresh: refreshRecords } = records;
   useEffect(() => {
     mounted.current = true;
     return () => {
@@ -63,6 +65,18 @@ export function useGithubVerification(name: string, attemptId?: string) {
     retry: false,
   });
   const validUntil = status.data?.validUntil;
+  const recordsSaved = Boolean(
+    publication.data &&
+    records.data?.find((record) => record.key === githubRecordKey)?.value ===
+      publication.data.login &&
+    records.data?.find((record) => record.key === "verification[text][com.github]")?.value ===
+      publication.data.descriptor,
+  );
+  const { refetch: refetchStatus } = status;
+  const check = useCallback(async () => {
+    setError(null);
+    await refetchStatus();
+  }, [refetchStatus]);
   useEffect(() => {
     if (!validUntil) return;
     const timer = setTimeout(
@@ -143,29 +157,38 @@ export function useGithubVerification(name: string, attemptId?: string) {
       }
       if (result.name !== name) throw new Error("This publication belongs to another ENS name.");
       assertAccount();
-      setPhase("writing");
-      // One resolver multicall keeps both text records atomic, including on wallets without EIP-5792.
-      const sent = await sendCalls.mutateAsync({
-        account: address,
-        calls: [
-          sdk.records.setTexts.call({
-            name,
-            texts: [
-              { key: githubRecordKey, value: result.login },
-              { key: "verification[text][com.github]", value: result.descriptor },
-            ],
-          }),
-        ],
-        mode: "auto",
-        atomicity: "preferred",
-        simulation: "required",
-        confirmation: { type: "confirmed", confirmations: 1, timeout: 120_000 },
-      });
-      assertAccount();
-      if (sent.mode === "sequential" ? sent.status !== "completed" : sent.status !== "confirmed")
-        throw new Error(
-          "The wallet has not confirmed the update. Check verification before sending again.",
-        );
+      const live = await refreshRecords();
+      if (
+        live.find((record) => record.key === githubRecordKey)?.value !== result.login ||
+        live.find((record) => record.key === "verification[text][com.github]")?.value !==
+          result.descriptor
+      ) {
+        assertAccount();
+        setPhase("writing");
+        // One resolver multicall keeps both text records atomic, including on wallets without EIP-5792.
+        const sent = await sendCalls.mutateAsync({
+          account: address,
+          calls: [
+            sdk.records.setTexts.call({
+              name,
+              texts: [
+                { key: githubRecordKey, value: result.login },
+                { key: "verification[text][com.github]", value: result.descriptor },
+              ],
+            }),
+          ],
+          mode: "auto",
+          atomicity: "preferred",
+          simulation: "required",
+          confirmation: { type: "confirmed", confirmations: 1, timeout: 120_000 },
+        });
+        assertAccount();
+        if (sent.mode === "sequential" ? sent.status !== "completed" : sent.status !== "confirmed")
+          throw new Error(
+            "The wallet has not confirmed the update. Check verification before sending again.",
+          );
+        await refreshRecords();
+      }
       setPhase("checking");
       const verified = await githubClient.status(name);
       queryClient.setQueryData(["github", "status", name], verified);
@@ -184,7 +207,18 @@ export function useGithubVerification(name: string, attemptId?: string) {
       running.current = false;
       setPhase("idle");
     }
-  }, [account.address, attemptId, name, queryClient, sdk, sendCalls, sign]);
+  }, [account.address, attemptId, name, queryClient, sdk, sendCalls, sign, refreshRecords]);
 
-  return { configuration, status, attempt, publication, phase, error, start, publish };
+  return {
+    configuration,
+    status,
+    attempt,
+    publication,
+    phase,
+    error,
+    start,
+    publish,
+    recordsSaved,
+    check,
+  };
 }

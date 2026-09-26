@@ -43,7 +43,11 @@ export function GithubVerification({
   const ready = github.attempt.data?.name === name && github.attempt.data.status === "ready";
   const published = github.publication.data;
   const busy = github.phase !== "idle";
-  const issue = github.error || github.attempt.error?.message || github.publication.error?.message;
+  const issue =
+    github.error ||
+    github.status.error?.message ||
+    github.attempt.error?.message ||
+    github.publication.error?.message;
   const { start, publish: publishProof } = github;
   const connect = useCallback(() => {
     void start();
@@ -51,10 +55,10 @@ export function GithubVerification({
   const publish = useCallback(() => {
     void publishProof();
   }, [publishProof]);
-  const { refetch } = github.status;
+  const { check } = github;
   const retry = useCallback(() => {
-    void refetch();
-  }, [refetch]);
+    void check();
+  }, [check]);
 
   return (
     <section className="mt-12" aria-labelledby="social-heading">
@@ -124,9 +128,11 @@ export function GithubVerification({
           <div className="mt-5 border-t border-border pt-5">
             {ready || published ? (
               <p className="mb-4 text-sm leading-6 text-muted">
-                {published
-                  ? "Your signed gist is ready. Save both records to ENS to finish."
-                  : `Connected as @${github.attempt.data?.identity?.login}. Publish the signed proof, then approve the ENS record update.`}
+                {github.recordsSaved
+                  ? "Both records are saved to ENS. Only the verification check remains; no new transaction is needed."
+                  : published
+                    ? "Your signed gist is ready. Save both records to ENS to finish."
+                    : `Connected as @${github.attempt.data?.identity?.login}. Publish the signed proof, then approve the ENS record update.`}
               </p>
             ) : (
               <p className="mb-4 text-sm leading-6 text-muted">
@@ -136,7 +142,7 @@ export function GithubVerification({
             )}
             {github.configuration.data?.enabled ? (
               <div className="flex flex-wrap items-center gap-3">
-                {ready || published ? (
+                {github.recordsSaved ? null : ready || published ? (
                   <Button onPress={publish} isDisabled={busy || github.publication.isPending}>
                     {busy
                       ? phaseLabels[github.phase]
@@ -180,7 +186,7 @@ export function GithubVerification({
             {issue}
           </p>
         ) : null}
-        {github.status.isError || github.error ? (
+        {github.status.isError || github.error || (github.recordsSaved && !verified) ? (
           <Button
             className="mt-3"
             size="sm"
