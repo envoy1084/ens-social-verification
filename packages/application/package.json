@@ -23,6 +23,7 @@
     "@farcaster/auth-client": "catalog:",
     "effect": "catalog:",
     "mailauth": "catalog:",
+    "openid-client": "catalog:",
     "resend": "catalog:",
     "viem": "catalog:"
   },

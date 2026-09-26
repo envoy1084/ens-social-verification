@@ -3,6 +3,7 @@ packages:
   - packages/*
 
 catalog:
+  openid-client: 6.8.8
   mailauth: 6.0.0
   resend: 6.30.0
   "@farcaster/auth-client": 0.7.1
