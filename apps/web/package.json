@@ -7,9 +7,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "oxlint --deny-warnings .",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:e2e": "playwright test"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@ensforge/react": "catalog:",
@@ -37,7 +35,6 @@
     "wagmi": "catalog:"
   },
   "devDependencies": {
-    "@playwright/test": "1.63.0",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/router-plugin": "catalog:",
     "@types/node": "catalog:",
@@ -48,7 +45,6 @@
     "oxlint": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
-    "vite": "catalog:",
-    "vitest": "catalog:"
+    "vite": "catalog:"
   }
 }
