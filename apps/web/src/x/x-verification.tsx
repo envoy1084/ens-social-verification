@@ -160,11 +160,7 @@ function XAccount({
                   ? "Your signed post is ready. Save both records to ENS to finish."
                   : `Connected as @${x.attempt.data?.identity?.login}. Publish the signed proof, then approve the ENS record update.`}
             </p>
-          ) : (
-            <p className="mb-4 text-sm leading-6 text-muted">
-              Connect X to publish a public post linking this ENS name and wallet to your account.
-            </p>
-          )}
+          ) : null}
           {x.configuration.data?.enabled ? (
             <div className="flex flex-wrap items-center gap-3">
               {x.recordsSaved ? null : ready || published ? (
@@ -179,13 +175,6 @@ function XAccount({
                   onPress={connect}
                   isDisabled={busy || Boolean(attemptId && x.attempt.isPending)}
                 >
-                  <img
-                    src="/brands/x.svg"
-                    alt=""
-                    width={18}
-                    height={18}
-                    className="size-[18px] shrink-0 brightness-0 invert"
-                  />
                   {busy ? phaseLabels[x.phase] : "Connect X"}
                 </Button>
               )}

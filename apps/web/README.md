@@ -40,6 +40,9 @@ Discord and Telegram share `OAuthVerification`, with provider-specific icons, re
 keys and authorization destinations. Both disclose attestor trust and public identity
 fields before signing, batch record updates, and revoke proofs after removal. Telegram
 requires a public username. See [OAuth flow](../../architecture/oauth.md).
+OAuth proof links, attestor and expiry live in the Verified details dialog, with
+owner removal behind a separate confirmation. Social cards keep aligned headers
+and concise connect actions; publication and error states retain necessary feedback.
 Callback attempts are scoped by provider and removed from the URL after a successful
 save. A stale setup attempt does not override a live verified attestation.
 GitHub, X and OAuth callback parameters are also cleared when a reload or manual

@@ -3,8 +3,8 @@ import { useCallback, useState } from "react";
 import { AlertDialog } from "@thenamespace/uikit/alert-dialog";
 import { Button } from "@thenamespace/uikit/button";
 import { HugeiconsIcon, CheckmarkCircle02Icon } from "@thenamespace/uikit/icons";
+import { Modal } from "@thenamespace/uikit/modal";
 import { Skeleton } from "@thenamespace/uikit/skeleton";
-import { Tooltip } from "@thenamespace/uikit/tooltip";
 import { useAccount } from "wagmi";
 
 import { oauthProofLink } from "./client";
@@ -51,6 +51,8 @@ function OAuthAccount({
   const definition = oauthProviders[provider];
   const oauth = useOAuthVerification(provider, definition.recordKey, name, attemptId);
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const closeDetails = useCallback(() => setDetailsOpen(false), []);
   const isOwner = Boolean(
     owner && account.address?.toLowerCase() === owner.toLowerCase() && account.chainId === 11155111,
   );
@@ -105,25 +107,60 @@ function OAuthAccount({
             )}
           </div>
         </div>
-        {verified && isOwner && account.address && value && oauth.status.data?.proofUri ? (
-          <RemoveOAuthDialog
-            provider={provider}
-            recordKey={definition.recordKey}
-            name={name}
-            value={value}
-            proofUri={oauth.status.data.proofUri}
-            address={account.address}
-            onRecordsChanged={check}
-          />
-        ) : verified ? (
-          <Tooltip>
+        {verified ? (
+          <Modal isOpen={detailsOpen} onOpenChange={setDetailsOpen}>
             <Button size="sm" variant="tertiary" className="shrink-0 text-success">
               <HugeiconsIcon icon={CheckmarkCircle02Icon} size={18} /> Verified
             </Button>
-            <Tooltip.Content className="max-w-xs break-words">
-              Account access attested by {attestor}. This verification trusts that attestor.
-            </Tooltip.Content>
-          </Tooltip>
+            <Modal.Backdrop>
+              <Modal.Container size="sm">
+                <Modal.Dialog>
+                  <Modal.Header>
+                    <Modal.Heading>{definition.label} verification</Modal.Heading>
+                  </Modal.Header>
+                  <Modal.Body className="space-y-4 text-sm">
+                    <p>Verified through OAuth. Trusts the attestor below.</p>
+                    <div>
+                      <p className="text-muted">Attestor</p>
+                      <p className="mt-1 break-all font-mono text-xs">{attestor}</p>
+                    </div>
+                    <p>
+                      Valid until{" "}
+                      {new Date(Number(oauth.status.data?.validUntil) * 1000).toLocaleDateString()}
+                    </p>
+                    {oauth.status.data?.proofUri ? (
+                      <a
+                        className="inline-block font-semibold text-accent hover:underline"
+                        href={oauthProofLink(oauth.status.data.proofUri)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        View attestation<span className="sr-only"> (opens in new tab)</span>
+                      </a>
+                    ) : null}
+                    {isOwner && account.address && value && oauth.status.data?.proofUri ? (
+                      <div className="border-t border-border pt-4">
+                        <RemoveOAuthDialog
+                          provider={provider}
+                          recordKey={definition.recordKey}
+                          name={name}
+                          value={value}
+                          proofUri={oauth.status.data.proofUri}
+                          address={account.address}
+                          onRecordsChanged={check}
+                        />
+                      </div>
+                    ) : null}
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="tertiary" onPress={closeDetails}>
+                      Close
+                    </Button>
+                  </Modal.Footer>
+                </Modal.Dialog>
+              </Modal.Container>
+            </Modal.Backdrop>
+          </Modal>
         ) : (
           <span className="shrink-0 text-xs text-muted">
             {oauth.status.isPending
@@ -134,24 +171,6 @@ function OAuthAccount({
           </span>
         )}
       </div>
-      {verified && oauth.status.data?.proofUri ? (
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs text-muted">
-          <span title={attestor ?? undefined}>
-            Verified by {attestor?.slice(0, 6)}...{attestor?.slice(-4)}
-          </span>
-          <a
-            className="font-semibold text-accent hover:underline"
-            href={oauthProofLink(oauth.status.data.proofUri)}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            View attestation<span className="sr-only"> (opens in new tab)</span>
-          </a>
-          <span>
-            Valid until {new Date(Number(oauth.status.data.validUntil) * 1000).toLocaleDateString()}
-          </span>
-        </div>
-      ) : null}
       {isOwner && !verified ? (
         <div className="mt-5 border-t border-border pt-5">
           {ready ? (

@@ -9,7 +9,6 @@ import { formatVerificationDescriptor, oauthMethod } from "@ens-social-verificat
 import { useEnsforge, useSendCalls } from "@ensforge/react";
 import { AlertDialog } from "@thenamespace/uikit/alert-dialog";
 import { Button } from "@thenamespace/uikit/button";
-import { CheckmarkCircle02Icon, HugeiconsIcon } from "@thenamespace/uikit/icons";
 import { getAddress } from "viem";
 import { getAccount } from "wagmi/actions";
 
@@ -121,13 +120,8 @@ export function RemoveOAuthDialog({
   }, [remove]);
   return (
     <AlertDialog isOpen={open} onOpenChange={onOpenChange}>
-      <Button
-        size="sm"
-        variant="tertiary"
-        className="shrink-0 text-success"
-        aria-label="Verified account: remove verification"
-      >
-        <HugeiconsIcon icon={CheckmarkCircle02Icon} size={18} /> Verified
+      <Button size="sm" variant="tertiary" className="text-danger">
+        Remove verification
       </Button>
       <AlertDialog.Backdrop isKeyboardDismissDisabled={busy}>
         <AlertDialog.Container size="sm">

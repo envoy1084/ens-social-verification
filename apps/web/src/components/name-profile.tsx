@@ -208,7 +208,7 @@ export function NameProfile({
           <h2 id="social-heading" className="text-lg font-semibold">
             Social accounts
           </h2>
-          <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 [&>article]:mt-0 [&>article]:min-w-0">
+          <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 [&>article]:mt-0 [&>article]:min-w-0 [&>article]:justify-start">
             <GithubVerification name={name} owner={ownerAddress} attemptId={githubAttempt} />
             <FarcasterVerification key={name} name={name} owner={ownerAddress} />
             <XVerification name={name} owner={ownerAddress} attemptId={xAttempt} />

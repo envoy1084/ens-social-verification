@@ -137,12 +137,7 @@ export function GithubVerification({
                   ? "Your signed gist is ready. Save both records to ENS to finish."
                   : `Connected as @${github.attempt.data?.identity?.login}. Publish the signed proof, then approve the ENS record update.`}
             </p>
-          ) : (
-            <p className="mb-4 text-sm leading-6 text-muted">
-              Connect GitHub to publish a public gist linking this ENS name and wallet to your
-              account.
-            </p>
-          )}
+          ) : null}
           {github.configuration.data?.enabled ? (
             <div className="flex flex-wrap items-center gap-3">
               {github.recordsSaved ? null : ready || published ? (
@@ -158,13 +153,6 @@ export function GithubVerification({
                   onPress={connect}
                   isDisabled={busy || Boolean(attemptId && github.attempt.isPending)}
                 >
-                  <img
-                    src="/brands/github.svg"
-                    alt=""
-                    width={18}
-                    height={18}
-                    className="size-[18px] shrink-0 brightness-0 invert"
-                  />
                   {busy ? phaseLabels[github.phase] : "Connect GitHub"}
                 </Button>
               )}
