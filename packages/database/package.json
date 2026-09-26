@@ -21,7 +21,8 @@
     "@effect/sql-pg": "catalog:",
     "@ens-social-verification/protocol": "workspace:*",
     "drizzle-orm": "catalog:",
-    "effect": "catalog:"
+    "effect": "catalog:",
+    "pg": "^8.23.0"
   },
   "devDependencies": {
     "@types/node": "catalog:",

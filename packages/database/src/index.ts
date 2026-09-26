@@ -1,2 +1,2 @@
-// eslint-disable-next-line unicorn/require-module-specifiers -- Intentionally empty hackathon scaffold.
-export {};
+export { Database } from "./database.js";
+export { authChallenges, sessions } from "./schema.js";
