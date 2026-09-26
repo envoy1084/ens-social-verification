@@ -87,6 +87,14 @@ public proof retrieval, live status and optional post deletion. Set the OAuth 2.
 `X_TOKEN_ENCRYPTION_KEY`. No OAuth 1.0a credentials are used.
 See [X configuration and failure boundaries](../../architecture/x.md).
 
+## Email
+
+Set `RESEND_API_KEY` and `EMAIL_VERIFICATION_RECIPIENT` for a dedicated Resend
+receiving subdomain. `/verification/email/` provides challenge creation, polled
+receipt, private raw-message preview, consent-gated publication, status, and removal.
+No webhook or outbound email is used. See [DKIM email](../../architecture/email.md)
+for DNS setup, proof disclosure, supported signatures, and retention.
+
 ## Database Tests
 
 Override `DATABASE_URL` for test commands with a separate database ending in `_test`.

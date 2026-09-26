@@ -2,6 +2,7 @@ import { Layer } from "effect";
 
 import { Cors } from "../middlewares/cors.js";
 import { AuthRoutes } from "./auth/index.js";
+import { EmailRoutes } from "./email/index.js";
 import { FarcasterRoutes } from "./farcaster/index.js";
 import { GithubRoutes } from "./github/index.js";
 import { HealthRoutes } from "./health.js";
@@ -17,5 +18,6 @@ export const Routes = Layer.mergeAll(
   GithubRoutes,
   XRoutes,
   FarcasterRoutes,
+  EmailRoutes,
   Cors,
 );
