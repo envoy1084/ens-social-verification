@@ -6,6 +6,8 @@ export class ServerConfig extends Context.Service<
     readonly host: string;
     readonly port: number;
     readonly alchemyKey: Redacted.Redacted<string>;
+    readonly pimlicoUrl: Redacted.Redacted<string>;
+    readonly sponsorshipPolicy: string;
   }
 >()("server/ServerConfig") {
   static readonly layer = Layer.effect(
@@ -18,6 +20,12 @@ export class ServerConfig extends Context.Service<
       return {
         host: yield* Config.String("HOST").pipe(Config.withDefault("127.0.0.1")),
         port,
+        pimlicoUrl: yield* Config.Redacted("PIMLICO_RPC_URL").pipe(
+          Config.withDefault(Redacted.make("")),
+        ),
+        sponsorshipPolicy: yield* Config.String("PIMLICO_SPONSORSHIP_POLICY_ID").pipe(
+          Config.withDefault(""),
+        ),
         alchemyKey: yield* Config.Redacted("ALCHEMY_API_KEY").pipe(
           Config.withDefault(Redacted.make("")),
         ),

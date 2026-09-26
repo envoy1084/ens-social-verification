@@ -104,6 +104,13 @@ Telegram uses `openid profile` and validates signed ID tokens, including nonce.
 Tokens are not stored. This method trusts the backend attestor, unlike public-post flows.
 See [OAuth architecture](../../architecture/oauth.md) for trust, expiry and removal.
 
+## Sponsored Updates
+
+Optional `PIMLICO_RPC_URL` and `PIMLICO_SPONSORSHIP_POLICY_ID` enable authenticated
+Sepolia HCA sponsorship. The key remains server-side. Configure spending limits in
+the Pimlico policy before deployment. See [sponsorship](../../architecture/sponsorship.md)
+for setup permissions, the RPC allowlist and pending-operation recovery.
+
 ## Database Tests
 
 Override `DATABASE_URL` for test commands with a separate database ending in `_test`.

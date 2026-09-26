@@ -3,6 +3,8 @@ packages:
   - packages/*
 
 catalog:
+  "@ensforge/hca": 0.5.0
+  permissionless: 0.4.0
   openid-client: 6.8.8
   mailauth: 6.0.0
   resend: 6.30.0
@@ -80,6 +82,7 @@ peerDependencyRules:
   ignoreMissing:
     - redis
 minimumReleaseAgeExclude:
+  - "@ensforge/hca@0.5.0"
   - "@types/node@24.19.0"
   - "@ensforge/contracts@0.5.0"
   - "@ensforge/core@0.5.0"

@@ -13,12 +13,13 @@ import {
   parseVerificationDescriptor,
   validateVerificationClaim,
 } from "@ens-social-verification/protocol";
-import { useEnsforge, useSendCalls, useTexts } from "@ensforge/react";
+import { useEnsforge, useTexts } from "@ensforge/react";
 import { useAccount, useSignTypedData } from "wagmi";
 import { getAccount } from "wagmi/actions";
 
 import { authClient } from "../auth/client";
 import { useClearVerificationAttempt } from "../hooks/use-clear-verification-attempt";
+import { useRecordCalls } from "../sponsorship/use-record-calls";
 import { wagmiConfig } from "../wallet";
 import { oauthClient } from "./client";
 import { oauthProviders, type OAuthProviderId } from "./providers";
@@ -33,7 +34,7 @@ export function useOAuthVerification(
   const attemptId = search.oauthProvider === provider ? callbackAttemptId : undefined;
   const account = useAccount();
   const sdk = useEnsforge();
-  const sendCalls = useSendCalls();
+  const sendCalls = useRecordCalls(name);
   const sign = useSignTypedData();
   const queryClient = useQueryClient();
   const [phase, setPhase] = useState<

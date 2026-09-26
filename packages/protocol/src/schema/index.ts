@@ -6,3 +6,4 @@ export * from "./farcaster.js";
 export * from "./x.js";
 export * from "./email.js";
 export * from "./oauth.js";
+export * from "./sponsorship.js";

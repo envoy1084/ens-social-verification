@@ -8,12 +8,14 @@ import { GithubRoutes } from "./github/index.js";
 import { HealthRoutes } from "./health.js";
 import { ReferenceRoutes } from "./reference.js";
 import { RpcRoutes } from "./rpc.js";
+import { SponsorshipRoutes } from "./sponsorship/index.js";
 import { XRoutes } from "./x/index.js";
 
 export const Routes = Layer.mergeAll(
   HealthRoutes,
   ReferenceRoutes,
   RpcRoutes,
+  SponsorshipRoutes,
   AuthRoutes,
   GithubRoutes,
   XRoutes,

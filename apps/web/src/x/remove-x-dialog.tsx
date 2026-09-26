@@ -6,7 +6,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Effect } from "effect";
 
 import { formatVerificationDescriptor, xMethod } from "@ens-social-verification/protocol";
-import { useEnsforge, useSendCalls } from "@ensforge/react";
+import { useEnsforge } from "@ensforge/react";
 import { AlertDialog } from "@thenamespace/uikit/alert-dialog";
 import { Button } from "@thenamespace/uikit/button";
 import { CheckmarkCircle02Icon, HugeiconsIcon } from "@thenamespace/uikit/icons";
@@ -14,6 +14,7 @@ import { getAddress } from "viem";
 import { getAccount } from "wagmi/actions";
 
 import { authClient } from "../auth/client";
+import { useRecordCalls } from "../sponsorship/use-record-calls";
 import { wagmiConfig } from "../wallet";
 import { xClient } from "./client";
 import { xProofLink } from "./proof-link";
@@ -36,7 +37,7 @@ export function RemoveXDialog({
   const [message, setMessage] = useState<string | null>(null);
   const running = useRef(false);
   const sdk = useEnsforge();
-  const sendCalls = useSendCalls();
+  const sendCalls = useRecordCalls(name);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const options = useQuery({

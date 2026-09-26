@@ -25,6 +25,7 @@ import { FarcasterVerification } from "../farcaster/farcaster-verification";
 import { GithubVerification } from "../github/github-verification";
 import { DiscordVerification } from "../oauth/discord-verification";
 import { OAuthVerification } from "../oauth/oauth-verification";
+import { HcaBanner } from "../sponsorship/hca-banner";
 import { XVerification } from "../x/x-verification";
 import { CopyButton } from "./copy-button";
 import { NameAvatar } from "./name-avatar";
@@ -143,6 +144,8 @@ export function NameProfile({
             </dd>
           </div>
         </dl>
+
+        <HcaBanner name={name} owner={ownerAddress} />
 
         {failed ? (
           <div

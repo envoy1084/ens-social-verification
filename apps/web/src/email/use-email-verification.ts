@@ -18,11 +18,12 @@ import {
 } from "@ens-social-verification/protocol";
 import type { EmailPublication, EmailStartResponse } from "@ens-social-verification/protocol/dto";
 import type { VerificationClaim } from "@ens-social-verification/protocol/schema";
-import { useEnsforge, useSendCalls, useTexts } from "@ensforge/react";
+import { useEnsforge, useTexts } from "@ensforge/react";
 import { useAccount, useSignTypedData } from "wagmi";
 import { getAccount } from "wagmi/actions";
 
 import { authClient } from "../auth/client";
+import { useRecordCalls } from "../sponsorship/use-record-calls";
 import { wagmiConfig } from "../wallet";
 import { emailClient } from "./client";
 
@@ -34,7 +35,7 @@ export function useEmailVerification(name: string) {
   const account = useAccount();
   const sdk = useEnsforge();
   const sign = useSignTypedData();
-  const sendCalls = useSendCalls();
+  const sendCalls = useRecordCalls(name);
   const queryClient = useQueryClient();
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<string | null>(null);

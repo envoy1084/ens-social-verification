@@ -2,7 +2,7 @@ import { useState, type PropsWithChildren } from "react";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import { sepoliaV2Deployment } from "@ensforge/contracts/deployments";
+import { sepoliaV2Deployment, sepoliaHcaDeployment } from "@ensforge/contracts/deployments";
 import { EnsforgeProvider } from "@ensforge/react";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
@@ -11,6 +11,7 @@ import { AuthenticationProvider } from "./auth/provider";
 import { rainbowKitTheme, wagmiConfig } from "./wallet";
 
 const ensforgeConfig = {
+  hca: sepoliaHcaDeployment,
   network: {
     id: "ens-social-verification-sepolia-v2",
     chainId: 11155111,

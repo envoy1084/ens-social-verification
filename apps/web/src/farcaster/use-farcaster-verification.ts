@@ -16,12 +16,13 @@ import type {
   FarcasterPublication,
   FarcasterReadyResponse,
 } from "@ens-social-verification/protocol/dto";
-import { useEnsforge, useSendCalls, useTexts } from "@ensforge/react";
+import { useEnsforge, useTexts } from "@ensforge/react";
 import { createAppClient, viemConnector } from "@farcaster/auth-client";
 import { useAccount, useSignTypedData } from "wagmi";
 import { getAccount } from "wagmi/actions";
 
 import { authClient } from "../auth/client";
+import { useRecordCalls } from "../sponsorship/use-record-calls";
 import { wagmiConfig } from "../wallet";
 import { farcasterClient } from "./client";
 
@@ -44,7 +45,7 @@ export function useFarcasterVerification(name: string) {
   const account = useAccount();
   const sdk = useEnsforge();
   const sign = useSignTypedData();
-  const sendCalls = useSendCalls();
+  const sendCalls = useRecordCalls(name);
   const queryClient = useQueryClient();
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<string | null>(null);

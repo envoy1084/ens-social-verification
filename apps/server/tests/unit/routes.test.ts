@@ -32,6 +32,8 @@ function setup(key = "test-key", status = 200) {
           host: "127.0.0.1",
           port: 3001,
           alchemyKey: Redacted.make(key),
+          pimlicoUrl: Redacted.make(""),
+          sponsorshipPolicy: "",
         }),
         Layer.succeed(HttpClient.HttpClient, client),
         HttpServer.layerServices,

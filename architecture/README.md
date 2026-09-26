@@ -16,6 +16,7 @@ commands; these documents explain cross-package flows, persistence, and security
 9. [X proof posts](x.md): OAuth, public claim commitments, live checks and optional post deletion.
 10. [DKIM email](email.md): Resend polling, private evidence, public consent, and signed ENS records.
 11. [OAuth attestations](oauth.md): Discord OAuth, Telegram OIDC, attestor trust and revocation.
+12. [Sponsored updates](sponsorship.md): optional HCA setup, Pimlico policy and transaction recovery.
 
 The web app reads ENSv2 names on Sepolia. The authentication backend verifies wallet
 control and issues browser sessions through the RainbowKit adapter. Read-only record
