@@ -9,7 +9,15 @@ Node.js 24.18.0 and pnpm 11.10.0.
 ```sh
 pnpm install
 pnpm check
+pnpm dev
 ```
+
+Web: [localhost:3000](http://localhost:3000). Server: [localhost:8080](http://localhost:8080).
+[Scalar reference](http://localhost:8080/reference) and [OpenAPI JSON](http://localhost:8080/openapi.json).
+Set `ALCHEMY_API_KEY` in `apps/server/.env` for live ENS reads; see each app's `.env.example`.
+
+Workspaces use `@ens-social-verification/*`: `server`, `web`, `api`, `application`,
+`protocol`, and `database`. The last three are scaffolds; no database is needed yet.
 
 ## Commands
 
