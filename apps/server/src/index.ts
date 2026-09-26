@@ -5,7 +5,7 @@ import { Effect, Layer } from "effect";
 import { HttpRouter } from "effect/unstable/http";
 
 import { ServerConfig } from "./config.js";
-import { Routes } from "./routes.js";
+import { Routes } from "./routes/index.js";
 
 const ServerLive = Layer.unwrap(
   Effect.gen(function* () {

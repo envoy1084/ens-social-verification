@@ -1,4 +1,5 @@
 import { Schema } from "effect";
+import { HttpApiEndpoint, HttpApiGroup, HttpApiSchema, OpenApi } from "effect/unstable/httpapi";
 
 export const RpcRequest = Schema.Struct({
   jsonrpc: Schema.Literal("2.0"),
@@ -27,3 +28,22 @@ export const RpcPayload = Schema.Union([
   RpcRequest,
   Schema.Array(RpcRequest).check(Schema.isMinLength(1), Schema.isMaxLength(20)),
 ]);
+
+export const RpcApi = HttpApiGroup.make("rpc").add(
+  HttpApiEndpoint.post("forward", "/rpc/:chainId", {
+    params: { chainId: Schema.Literals(["1", "11155111"]) },
+    payload: RpcPayload,
+    success: Schema.Unknown,
+    error: [
+      Schema.Struct({ error: Schema.String }).pipe(HttpApiSchema.status(400)),
+      Schema.Struct({ error: Schema.String }).pipe(HttpApiSchema.status(413)),
+      Schema.Struct({ error: Schema.String }).pipe(HttpApiSchema.status(415)),
+      Schema.Struct({ error: Schema.String }).pipe(HttpApiSchema.status(429)),
+      Schema.Struct({ error: Schema.String }).pipe(HttpApiSchema.status(502)),
+      Schema.Struct({ error: Schema.String }).pipe(HttpApiSchema.status(503)),
+    ],
+  }).annotate(
+    OpenApi.Description,
+    "Read-only Alchemy JSON-RPC proxy. Ethereum and Sepolia; up to 20 requests per batch. Upstream JSON-RPC errors preserve their response envelope.",
+  ),
+);

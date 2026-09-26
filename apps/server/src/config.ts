@@ -11,7 +11,7 @@ export class ServerConfig extends Context.Service<
   static readonly layer = Layer.effect(
     ServerConfig,
     Effect.gen(function* () {
-      const port = yield* Config.Int("PORT").pipe(Config.withDefault(3001));
+      const port = yield* Config.Int("PORT").pipe(Config.withDefault(8080));
       yield* Schema.decodeUnknownEffect(
         Schema.Int.check(Schema.isBetween({ minimum: 1, maximum: 65535 })),
       )(port);

@@ -5,7 +5,7 @@ import { HttpClient, HttpClientResponse, HttpRouter, HttpServer } from "effect/u
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { ServerConfig } from "../src/config.js";
-import { Routes } from "../src/routes.js";
+import { Routes } from "../src/routes/index.js";
 
 const disposals: Array<() => Promise<void>> = [];
 afterEach(async () => {
@@ -69,6 +69,13 @@ describe("server routes", () => {
     expect((await app.handler(new Request("http://localhost/health/ready"))).status).toBe(503);
     expect((await app.post(call)).status).toBe(503);
     expect(app.upstream).not.toHaveBeenCalled();
+  });
+
+  it("serves the bundled Scalar reference", async () => {
+    const response = await setup().handler(new Request("http://localhost/reference"));
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("text/html");
+    expect(await response.text()).toContain("Scalar.createApiReference");
   });
 
   it("forwards to the fixed Alchemy network and preserves JSON-RPC results", async () => {

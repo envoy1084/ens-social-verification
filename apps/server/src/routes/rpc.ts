@@ -6,16 +6,14 @@ import {
   HttpRouter,
   HttpServerResponse,
 } from "effect/unstable/http";
-import { OpenApi } from "effect/unstable/httpapi";
 
-import { Api, RpcPayload } from "@ens-social/api";
+import { RpcPayload } from "@ens-social/api";
 
-import { ServerConfig } from "./config.js";
+import { ServerConfig } from "../config.js";
 const alchemyNetworks: Readonly<Record<string, string>> = {
   "1": "eth-mainnet",
   "11155111": "eth-sepolia",
 };
-const openApi = OpenApi.fromApi(Api);
 
 const failure = (status: number, message: string) =>
   HttpServerResponse.jsonUnsafe(
@@ -26,7 +24,7 @@ const failure = (status: number, message: string) =>
     },
   );
 
-export const Routes = Layer.unwrap(
+export const RpcRoutes = Layer.unwrap(
   Effect.gen(function* () {
     const config = yield* ServerConfig;
     const client = yield* HttpClient.HttpClient;
@@ -34,29 +32,7 @@ export const Routes = Layer.unwrap(
     let requests = 0;
     let active = 0;
 
-    const health = HttpRouter.add(
-      "GET",
-      "/health",
-      Effect.succeed(
-        HttpServerResponse.jsonUnsafe(
-          { status: "ok" },
-          { headers: { "cache-control": "no-store" } },
-        ),
-      ),
-    );
-    const ready = HttpRouter.add(
-      "GET",
-      "/health/ready",
-      Effect.sync(() =>
-        Redacted.value(config.alchemyKey).trim()
-          ? HttpServerResponse.jsonUnsafe(
-              { status: "ready" },
-              { headers: { "cache-control": "no-store" } },
-            )
-          : failure(503, "Alchemy is not configured"),
-      ),
-    );
-    const rpc = HttpRouter.add("POST", "/rpc/:chainId", (request) =>
+    return HttpRouter.add("POST", "/rpc/:chainId", (request) =>
       Effect.gen(function* () {
         const { chainId = "" } = yield* HttpRouter.params;
         const network = Object.hasOwn(alchemyNetworks, chainId)
@@ -127,14 +103,6 @@ export const Routes = Layer.unwrap(
           ),
         );
       }),
-    );
-    const spec = Effect.succeed(HttpServerResponse.jsonUnsafe(openApi));
-    return Layer.mergeAll(
-      health,
-      ready,
-      rpc,
-      HttpRouter.add("GET", "/", spec),
-      HttpRouter.add("GET", "/openapi.json", spec),
     );
   }),
 );

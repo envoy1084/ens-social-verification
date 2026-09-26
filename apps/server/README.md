@@ -1,10 +1,11 @@
 # Server
 
 Effect v4 HTTP server. Run `pnpm --filter @ens-social/server dev`.
-Set `ALCHEMY_API_KEY` in `.env`; `HOST` defaults to `127.0.0.1`, `PORT` to `3001`.
+Set `ALCHEMY_API_KEY` in `.env`; `HOST` defaults to `127.0.0.1`, `PORT` to `8080`.
 
 - `GET /health`: process liveness.
 - `GET /` and `GET /openapi.json`: generated OpenAPI specification.
+- `GET /reference`: bundled Scalar API reference.
 - `GET /health/ready`: configuration readiness, not an Alchemy connectivity probe.
 - `POST /rpc/:chainId`: Alchemy JSON-RPC proxy for Ethereum (1) and Sepolia (11155111).
 
