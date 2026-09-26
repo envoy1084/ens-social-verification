@@ -10,9 +10,13 @@ export function AppNavbar() {
       className="absolute inset-x-0 top-0 z-40 flex flex-wrap items-start justify-between gap-3 p-3 sm:p-5"
     >
       <div className="flex w-full min-w-0 items-center gap-4 rounded-2xl bg-white/95 p-3 shadow-sm sm:w-auto sm:max-w-[calc(100%-180px)]">
-        <Link aria-label="ENS Social Verification home" className="shrink-0 rounded-sm px-1" to="/">
-          <img alt="ENS" className="h-8 w-24 object-contain" src="/ens-wordmark.svg" />
-          <span className="mt-1 block text-[10px] font-semibold text-midnight">
+        <Link
+          aria-label="ENS Social Verification home"
+          className="flex h-12 shrink-0 flex-col items-center justify-center gap-1 rounded-sm px-1"
+          to="/"
+        >
+          <img alt="ENS" className="h-6 w-20 object-contain" src="/ens-wordmark.svg" />
+          <span className="block text-[10px] leading-3 font-semibold text-midnight">
             Social Verification
           </span>
         </Link>
