@@ -6,14 +6,13 @@ import { EnsforgeProvider } from "@ensforge/react";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
 
-import { env } from "./env";
 import { rainbowKitTheme, wagmiConfig } from "./wallet";
 
 const ensforgeConfig = {
   network: "sepolia" as const,
   wagmiConfig,
   indexer: {
-    endpoints: { v1: null, ...(env.subgraphUrl ? { v2: env.subgraphUrl } : {}) },
+    endpoints: { v1: null },
     fetch: ((input, init) => {
       const request = new Request(input, init);
       // The public indexer permits Content-Type/Authorization, not Effect's tracing headers.

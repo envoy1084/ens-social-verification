@@ -5,7 +5,7 @@ import { injected } from "wagmi/connectors";
 
 import { env } from "./env";
 
-const transports = { [sepolia.id]: http(`${window.location.origin}/rpc/${sepolia.id}`) };
+const transports = { [sepolia.id]: http(`${env.serverUrl}/rpc/${sepolia.id}`) };
 export const wagmiConfig = env.walletConnectProjectId
   ? getDefaultConfig({
       appName: "ENS Social Verification",
