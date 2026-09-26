@@ -51,7 +51,6 @@ export function useXVerification(name: string, attemptId?: string) {
     queryKey: ["x", "status", name],
     queryFn: ({ signal }) => xClient.status(name, signal),
     staleTime: 30_000,
-    refetchInterval: 5 * 60_000,
     retry: false,
   });
   const attempt = useQuery({

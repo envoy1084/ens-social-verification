@@ -11,6 +11,7 @@ import {
   createVerificationSnapshot,
 } from "../verification/snapshot.js";
 import { validateSponsoredCalls } from "./calls.js";
+import { verifyHcaAtSnapshot } from "./hca-cache.js";
 
 const quantity = Schema.String.check(Schema.isPattern(/^0x(?:0|[1-9a-f][0-9a-f]*)$/i));
 const bytes = Schema.String.check(Schema.isPattern(/^0x(?:[0-9a-f]{2})*$/i));
@@ -87,7 +88,7 @@ export const validateSponsorshipRequest = Effect.fn("validateSponsorshipRequest"
     const hca = op.sender as Address;
     // verifyHca already checks canonical derivation, salt, owner and implementation.
     const [account, resolver] = await Promise.all([
-      sdk.hca.verifyHca({ hca, expectedOwner: owner, salt: 0n, blockNumber: snapshot.number }),
+      verifyHcaAtSnapshot(sdk.hca.verifyHca, snapshot, hca, owner),
       sdk.resolution.getResolver({ name, blockNumber: snapshot.number }),
     ]);
     if (account.deployed === false) throw new Error("Deploy HCA first");

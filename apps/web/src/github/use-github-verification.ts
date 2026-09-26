@@ -51,7 +51,6 @@ export function useGithubVerification(name: string, attemptId?: string) {
     queryKey: ["github", "status", name],
     queryFn: ({ signal }) => githubClient.status(name, signal),
     staleTime: 30_000,
-    refetchInterval: 5 * 60_000,
     retry: false,
   });
   const attempt = useQuery({

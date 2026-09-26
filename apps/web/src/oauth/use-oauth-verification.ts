@@ -62,7 +62,6 @@ export function useOAuthVerification(
     queryKey: ["oauth", provider, "status", name],
     queryFn: ({ signal }) => oauthClient.status(provider, name, signal),
     staleTime: 30_000,
-    refetchInterval: 300_000,
     retry: false,
   });
   const attempt = useQuery({

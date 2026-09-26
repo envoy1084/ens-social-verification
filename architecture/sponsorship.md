@@ -24,8 +24,9 @@ implementation, account ID and record permissions; it does not repeat the full
 deployment-wiring verification. Lookup failures identify the failed stage.
 It is not an authorization cache: the adapter and server still validate
 the actual operation against current chain state. Returning from wallet prompts
-does not trigger a page-wide query refresh; explicit refreshes and verification
-intervals remain active. Sponsored receipt polling runs every four seconds,
+does not trigger a page-wide query refresh; explicit and post-write refreshes remain
+active. Social proof status no longer polls every five minutes while idle. Active
+email inbox polling and attestation expiry timers remain. Sponsored receipt polling runs every four seconds,
 and the batched browser RPC transport does not automatically retry failed requests.
 Rate-limit errors return immediately rather than waiting for a retry window.
 ENSForge Effect atoms also have a 60-second stale window, a five-minute idle TTL,
@@ -66,7 +67,12 @@ This lock is wallet-wide, so an unresolved update blocks other providers too.
 - Canonical address derivation is checked by `verifyHca` with the expected owner
   and salt zero, without a redundant `predictHcaAddress` deployment-wiring check.
   HCA, resolver and permission reads use the authority snapshot's block number;
-  canonicality is checked again at the end. No authorization results are cached.
+  canonicality is checked again at the end. Ownership and record permission results
+  are never cached. Successful HCA deployment verification is reused only for an
+  identical block hash, block number, HCA, owner and SDK client (salt zero). In-flight
+  checks are shared; failures are evicted. Each client retains at most 64 entries for
+  30 seconds. New blocks and reorgs miss the cache; the final canonicality check stays
+  mandatory even on a cache hit.
 - Decode HCA execution: one zero-value resolver multicall containing exactly one
   supported social text key and its verification companion for the same name.
   Both permissioned DNS-name and public-resolver node encodings are supported.

@@ -36,3 +36,4 @@ export * from "./oauth/connection.js";
 export * from "./oauth/proofs.js";
 export * from "./sponsorship/validation.js";
 export * from "./sponsorship/calls.js";
+export * from "./sponsorship/hca-cache.js";

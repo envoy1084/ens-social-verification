@@ -61,7 +61,6 @@ export function useFarcasterVerification(name: string) {
     queryKey: ["farcaster", "status", name],
     queryFn: ({ signal }) => farcasterClient.status(name, signal),
     staleTime: 30_000,
-    refetchInterval: 300_000,
     retry: false,
   });
   const { refetch: refetchStatus } = status;

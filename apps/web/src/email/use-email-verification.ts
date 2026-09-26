@@ -50,7 +50,6 @@ export function useEmailVerification(name: string) {
     queryKey: ["email", "status", name],
     queryFn: ({ signal }) => emailClient.status(name, signal),
     staleTime: 30_000,
-    refetchInterval: 300_000,
     retry: false,
   });
   const { refetch: refetchStatus } = status;
