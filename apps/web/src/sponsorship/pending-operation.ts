@@ -52,11 +52,17 @@ export async function sponsorshipRpc(name: string, method: string, params: reado
   return body.result;
 }
 
-export async function reconcileOperation(owner: Address, client: PublicClient) {
+export async function reconcileOperation(
+  owner: Address,
+  client: PublicClient,
+  transactionHash?: Hex,
+) {
   const saved = localStorage.getItem(key(owner));
   if (!saved) return false;
   const pending = JSON.parse(saved) as PendingOperation;
-  const result = await sponsorshipRpc(pending.name, "eth_getUserOperationReceipt", [pending.hash]);
+  const result = transactionHash
+    ? { receipt: { transactionHash } }
+    : await sponsorshipRpc(pending.name, "eth_getUserOperationReceipt", [pending.hash]);
   if (!result?.receipt?.transactionHash) {
     if (pending.nonce && /^0x[0-9a-f]+$/i.test(pending.nonce)) {
       const nonce = BigInt(pending.nonce);
@@ -75,7 +81,7 @@ export async function reconcileOperation(owner: Address, client: PublicClient) {
       }
     }
     throw new Error(
-      `An earlier sponsored update for ${pending.name} is still unresolved. Use Check pending above before another update.`,
+      `An earlier sponsored update for ${pending.name} is still unresolved. Try again shortly to check its status.`,
     );
   }
   const receipt = await client.getTransactionReceipt({ hash: result.receipt.transactionHash });
@@ -88,6 +94,9 @@ export async function reconcileOperation(owner: Address, client: PublicClient) {
     (log) => log.args.userOpHash === pending.hash && isAddressEqual(log.args.sender, pending.hca),
   );
   if (!event) throw new Error("The sponsored transaction receipt could not be verified.");
+  const block = await client.getBlock({ blockNumber: receipt.blockNumber });
+  if (block.hash !== receipt.blockHash)
+    throw new Error("The sponsored receipt changed during confirmation. Try again.");
   clearOperation(owner);
   if (!event.args.success || receipt.status !== "success")
     throw new Error("The sponsored update failed onchain. You can retry.");

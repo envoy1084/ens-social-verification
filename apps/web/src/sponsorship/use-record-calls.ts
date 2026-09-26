@@ -1,14 +1,16 @@
 import { sepoliaHcaDeployment } from "@ensforge/contracts/deployments";
-import { pimlico } from "@ensforge/hca/pimlico";
 import { useEnsforge, useSendCalls } from "@ensforge/react";
+import { createSmartAccountClient } from "permissionless";
 import { createPimlicoClient } from "permissionless/clients/pimlico";
-import { custom, type Hex } from "viem";
+import { custom, isAddressEqual, verifyMessage, type Hex } from "viem";
+import { getUserOperationHash } from "viem/account-abstraction";
 import { sepolia } from "viem/chains";
 import { useAccount, useSignMessage } from "wagmi";
-import { getAccount } from "wagmi/actions";
+import { getAccount, getWalletClient } from "wagmi/actions";
 
 import { wagmiConfig } from "../wallet";
 import { sponsorshipExecutionError } from "./execution-error";
+import { deployedHcaAccount } from "./hca-account";
 import {
   reconcileOperation,
   rememberOperation,
@@ -43,7 +45,6 @@ export function useRecordCalls(name: string) {
               );
             if (!hca.enabled || hca.walletPaid) return normal.mutateAsync(input);
             const hcaAddress = await hca.prepareForUpdate();
-            let signedHash: Hex | undefined;
             const client = createPimlicoClient({
               chain: sepolia,
               entryPoint: {
@@ -54,12 +55,11 @@ export function useRecordCalls(name: string) {
                 {
                   request: async ({ method, params }) => {
                     if (method === "eth_sendUserOperation") {
-                      if (!signedHash) throw new Error("Missing signed operation hash");
                       const operation = (params as [{ nonce?: Hex }] | undefined)?.[0];
                       if (!operation?.nonce || !/^0x[0-9a-f]+$/i.test(operation.nonce))
                         throw new Error("Missing operation nonce");
                       rememberOperation(address, {
-                        hash: signedHash,
+                        hash,
                         hca: hcaAddress,
                         name,
                         nonce: operation.nonce,
@@ -70,11 +70,10 @@ export function useRecordCalls(name: string) {
                     } catch (error) {
                       if (
                         method === "eth_sendUserOperation" &&
-                        signedHash &&
                         error instanceof SponsorshipRejected &&
                         error.notSubmitted
                       )
-                        forgetOperation(address, signedHash);
+                        forgetOperation(address, hash);
                       throw error;
                     }
                   },
@@ -82,46 +81,73 @@ export function useRecordCalls(name: string) {
                 { retryCount: 0 },
               ),
             });
-            const execution = pimlico({
-              profile: sepoliaHcaDeployment,
-              chain: sepolia,
-              client,
-              sponsorship: {},
-              owner: {
-                address,
-                signMessage: async ({ message }) => {
-                  const current = getAccount(wagmiConfig);
-                  if (current.address !== address || current.chainId !== 11155111)
-                    throw new Error("Wallet changed.");
-                  const signature = await sign.signMessageAsync({ account: address, message });
-                  if (typeof message === "string" || typeof message.raw !== "string")
-                    throw new Error("Unexpected operation review");
-                  signedHash = message.raw;
-                  return signature;
-                },
-              },
-            });
-            const submission = await sdk.hca.executeHcaCalls({
-              hca: hcaAddress,
-              salt: 0n,
-              authorization: { kind: "owner" },
+            const assertWallet = () => {
+              const current = getAccount(wagmiConfig);
+              if (current.address !== address || current.chainId !== 11155111)
+                throw new Error("Wallet changed.");
+            };
+            const walletClient = await getWalletClient(wagmiConfig, { chainId: 11155111 });
+            const calls = await sdk.batch.prepareCalls({
               calls: input.calls,
-              execution,
+              account: address,
+              walletClient,
             });
-            const result = await sdk.hca.waitForHcaExecution({
-              submission,
-              execution,
+            const smartAccount = await deployedHcaAccount(sdk.config.publicClient, hcaAddress);
+            const operation = await createSmartAccountClient({
+              account: smartAccount,
+              chain: sepolia,
+              client: sdk.config.publicClient,
+              bundlerTransport: custom(
+                { request: (request) => client.request(request, { retryCount: 0 }) },
+                { retryCount: 0 },
+              ),
+              paymaster: {
+                getPaymasterData: client.getPaymasterData,
+                getPaymasterStubData: client.getPaymasterStubData,
+              },
+              userOperation: {
+                estimateFeesPerGas: async () => (await client.getUserOperationGasPrice()).fast,
+              },
+            }).prepareUserOperation({ calls });
+            if (
+              !operation.paymaster ||
+              operation.factory ||
+              operation.factoryData ||
+              !isAddressEqual(operation.sender, hcaAddress) ||
+              operation.callData !== (await smartAccount.encodeCalls(calls))
+            )
+              throw new Error("Prepared operation does not match the sponsored update.");
+            const hash = getUserOperationHash({
+              userOperation: operation,
+              entryPointAddress: sepoliaHcaDeployment.infrastructure.entryPoint,
+              entryPointVersion: "0.7",
+              chainId: sepolia.id,
+            });
+            assertWallet();
+            const signature = await sign.signMessageAsync({
+              account: address,
+              message: { raw: hash },
+            });
+            assertWallet();
+            if (!(await verifyMessage({ address, message: { raw: hash }, signature })))
+              throw new Error("The signature does not match the owner wallet.");
+            // An accountless client submits the exact signed operation without preparing again.
+            const submitted = await client.sendUserOperation({
+              ...operation,
+              signature,
+              entryPointAddress: sepoliaHcaDeployment.infrastructure.entryPoint,
+            });
+            if (submitted !== hash) throw new Error("Bundler returned a different operation hash.");
+            const result = await client.waitForUserOperationReceipt({
+              hash,
               timeout: 120_000,
-              confirmations: 1,
               pollingInterval: 4_000,
-              maxPollingInterval: 4_000,
             });
-            if (result.status !== "succeeded")
-              throw new Error(
-                "Sponsored update is not confirmed. Check again before sending another transaction.",
-              );
-            // ENSForge has already checked the canonical receipt and matching EntryPoint event.
-            if (signedHash) forgetOperation(address, signedHash);
+            await reconcileOperation(
+              address,
+              sdk.config.publicClient,
+              result.receipt.transactionHash,
+            );
             return { mode: "sequential" as const, status: "completed" as const };
           },
         )

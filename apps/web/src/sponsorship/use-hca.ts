@@ -49,7 +49,7 @@ export function useHca(name: string) {
         const hca = await sdk.hca.predictHcaAddress({ owner: account.address, salt: 0n });
         stage = "HCA deployment";
         const deployment = await sdk.hca.getHca({ hca });
-        // The execution adapter and server also verify full deployment wiring.
+        // The server verifies full deployment wiring before sponsorship.
         if (
           deployment.status === "deployed" &&
           (!isAddressEqual(deployment.owner, account.address) ||

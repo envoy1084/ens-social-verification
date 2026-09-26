@@ -1,6 +1,8 @@
 # Sponsored Record Updates
 
-The frontend uses ENSForge's pinned HCA deployment and Pimlico adapter on Sepolia.
+The frontend uses ENSForge's pinned HCA deployment with a direct permissionless/Pimlico
+UserOperation flow on Sepolia. ENSForge prepares resolver calls and handles setup;
+the high-level HCA execution adapter is not used for record submission.
 The canonical salt-zero HCA is derived from the connected owner. Existing canonical
 accounts are reused; arbitrary salts and other smart-account implementations are not
 automatically discovered. Social proofs are still signed by the owner, not the HCA.
@@ -19,7 +21,7 @@ focus and invalidation. Only an explicit record update refreshes readiness. It
 derives the canonical address and inspects deployment owner,
 implementation, account ID and record permissions; it does not repeat the full
 deployment-wiring verification. Lookup failures identify the failed stage.
-It is not an authorization cache: the adapter and server still validate
+It is not an authorization cache: the server still validates
 the actual operation against current chain state. Returning from wallet prompts
 does not trigger a page-wide query refresh; explicit and post-write refreshes remain
 active. Social proof status no longer polls every five minutes while idle. Active
@@ -53,6 +55,13 @@ errors are surfaced as rate limits instead of only a generic HCA revalidation er
 no automatic retries are added.
 
 All six verification providers and their removal flows use `useRecordCalls`.
+After readiness, the deployed-only account codec encodes the pinned HCA atomic
+execution format and reads the EntryPoint nonce once. Pimlico prepares gas and
+paymaster fields once. The owner signs the exact chain-bound operation hash;
+signature recovery and sender/call-data checks are local. An accountless bundler
+client submits that exact operation without preparing or estimating it again.
+There are no adapter verification passes, repeated network/wiring probes, or
+pre/post-signature gas re-estimates. Backend policy validation remains mandatory.
 Sponsored writes are atomic owner-signed UserOperations. Failures do not silently
 fall back to paid transactions. A wallet-scoped Web Lock prevents simultaneous
 submissions across tabs. Immediately before submission, the operation hash, HCA,
@@ -73,7 +82,7 @@ This lock is wallet-wide, so an unresolved update blocks other providers too.
 
 - `GET /sponsorship/configuration` returns only `{ enabled }`.
 - `POST /sponsorship/:name/rpc` requires a wallet session and exact app Origin.
-- Only Sepolia Pimlico methods needed by the adapter are accepted; no RPC batches.
+- Only Sepolia Pimlico methods needed by the submission flow are accepted; no RPC batches.
 - Before estimates, sponsorship or submission, verify active ENSv2 ownership,
   the canonical deployed HCA and current resolver permissions.
 - Canonical address derivation is checked by `verifyHca` with the expected owner
@@ -101,6 +110,7 @@ Pimlico must accept the pinned HCA implementation and EntryPoint 0.7; network an
 EntryPoint checks alone do not prove full bundler compatibility. Deployment,
 permission grants and end-to-end sponsorship require a real wallet test.
 
-After ENSForge returns a successful canonical receipt and verified EntryPoint event,
-the matching local pending hash is cleared directly. The recovery path still checks
-receipts independently for interrupted or ambiguous submissions.
+After Pimlico reports inclusion, the frontend checks the chain receipt, matching
+EntryPoint event and canonical block hash before clearing the pending operation.
+The same receipt validation handles interrupted or ambiguous submissions. Receipt
+polling does not repeat network or deployment verification.
