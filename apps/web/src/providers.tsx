@@ -3,12 +3,21 @@ import { useState, type PropsWithChildren } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { sepoliaV2Deployment, sepoliaHcaDeployment } from "@ensforge/contracts/deployments";
-import { EnsforgeProvider } from "@ensforge/react";
+import { EnsforgeProvider, type EnsforgeReactDefaults } from "@ensforge/react";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
 
 import { AuthenticationProvider } from "./auth/provider";
 import { rainbowKitTheme, wagmiConfig } from "./wallet";
+
+const ensforgeDefaults: EnsforgeReactDefaults = {
+  atoms: {
+    idleTTL: 300_000,
+    refreshInterval: false,
+    retry: false,
+    swr: { staleTime: 60_000, revalidateOnFocus: false, revalidateOnMount: true },
+  },
+};
 
 const ensforgeConfig = {
   hca: sepoliaHcaDeployment,
@@ -45,7 +54,7 @@ export function AppProviders({ children }: PropsWithChildren) {
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={client}>
-        <EnsforgeProvider config={ensforgeConfig}>
+        <EnsforgeProvider config={ensforgeConfig} defaults={ensforgeDefaults}>
           <AuthenticationProvider>
             <RainbowKitProvider theme={rainbowKitTheme}>{children}</RainbowKitProvider>
           </AuthenticationProvider>

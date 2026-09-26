@@ -24,6 +24,16 @@ the actual operation against current chain state. Returning from wallet prompts
 does not trigger a page-wide query refresh; explicit refreshes and verification
 intervals remain active. Sponsored receipt polling backs off from 4 to 12 seconds,
 and the batched browser RPC transport permits only one retry per failed request.
+ENSForge Effect atoms also have a 60-second stale window, a five-minute idle TTL,
+and no focus refresh, interval refresh or retries. Direct SDK HCA calls are instead
+deduplicated by the shared TanStack readiness query.
+
+Setup reuses readiness, skips already authorized accounts, and passes the connected
+Sepolia wallet client explicitly. Deployment waits for one confirmation before
+permission grants; grants prefer wallet batching with sequential fallback. The
+dialog reports preparation, deployment, authorization and final permission checks
+separately instead of claiming a wallet prompt is already open. Completion requires
+a fresh successful readiness check.
 
 All six verification providers and their removal flows use `useRecordCalls`.
 Sponsored writes are atomic owner-signed UserOperations. Failures do not silently

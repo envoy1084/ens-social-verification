@@ -7,7 +7,7 @@ import { Button } from "@thenamespace/uikit/button";
 import { Label } from "@thenamespace/uikit/label";
 import { Switch } from "@thenamespace/uikit/switch";
 import { useAccount } from "wagmi";
-import { getAccount } from "wagmi/actions";
+import { getAccount, getWalletClient } from "wagmi/actions";
 
 import { wagmiConfig } from "../wallet";
 import {
@@ -22,6 +22,7 @@ export function HcaBanner({ name, owner }: { name: string; owner: string | null 
   const sdk = useEnsforge();
   const hca = useHca(name);
   const [busy, setBusy] = useState(false);
+  const [step, setStep] = useState("Preparing setup...");
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const pending = useSyncExternalStore(subscribePendingOperation, () =>
@@ -36,30 +37,40 @@ export function HcaBanner({ name, owner }: { name: string; owner: string | null 
         throw new Error("Wallet changed. Return to the original wallet.");
     };
     setBusy(true);
+    setStep("Preparing setup...");
     setMessage(null);
     try {
-      const fresh = await hca.state.refetch();
-      if (!fresh.data) throw new Error("Could not check HCA deployment.");
-      assertAccount();
-      if (!fresh.data.deployed) {
-        const deployment = await sdk.hca.deployHca({ owner: address, account: address, salt: 0n });
-        if (deployment.hash) {
-          const receipt = await sdk.config.publicClient.waitForTransactionReceipt({
-            hash: deployment.hash,
-          });
-          if (receipt.status !== "success") throw new Error("HCA deployment failed.");
-        }
+      const readiness = await hca.getReadiness();
+      if (!readiness) throw new Error("Could not check HCA deployment.");
+      if (readiness.ready) {
+        hca.setWalletPaid(false);
+        setOpen(false);
+        return;
       }
       assertAccount();
+      const walletClient = await getWalletClient(wagmiConfig, { chainId: 11155111 });
+      if (!readiness.deployed) {
+        setStep("Deploying HCA...");
+        await sdk.hca.deployHca({
+          owner: address,
+          account: address,
+          walletClient,
+          salt: 0n,
+          confirmation: { type: "confirmed", confirmations: 1, timeout: 120_000 },
+        });
+      }
+      assertAccount();
+      setStep("Authorizing HCA...");
       const result = await sdk.permissions.setRecordPermissions({
         walletAccount: address,
+        walletClient,
         name,
-        account: fresh.data.hca,
+        account: readiness.hca,
         records: sponsoredRecords,
         approved: true,
         allowScopeWidening: true,
-        mode: "sequential",
-        atomicity: "none",
+        mode: "auto",
+        atomicity: "preferred",
         confirmation: { type: "confirmed", confirmations: 1, timeout: 120_000 },
       });
       if (
@@ -68,7 +79,12 @@ export function HcaBanner({ name, owner }: { name: string; owner: string | null 
           : result.execution.status !== "confirmed"
       )
         throw new Error("Permission transaction is not confirmed yet.");
-      await hca.state.refetch();
+      setStep("Checking permissions...");
+      const confirmed = await hca.state.refetch({ cancelRefetch: false });
+      if (confirmed.error || !confirmed.data?.ready)
+        throw new Error(
+          "Setup was submitted, but permissions could not be confirmed. Retry lookup.",
+        );
       hca.setWalletPaid(false);
       setOpen(false);
     } catch (error) {
@@ -195,7 +211,11 @@ export function HcaBanner({ name, owner }: { name: string; owner: string | null 
                   Not now
                 </Button>
                 <Button onPress={confirmSetup} isDisabled={busy}>
-                  {busy ? "Confirm in wallet..." : "Deploy and authorize"}
+                  {busy
+                    ? step
+                    : hca.state.data?.deployed
+                      ? "Authorize HCA"
+                      : "Deploy and authorize"}
                 </Button>
               </AlertDialog.Footer>
             </AlertDialog.Dialog>
