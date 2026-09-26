@@ -9,6 +9,8 @@
 - Make focused changes and commit each meaningful unit using Conventional Commits.
 - Do not add dependencies, abstractions, or unrelated refactors without a concrete need.
 - Never commit credentials or local environment files. `research/` stays untracked.
+- Keep environment files only in `apps/server` and `apps/web`, each with one example.
+  Database tools and Compose read the server environment; do not add a root env file.
 
 ## Tooling
 
@@ -24,12 +26,21 @@
 ## Package boundaries
 
 - `protocol`: shared schemas, public DTOs, and typed errors. No infrastructure imports.
+- Follow `protocol/src/schema/`, `model/`, `dto/`, and `errors/`; use `EthereumAddress`
+  for Ethereum address values. Models and DTOs are separate public subpaths.
 - `database`: Drizzle tables, migrations, PostgreSQL Layer, and focused queries in
   `src/repositories/`. Group repositories by domain when needed.
+- Follow database `src/core/`, `schema/<domain>/`, and `repositories/<domain>/`.
+  Resolve `transactionOrDatabase` in repositories so application transactions span
+  multiple repositories without passing raw transaction clients.
 - `application`: business workflows and provider coordination, independent of HTTP
   and React. Depends on protocol and database, never api or server.
 - `api`: public HttpApi contracts only. Depends on protocol, not application.
+- Put API groups in `api/src/routes/<domain>/` and mirror them in server routes.
 - `apps/server`: composition root, HTTP handlers, cookies, rate limits, and live Layers.
+- Keep server `src/index.ts` as a small launcher. Use `layers/`, `middlewares/`,
+  `helpers/`, and `routes/`; tests live in `tests/fixtures`, `tests/unit`, and
+  `tests/integration`. Add only files with a current responsibility.
 - `apps/web`: TanStack Router UI, Namespace UIKit, ENSForge, and wallet connections.
 
 Implement features in dependency order: protocol, database, application, api, server,
@@ -81,3 +92,5 @@ Keep this six-part structure; do not copy unrelated Namera packages or abstracti
   application internals when testing the HTTP boundary.
 - Keep documentation concise and synchronized. A scaffold is not an implemented
   feature; distinguish wired and tested behavior from future work.
+- Read the relevant document under `architecture/` before changing a cross-package
+  feature and update it in the same change. Start at `architecture/README.md`.
