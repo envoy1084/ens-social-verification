@@ -1,6 +1,8 @@
 import { createServer } from "node:http";
 
-import { NodeHttpClient, NodeHttpServer, NodeRuntime } from "@effect/platform-node";
+import * as NodeHttpClient from "@effect/platform-node/NodeHttpClient";
+import * as NodeHttpServer from "@effect/platform-node/NodeHttpServer";
+import * as NodeRuntime from "@effect/platform-node/NodeRuntime";
 import { Effect, Layer } from "effect";
 import { HttpRouter } from "effect/unstable/http";
 

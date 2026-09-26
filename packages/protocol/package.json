@@ -1,5 +1,5 @@
 {
-  "name": "@ens-social-verification/api",
+  "name": "@ens-social-verification/protocol",
   "private": true,
   "type": "module",
   "exports": {

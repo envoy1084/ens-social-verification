@@ -4,17 +4,18 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", "build/**"]
+      "outputs": ["dist/**", "build/**"],
+      "env": ["VITE_*", "SERVER_URL"]
     },
     "dev": {
       "cache": false,
       "persistent": true,
-      "passThroughEnv": ["HOST", "PORT", "ALCHEMY_API_KEY"]
+      "passThroughEnv": ["HOST", "PORT", "ALCHEMY_API_KEY", "VITE_*", "SERVER_URL"]
     },
     "lint": { "outputs": [] },
     "lint:fix": { "cache": false },
     "typecheck": { "dependsOn": ["^typecheck"], "outputs": [] },
-    "test": { "dependsOn": ["^build"], "outputs": ["coverage/**"] },
+    "test": { "dependsOn": ["^build"], "outputs": [] },
     "test:watch": { "cache": false, "persistent": true },
     "clean": { "cache": false }
   }

@@ -7,7 +7,7 @@ import {
   HttpServerResponse,
 } from "effect/unstable/http";
 
-import { RpcPayload } from "@ens-social/api";
+import { RpcPayload } from "@ens-social-verification/api";
 
 import { ServerConfig } from "../config.js";
 const alchemyNetworks: Readonly<Record<string, string>> = {

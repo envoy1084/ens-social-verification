@@ -1,0 +1,8 @@
+{
+  "extends": "klarity/tsconfig/library",
+  "compilerOptions": {
+    "noEmit": true,
+    "customConditions": ["workspace-source"]
+  },
+  "include": ["src/**/*.ts", "*.config.ts"]
+}

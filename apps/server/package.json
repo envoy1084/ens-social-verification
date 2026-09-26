@@ -1,5 +1,5 @@
 {
-  "name": "@ens-social/server",
+  "name": "@ens-social-verification/server",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@effect/platform-node": "catalog:",
-    "@ens-social/api": "workspace:*",
+    "@ens-social-verification/api": "workspace:*",
     "effect": "catalog:"
   },
   "devDependencies": {
