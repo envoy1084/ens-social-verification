@@ -17,6 +17,7 @@
     "@ens-social-verification/application": "workspace:*",
     "@ens-social-verification/database": "workspace:*",
     "@ens-social-verification/protocol": "workspace:*",
+    "@farcaster/auth-client": "catalog:",
     "effect": "catalog:",
     "viem": "catalog:"
   },

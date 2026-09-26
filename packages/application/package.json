@@ -20,6 +20,7 @@
     "@ensforge/contracts": "catalog:",
     "@ensforge/core": "catalog:",
     "@ensforge/sdk": "catalog:",
+    "@farcaster/auth-client": "catalog:",
     "effect": "catalog:",
     "viem": "catalog:"
   },

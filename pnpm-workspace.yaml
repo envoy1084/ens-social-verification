@@ -3,6 +3,8 @@ packages:
   - packages/*
 
 catalog:
+  "@farcaster/auth-client": 0.7.1
+  qrcode.react: 4.2.0
   "@effect/sql-pg": 4.0.0-rc.117
   drizzle-orm: 1.0.0-rc.4
   drizzle-kit: 1.0.0-rc.4

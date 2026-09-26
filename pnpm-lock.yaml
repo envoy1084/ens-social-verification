@@ -30,6 +30,9 @@ catalogs:
     '@ensforge/sdk':
       specifier: 0.5.0
       version: 0.5.0
+    '@farcaster/auth-client':
+      specifier: 0.7.1
+      version: 0.7.1
     '@fontsource-variable/manrope':
       specifier: 5.3.0
       version: 5.3.0
@@ -96,6 +99,9 @@ catalogs:
     pg:
       specifier: 8.23.0
       version: 8.23.0
+    qrcode.react:
+      specifier: 4.2.0
+      version: 4.2.0
     react:
       specifier: 19.2.8
       version: 19.2.8
@@ -191,6 +197,9 @@ importers:
       '@ens-social-verification/protocol':
         specifier: workspace:*
         version: link:../../packages/protocol
+      '@farcaster/auth-client':
+        specifier: 'catalog:'
+        version: 0.7.1(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5)
       effect:
         specifier: 'catalog:'
         version: 4.0.0-rc.117
@@ -234,6 +243,9 @@ importers:
       '@ensforge/react':
         specifier: 'catalog:'
         version: 0.5.0(bufferutil@4.1.0)(effect@4.0.0-rc.117)(react@19.2.8)(scheduler@0.27.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)
+      '@farcaster/auth-client':
+        specifier: 'catalog:'
+        version: 0.7.1(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)
       '@fontsource-variable/manrope':
         specifier: 'catalog:'
         version: 5.3.0
@@ -279,6 +291,9 @@ importers:
       effect:
         specifier: 'catalog:'
         version: 4.0.0-rc.117
+      qrcode.react:
+        specifier: 'catalog:'
+        version: 4.2.0(react@19.2.8)
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -377,6 +392,9 @@ importers:
       '@ensforge/sdk':
         specifier: 'catalog:'
         version: 0.5.0(bufferutil@4.1.0)(effect@4.0.0-rc.117)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(zod@4.6.5))(zod@4.6.5)
+      '@farcaster/auth-client':
+        specifier: 'catalog:'
+        version: 0.7.1(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5)
       effect:
         specifier: 'catalog:'
         version: 4.0.0-rc.117
@@ -1076,6 +1094,9 @@ packages:
   '@ethereumjs/util@8.1.0':
     resolution: {integrity: sha512-zQ0IqbdX8FZ9aw11vP+dZkKDkS+kgIvQPHnSAXzP9pLu+Rfu3D3XEeLbicvoXJTYnhZiPmsZUxgdzXwNKxRPbA==}
     engines: {node: '>=14'}
+
+  '@farcaster/auth-client@0.7.1':
+    resolution: {integrity: sha512-Mo5FnQPCfcV1ECSEvLz/WeFbH5F0ok5SJkRtwyO27KTQIuXKeL8O8oq6PlcVEEP8rkDnGkGkQ5rnT5Re9DDyNA==}
 
   '@floating-ui/core@1.8.0':
     resolution: {integrity: sha512-0CIZ5itps/8x7BG8dEIhs53BvCUH2PCoogtakwRTut+Arm58sJooJ0AuZhLw2HJYIR5cMLNPBSS728sPho2khQ==}
@@ -5099,6 +5120,9 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
+  neverthrow@6.2.2:
+    resolution: {integrity: sha512-POR1FACqdK9jH0S2kRPzaZEvzT11wsOxLW520PQV/+vKi9dQe+hXq19EiOvYx7lSRaF5VB9lYGsPInynrnN05w==}
+
   node-addon-api@2.0.2:
     resolution: {integrity: sha512-Ntyt4AIXyaLIuMHF6IOoTakB3K+RWxwtsHNRxllEoA6vPwP9o4866g6YWDLUdnucilZhmkxiHwHr11gAENw+QA==}
 
@@ -5488,6 +5512,11 @@ packages:
   qr@0.7.0:
     resolution: {integrity: sha512-/VrrACmOAwZVipuRITwfEwOL5oAMEHH5PTmBWaGtlTom2Thxaa+rhmna4zU9PRN2uLw2wdccbkHOLGZb1Q9SdA==}
     engines: {node: '>= 20.19.0'}
+
+  qrcode.react@4.2.0:
+    resolution: {integrity: sha512-QpgqWi8rD9DsS9EP3z7BT+5lY5SFhsqGjpgW5DY/i3mK4M9DTBNz3ErMi8BWYEfI3L0d8GIbGmcdFAS1uIRGjA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   qrcode@1.5.3:
     resolution: {integrity: sha512-puyri6ApkEHYiVl4CFzo1tDkAZ+ATcnbJrJ6RiBM1Fhctdn/ix9MTE3hRph33omisEbC/2fcfemsseiKgBPKZg==}
@@ -7231,6 +7260,26 @@ snapshots:
       '@ethereumjs/rlp': 4.0.1
       ethereum-cryptography: 2.2.1
       micro-ftch: 0.3.1
+
+  '@farcaster/auth-client@0.7.1(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)':
+    dependencies:
+      neverthrow: 6.2.2
+      viem: 2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)
+    transitivePeerDependencies:
+      - bufferutil
+      - typescript
+      - utf-8-validate
+      - zod
+
+  '@farcaster/auth-client@0.7.1(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5)':
+    dependencies:
+      neverthrow: 6.2.2
+      viem: 2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5)
+    transitivePeerDependencies:
+      - bufferutil
+      - typescript
+      - utf-8-validate
+      - zod
 
   '@floating-ui/core@1.8.0':
     dependencies:
@@ -12622,6 +12671,8 @@ snapshots:
 
   nanoid@3.3.19: {}
 
+  neverthrow@6.2.2: {}
+
   node-addon-api@2.0.2: {}
 
   node-fetch-native@1.6.7: {}
@@ -13154,6 +13205,10 @@ snapshots:
       once: 1.4.0
 
   qr@0.7.0: {}
+
+  qrcode.react@4.2.0(react@19.2.8):
+    dependencies:
+      react: 19.2.8
 
   qrcode@1.5.3:
     dependencies:
