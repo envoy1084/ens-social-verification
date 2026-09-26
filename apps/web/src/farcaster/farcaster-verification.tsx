@@ -98,7 +98,7 @@ function FarcasterAccount({ name, owner }: { name: string; owner?: string | null
             {verification.records.isInitial ? (
               <Skeleton className="mt-2 h-4 w-28" />
             ) : (
-              <p className="mt-1 break-all text-sm text-muted">
+              <p className="mt-1 text-sm text-muted [overflow-wrap:anywhere]">
                 {username
                   ? username.startsWith("fid:")
                     ? `FID ${username.slice(4)}`

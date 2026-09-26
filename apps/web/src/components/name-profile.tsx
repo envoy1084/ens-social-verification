@@ -203,27 +203,29 @@ export function NameProfile({
           </div>
         </section>
 
+        <EmailVerification name={name} owner={ownerAddress} />
         <section className="mt-12" aria-labelledby="social-heading">
           <h2 id="social-heading" className="text-lg font-semibold">
             Social accounts
           </h2>
-          <GithubVerification name={name} owner={ownerAddress} attemptId={githubAttempt} />
-          <FarcasterVerification key={name} name={name} owner={ownerAddress} />
-          <XVerification name={name} owner={ownerAddress} attemptId={xAttempt} />
-          <DiscordVerification name={name} owner={ownerAddress} attemptId={oauthAttempt} />
-          <OAuthVerification
-            provider="telegram"
-            name={name}
-            owner={ownerAddress}
-            attemptId={oauthAttempt}
-          />
+          <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 [&>article]:mt-0 [&>article]:min-w-0">
+            <GithubVerification name={name} owner={ownerAddress} attemptId={githubAttempt} />
+            <FarcasterVerification key={name} name={name} owner={ownerAddress} />
+            <XVerification name={name} owner={ownerAddress} attemptId={xAttempt} />
+            <DiscordVerification name={name} owner={ownerAddress} attemptId={oauthAttempt} />
+            <OAuthVerification
+              provider="telegram"
+              name={name}
+              owner={ownerAddress}
+              attemptId={oauthAttempt}
+            />
+          </div>
         </section>
-        <EmailVerification name={name} owner={ownerAddress} />
         <section className="mt-10" aria-labelledby="addresses-heading">
           <h2 id="addresses-heading" className="text-lg font-semibold">
             Addresses
           </h2>
-          <article className="record-card mt-4 max-w-2xl">
+          <article className="record-card mt-4 w-full">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <NetworkEthereum

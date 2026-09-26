@@ -94,7 +94,7 @@ function XAccount({
             {record.isInitial ? (
               <Skeleton className="mt-2 h-4 w-28" />
             ) : (
-              <p className="mt-1 break-all text-sm text-muted">
+              <p className="mt-1 text-sm text-muted [overflow-wrap:anywhere]">
                 {login ? `@${login}` : "No X account linked"}
               </p>
             )}

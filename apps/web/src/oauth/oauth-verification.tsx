@@ -99,7 +99,7 @@ function OAuthAccount({
             {oauth.records.isInitial ? (
               <Skeleton className="mt-2 h-4 w-28" />
             ) : (
-              <p className="mt-1 break-all text-sm text-muted">
+              <p className="mt-1 text-sm text-muted [overflow-wrap:anywhere]">
                 {value ? `@${value}` : `No ${definition.label} account linked`}
               </p>
             )}
