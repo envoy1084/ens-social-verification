@@ -1,4 +1,6 @@
 # API
 
-Effect HttpApi contract and JSON-RPC request schemas. No handlers or credentials.
+Effect HttpApi contracts for health, authentication, and the JSON-RPC proxy.
+Shared authentication schemas come from protocol. No handlers or credentials.
 The server exposes the generated OpenAPI document at `/` and `/openapi.json`.
+Groups live in `src/routes/`; `routes/auth/wallet.ts` and `session.ts` mirror server handlers.
