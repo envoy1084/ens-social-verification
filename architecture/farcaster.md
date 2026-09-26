@@ -62,10 +62,16 @@ hosts or restoring a database without these envelopes requires updating records.
 ## Removal And Recovery
 
 An owner can click Verified and confirm clearing both Farcaster records in one
-transaction. This does not revoke the Farcaster account or delete the signed public
-envelope. Restoring the records can reactivate an unexpired proof. No Farcaster
-OAuth token or gist exists to delete. Pending state is not persisted in browser
-storage; after refresh, start another attempt if no records were saved yet.
+transaction. After confirmation, `POST /verification/farcaster/removal` rechecks
+the authenticated current ENS owner and both empty records at a pinned block, then
+deletes the proof's attempt row, including its envelope, evidence and claim.
+Deletion is idempotent and scoped to the name. A deleted attempt cannot publish again.
+The public URL stops serving the proof; the Farcaster account itself is unchanged.
+Already-downloaded copies cannot be erased, so this is not universal cryptographic
+revocation. Failed cleanup stays visible in the dialog and can be retried without
+another ENS transaction. Keep the page open until cleanup succeeds.
+Pending state is not persisted in browser storage; after refresh, start another
+attempt if no records were saved yet.
 One FID can verify multiple ENS names using separate intent-bound proofs.
 
 ## Configuration And Limits

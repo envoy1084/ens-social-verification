@@ -198,11 +198,44 @@ describe("Farcaster signed proof workflow", () => {
       status: "unverified",
     });
     app.rpc.owner = owner.address;
+    const removal = { name: "alice.eth", proofUri: publication.proofUri };
+    expect((await app.request("removal", { body: removal })).status).toBe(401);
+    expect(
+      (await app.request("removal", { cookie, body: removal, origin: "https://evil.test" })).status,
+    ).toBe(403);
+    expect((await app.request("removal", { cookie, body: removal })).status).toBe(400);
     app.records[farcasterRecordKey] = "";
     expect(await (await app.request("status?name=alice.eth")).json()).toMatchObject({
       status: "unverified",
     });
+    expect((await app.request("removal", { cookie, body: removal })).status).toBe(400);
     app.records[farcasterVerificationKey] = "";
     expect(await (await app.request(`proofs/${pending.id}`)).json()).toEqual(envelope);
+    app.rpc.owner = stranger.address;
+    expect((await app.request("removal", { cookie, body: removal })).status).toBe(403);
+    app.rpc.owner = owner.address;
+    expect(
+      (await app.request("removal", { cookie, body: { ...removal, name: "bob.eth" } })).status,
+    ).toBe(403);
+    expect(await (await app.request("removal", { cookie, body: removal })).json()).toEqual({
+      deleted: true,
+    });
+    expect((await app.request(`proofs/${pending.id}`)).status).toBe(400);
+    expect(await (await app.request("removal", { cookie, body: removal })).json()).toEqual({
+      deleted: true,
+    });
+    expect(
+      (
+        await app.request(`attempts/${pending.id}/publish`, {
+          cookie,
+          body: { authoritySignature: signature },
+        })
+      ).status,
+    ).toBe(400);
+    app.records[farcasterRecordKey] = "alice";
+    app.records[farcasterVerificationKey] = publication.descriptor;
+    expect(await (await app.request("status?name=alice.eth")).json()).toMatchObject({
+      status: "unverified",
+    });
   });
 });

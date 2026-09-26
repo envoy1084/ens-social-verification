@@ -51,6 +51,7 @@ export function useFarcasterVerification(name: string) {
   const [url, setUrl] = useState<string | null>(null);
   const [ready, setReady] = useState<Ready | null>(null);
   const [publication, setPublication] = useState<typeof FarcasterPublication.Type | null>(null);
+  const [cleanupUri, setCleanupUri] = useState<string | null>(null);
   const running = useRef(false);
   const generation = useRef(0);
   const records = useTexts({ name, keys: [farcasterRecordKey, farcasterVerificationKey] });
@@ -248,50 +249,82 @@ export function useFarcasterVerification(name: string) {
     }
   }, [ready, publication, name, sign, sendCalls, sdk, queryClient, refreshRecords]);
   const remove = useCallback(async () => {
-    if (running.current || !account.address || !status.data?.proofUri) return false;
+    const proofUri = cleanupUri ?? status.data?.proofUri;
+    if (running.current || !account.address || !proofUri) return false;
     running.current = true;
     setPhase("removing");
     setError(null);
     const address = account.address;
     const run = generation.current;
+    let recordsRemoved = Boolean(cleanupUri);
     try {
-      const live = await refreshRecords();
-      const verdict = await farcasterClient.status(name);
-      if (
-        verdict.status !== "verified" ||
-        verdict.proofUri !== status.data.proofUri ||
-        live.find((record) => record.key === farcasterRecordKey)?.value !== verdict.username
-      )
-        throw new Error("The verification changed. Refresh before removing it.");
+      const session = await authClient.session();
+      if (session?.address.toLowerCase() !== address.toLowerCase())
+        throw new Error("Sign in with the name owner's wallet first.");
+      if (!cleanupUri) {
+        const live = await refreshRecords();
+        const verdict = await farcasterClient.status(name);
+        if (
+          verdict.status !== "verified" ||
+          verdict.proofUri !== proofUri ||
+          live.find((record) => record.key === farcasterRecordKey)?.value !== verdict.username
+        )
+          throw new Error("The verification changed. Refresh before removing it.");
+        const current = getAccount(wagmiConfig);
+        if (
+          run !== generation.current ||
+          current.address !== address ||
+          current.chainId !== 11155111
+        )
+          throw new Error("Return to the name owner's wallet on Sepolia.");
+        const sent = await sendCalls.mutateAsync({
+          account: address,
+          calls: [
+            sdk.records.setTexts.call({
+              name,
+              texts: [
+                { key: farcasterRecordKey, value: "" },
+                { key: farcasterVerificationKey, value: "" },
+              ],
+            }),
+          ],
+          mode: "auto",
+          atomicity: "preferred",
+          simulation: "required",
+          confirmation: { type: "confirmed", confirmations: 1, timeout: 120_000 },
+        });
+        if (sent.mode === "sequential" ? sent.status !== "completed" : sent.status !== "confirmed")
+          throw new Error("Removal is not confirmed. Check the transaction before retrying.");
+        if (run !== generation.current) return false;
+        recordsRemoved = true;
+        setCleanupUri(proofUri);
+        queryClient.setQueryData(["farcaster", "status", name], {
+          status: "unverified",
+          username: null,
+          proofUri: null,
+          validUntil: null,
+          reason: "Records removed",
+        });
+      }
       const current = getAccount(wagmiConfig);
       if (run !== generation.current || current.address !== address || current.chainId !== 11155111)
         throw new Error("Return to the name owner's wallet on Sepolia.");
-      const sent = await sendCalls.mutateAsync({
-        account: address,
-        calls: [
-          sdk.records.setTexts.call({
-            name,
-            texts: [
-              { key: farcasterRecordKey, value: "" },
-              { key: farcasterVerificationKey, value: "" },
-            ],
-          }),
-        ],
-        mode: "auto",
-        atomicity: "preferred",
-        simulation: "required",
-        confirmation: { type: "confirmed", confirmations: 1, timeout: 120_000 },
-      });
-      if (sent.mode === "sequential" ? sent.status !== "completed" : sent.status !== "confirmed")
-        throw new Error("Removal is not confirmed. Check the transaction before retrying.");
+      await farcasterClient.removeProof(name, proofUri);
       if (run !== generation.current) return false;
+      setCleanupUri(null);
       setReady(null);
       setPublication(null);
       await check();
       return true;
     } catch (cause) {
       if (run === generation.current)
-        setError(cause instanceof Error ? cause.message : "Couldn't remove verification.");
+        setError(
+          recordsRemoved
+            ? "ENS records were removed. Hosted proof cleanup could not finish; retry cleanup without another transaction."
+            : cause instanceof Error
+              ? cause.message
+              : "Couldn't remove verification.",
+        );
       return false;
     } finally {
       if (run === generation.current) {
@@ -299,7 +332,17 @@ export function useFarcasterVerification(name: string) {
         setPhase("idle");
       }
     }
-  }, [account.address, status.data, name, refreshRecords, sendCalls, sdk, check]);
+  }, [
+    account.address,
+    status.data,
+    cleanupUri,
+    name,
+    refreshRecords,
+    sendCalls,
+    sdk,
+    check,
+    queryClient,
+  ]);
   const recordsSaved = Boolean(
     publication &&
     records.data?.find((record) => record.key === farcasterRecordKey)?.value ===
@@ -321,5 +364,6 @@ export function useFarcasterVerification(name: string) {
     publish,
     check,
     remove,
+    cleanupPending: Boolean(cleanupUri),
   };
 }

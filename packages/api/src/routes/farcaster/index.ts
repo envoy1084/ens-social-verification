@@ -8,6 +8,8 @@ import {
   FarcasterPublishRequest,
   FarcasterPublication,
   FarcasterStatusResponse,
+  FarcasterRemovalRequest,
+  FarcasterRemovalResponse,
 } from "@ens-social-verification/protocol/dto";
 import {
   FarcasterAttemptId,
@@ -18,6 +20,14 @@ import {
 import { AuthErrors } from "../auth/errors.js";
 
 export const FarcasterApi = HttpApiGroup.make("farcaster").add(
+  HttpApiEndpoint.post("removeProof", "/verification/farcaster/removal", {
+    payload: FarcasterRemovalRequest,
+    success: FarcasterRemovalResponse,
+    error: AuthErrors,
+  }).annotate(
+    OpenApi.Description,
+    "Removes the hosted proof after the authenticated current owner clears both ENS records. Idempotent; does not submit transactions.",
+  ),
   HttpApiEndpoint.post("start", "/verification/farcaster/start", {
     payload: FarcasterStartRequest,
     success: FarcasterStartResponse,

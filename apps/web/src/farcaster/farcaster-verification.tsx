@@ -108,31 +108,47 @@ function FarcasterAccount({ name, owner }: { name: string; owner?: string | null
             )}
           </div>
         </div>
-        {verified && isOwner ? (
+        {(verified || verification.cleanupPending) && isOwner ? (
           <AlertDialog isOpen={removeOpen} onOpenChange={onRemoveOpenChange}>
             <Button
               variant="tertiary"
               size="sm"
-              className="shrink-0 text-success"
-              aria-label="Verified Farcaster account: remove verification"
+              className={verification.cleanupPending ? "shrink-0" : "shrink-0 text-success"}
+              aria-label={
+                verification.cleanupPending
+                  ? "Retry hosted proof cleanup"
+                  : "Verified Farcaster account: remove verification"
+              }
             >
               <HugeiconsIcon icon={CheckmarkCircle02Icon} size={18} />
-              Verified
+              {verification.cleanupPending ? "Cleanup pending" : "Verified"}
             </Button>
             <AlertDialog.Backdrop isKeyboardDismissDisabled={busy}>
               <AlertDialog.Container size="sm">
                 <AlertDialog.Dialog>
                   <AlertDialog.Header>
-                    <AlertDialog.Heading>Remove Farcaster verification?</AlertDialog.Heading>
+                    <AlertDialog.Heading>
+                      {verification.cleanupPending
+                        ? "Remove hosted proof"
+                        : "Remove Farcaster verification?"}
+                    </AlertDialog.Heading>
                   </AlertDialog.Header>
                   <AlertDialog.Body className="space-y-3 text-sm leading-6">
-                    <p>
-                      This clears <strong>xyz.farcaster</strong> and{" "}
-                      <strong>verification[text][xyz.farcaster]</strong> from{" "}
-                      <strong className="break-all">{name}</strong> in one wallet transaction.
-                    </p>
+                    {verification.cleanupPending ? (
+                      <p>
+                        Both ENS records are already removed. Retry deleting the hosted proof; no
+                        wallet transaction is needed.
+                      </p>
+                    ) : (
+                      <p>
+                        This clears <strong>xyz.farcaster</strong> and{" "}
+                        <strong>verification[text][xyz.farcaster]</strong> from{" "}
+                        <strong className="break-all">{name}</strong> in one wallet transaction.
+                      </p>
+                    )}
                     <p className="text-muted">
-                      The signed public proof is kept. Restoring both records can reactivate it.
+                      After the transaction confirms, the hosted signed proof will be permanently
+                      removed. Copies already downloaded by others cannot be erased.
                     </p>
                     {issue ? (
                       <p role="alert" className="text-danger">
@@ -145,7 +161,11 @@ function FarcasterAccount({ name, owner }: { name: string; owner?: string | null
                       Cancel
                     </Button>
                     <Button variant="danger" onPress={confirmRemoval} isDisabled={busy}>
-                      {busy ? "Removing..." : "Remove verification"}
+                      {busy
+                        ? "Removing..."
+                        : verification.cleanupPending
+                          ? "Retry proof cleanup"
+                          : "Remove verification"}
                     </Button>
                   </AlertDialog.Footer>
                 </AlertDialog.Dialog>
@@ -199,7 +219,7 @@ function FarcasterAccount({ name, owner }: { name: string; owner?: string | null
           </span>
         </div>
       ) : null}
-      {isOwner && !verified ? (
+      {isOwner && !verified && !verification.cleanupPending ? (
         <div className="mt-5 border-t border-border pt-5">
           {verification.ready ? (
             <p className="mb-4 text-sm leading-6 text-muted">
@@ -237,7 +257,7 @@ function FarcasterAccount({ name, owner }: { name: string; owner?: string | null
           {issue}
         </p>
       ) : null}
-      {issue || (verification.recordsSaved && !verified) ? (
+      {!verification.cleanupPending && (issue || (verification.recordsSaved && !verified)) ? (
         <Button
           variant="tertiary"
           size="sm"

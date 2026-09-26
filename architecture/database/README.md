@@ -64,7 +64,9 @@ updates make completion and publication immutable and session-bound. The envelop
 remains publicly readable after the attempt expires; claim expiry and live provider
 checks, not database presence, determine verification. No Farcaster credentials are
 persisted. Expired pending rows and public envelopes remain until maintenance; do
-not purge valid published proofs. See [Farcaster](../farcaster.md).
+not purge valid published proofs during routine maintenance. Explicit owner removal
+deletes the entire matching attempt only after both ENS records are confirmed empty.
+The proof stops being served and the attempt cannot be republished. See [Farcaster](../farcaster.md).
 
 ## Transactions And Lifecycle
 

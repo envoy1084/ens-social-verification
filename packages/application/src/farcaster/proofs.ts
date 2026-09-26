@@ -12,11 +12,15 @@ import {
 import { FarcasterError, VerificationError } from "@ens-social-verification/protocol/errors";
 import { FarcasterAttemptId, FarcasterEnvelope } from "@ens-social-verification/protocol/schema";
 
+import { Auth } from "../auth/index.js";
 import { validateRecordAuthority } from "../verification/claim.js";
 import { VerificationClient } from "../verification/client.js";
 import { readVerificationRecords } from "../verification/records.js";
 import { verifyAuthoritySignature } from "../verification/signature.js";
-import { createVerificationSnapshot } from "../verification/snapshot.js";
+import {
+  createVerificationSnapshot,
+  assertVerificationSnapshot,
+} from "../verification/snapshot.js";
 import { FarcasterAuthority } from "./authority.js";
 import { FarcasterConfig } from "./config.js";
 import { FarcasterConnection } from "./connection.js";
@@ -29,6 +33,7 @@ const make = Effect.gen(function* () {
   const provider = yield* FarcasterProvider;
   const config = yield* FarcasterConfig;
   const sdk = yield* VerificationClient;
+  const auth = yield* Auth;
 
   const evidence = Effect.fn("FarcasterProofs.evidence")(function* (envelope: FarcasterEnvelope) {
     const { claim, proof } = envelope;
@@ -69,6 +74,59 @@ const make = Effect.gen(function* () {
   });
 
   return {
+    remove: Effect.fn("FarcasterProofs.remove")(function* (
+      name: string,
+      proofUri: string,
+      token: string | undefined,
+    ) {
+      const session = yield* auth.session(token);
+      const owner = yield* authority.check(name, session.address);
+      const prefix = `${config.proofOrigin}/verification/farcaster/proofs/`;
+      if (!proofUri.startsWith(prefix))
+        return yield* new FarcasterError({
+          code: "INVALID_PROOF",
+          message: "Unsupported Farcaster proof host.",
+        });
+      const id = yield* Schema.decodeUnknownEffect(FarcasterAttemptId)(
+        proofUri.slice(prefix.length),
+      ).pipe(
+        Effect.mapError(
+          () =>
+            new FarcasterError({ code: "INVALID_PROOF", message: "Invalid Farcaster proof URL." }),
+        ),
+      );
+      const records = yield* sdk.records.getTexts
+        .effect({
+          name: owner.name,
+          keys: [farcasterRecordKey, "verification[text][xyz.farcaster]"],
+          blockNumber: owner.snapshot.number,
+        })
+        .pipe(
+          Effect.mapError(
+            () =>
+              new FarcasterError({
+                code: "UNAVAILABLE",
+                message: "Cannot confirm record removal. The hosted proof was kept.",
+              }),
+          ),
+        );
+      yield* assertVerificationSnapshot(owner.snapshot).pipe(
+        Effect.provideService(VerificationClient, sdk),
+      );
+      if (records.length !== 2 || records.some((record) => record.value))
+        return yield* new FarcasterError({
+          code: "INVALID_ATTEMPT",
+          message: "Clear both Farcaster records before removing the hosted proof.",
+        });
+      const envelope = yield* attempts.proof(id);
+      if (envelope && envelope.claim.name !== owner.name)
+        return yield* new FarcasterError({
+          code: "FORBIDDEN",
+          message: "This proof belongs to another ENS name.",
+        });
+      yield* attempts.remove(id, owner.name);
+      return { deleted: true as const };
+    }),
     proof: Effect.fn("FarcasterProofs.proof")(function* (id: string) {
       const envelope = yield* attempts.proof(id);
       if (!envelope)

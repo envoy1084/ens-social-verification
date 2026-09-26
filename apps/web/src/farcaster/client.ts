@@ -35,6 +35,8 @@ function request<A, E>(operation: Effect.Effect<A, E>, signal?: AbortSignal) {
 }
 
 export const farcasterClient = {
+  removeProof: (name: string, proofUri: string) =>
+    request(client.farcaster.removeProof({ payload: { name, proofUri } })),
   start: (name: string) => request(client.farcaster.start({ payload: { name } })),
   complete: (id: string, payload: typeof FarcasterCompleteRequest.Type) =>
     request(client.farcaster.complete({ params: { id }, payload })),

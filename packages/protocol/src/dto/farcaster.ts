@@ -1,5 +1,11 @@
 import { Schema } from "effect";
 
+export const FarcasterRemovalRequest = Schema.Struct({
+  name: Schema.String.check(Schema.isMinLength(1), Schema.isMaxLength(255)),
+  proofUri: Schema.String.check(Schema.isMaxLength(1024)),
+});
+export const FarcasterRemovalResponse = Schema.Struct({ deleted: Schema.Literal(true) });
+
 import {
   FarcasterAttemptId,
   FarcasterIntent,

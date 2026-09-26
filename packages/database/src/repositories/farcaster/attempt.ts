@@ -16,6 +16,17 @@ import { farcasterAttempts } from "../../schema/farcaster/attempt.js";
 const make = Effect.gen(function* () {
   const database = yield* Database;
   return {
+    remove: Effect.fn("FarcasterAttemptRepository.remove")(
+      function* (id: string, name: string) {
+        const db = yield* transactionOrDatabase(database);
+        yield* db
+          .delete(farcasterAttempts)
+          .where(
+            and(eq(farcasterAttempts.id, id), sql`${farcasterAttempts.intent}->>'name' = ${name}`),
+          );
+      },
+      Effect.mapError(() => new DatabaseError()),
+    ),
     create: Effect.fn("FarcasterAttemptRepository.create")(
       function* (input: FarcasterAttempt) {
         const db = yield* transactionOrDatabase(database);
