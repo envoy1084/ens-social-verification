@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as NameRouteImport } from './routes/$name'
 import { Route as GithubCallbackRouteImport } from './routes/github.callback'
+import { Route as OauthCallbackRouteImport } from './routes/oauth.callback'
 import { Route as XCallbackRouteImport } from './routes/x.callback'
 
 const IndexRoute = IndexRouteImport.update({
@@ -29,6 +30,11 @@ const GithubCallbackRoute = GithubCallbackRouteImport.update({
   path: '/github/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OauthCallbackRoute = OauthCallbackRouteImport.update({
+  id: '/oauth/callback',
+  path: '/oauth/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const XCallbackRoute = XCallbackRouteImport.update({
   id: '/x/callback',
   path: '/x/callback',
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$name': typeof NameRoute
   '/github/callback': typeof GithubCallbackRoute
+  '/oauth/callback': typeof OauthCallbackRoute
   '/x/callback': typeof XCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$name': typeof NameRoute
   '/github/callback': typeof GithubCallbackRoute
+  '/oauth/callback': typeof OauthCallbackRoute
   '/x/callback': typeof XCallbackRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,29 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$name': typeof NameRoute
   '/github/callback': typeof GithubCallbackRoute
+  '/oauth/callback': typeof OauthCallbackRoute
   '/x/callback': typeof XCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$name' | '/github/callback' | '/x/callback'
+  fullPaths:
+    '/' | '/$name' | '/github/callback' | '/oauth/callback' | '/x/callback'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$name' | '/github/callback' | '/x/callback'
-  id: '__root__' | '/' | '/$name' | '/github/callback' | '/x/callback'
+  to: '/' | '/$name' | '/github/callback' | '/oauth/callback' | '/x/callback'
+  id:
+    | '__root__'
+    | '/'
+    | '/$name'
+    | '/github/callback'
+    | '/oauth/callback'
+    | '/x/callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   NameRoute: typeof NameRoute
   GithubCallbackRoute: typeof GithubCallbackRoute
+  OauthCallbackRoute: typeof OauthCallbackRoute
   XCallbackRoute: typeof XCallbackRoute
 }
 
@@ -92,6 +109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GithubCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/oauth/callback': {
+      id: '/oauth/callback'
+      path: '/oauth/callback'
+      fullPath: '/oauth/callback'
+      preLoaderRoute: typeof OauthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/x/callback': {
       id: '/x/callback'
       path: '/x/callback'
@@ -106,6 +130,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   NameRoute: NameRoute,
   GithubCallbackRoute: GithubCallbackRoute,
+  OauthCallbackRoute: OauthCallbackRoute,
   XCallbackRoute: XCallbackRoute,
 }
 export const routeTree = rootRouteImport

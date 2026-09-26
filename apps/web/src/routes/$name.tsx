@@ -6,7 +6,18 @@ import { normalizeEnsInput } from "../data/ens-name";
 export const Route = createFileRoute("/$name")({
   validateSearch: (
     search: Record<string, unknown>,
-  ): { githubAttempt?: string | undefined; xAttempt?: string | undefined } => ({
+  ): {
+    githubAttempt?: string | undefined;
+    xAttempt?: string | undefined;
+    oauthAttempt?: string | undefined;
+  } => ({
+    oauthAttempt:
+      typeof search.oauthAttempt === "string" &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(
+        search.oauthAttempt,
+      )
+        ? search.oauthAttempt
+        : undefined,
     xAttempt:
       typeof search.xAttempt === "string" &&
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(search.xAttempt)
@@ -29,8 +40,14 @@ export const Route = createFileRoute("/$name")({
 
 function NamePage() {
   const { name } = Route.useParams();
-  const { githubAttempt, xAttempt } = Route.useSearch();
+  const { githubAttempt, xAttempt, oauthAttempt } = Route.useSearch();
   return (
-    <NameProfileGate key={name} name={name} githubAttempt={githubAttempt} xAttempt={xAttempt} />
+    <NameProfileGate
+      key={name}
+      name={name}
+      githubAttempt={githubAttempt}
+      xAttempt={xAttempt}
+      oauthAttempt={oauthAttempt}
+    />
   );
 }

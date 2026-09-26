@@ -23,6 +23,7 @@ import { formatEnsDate } from "../data/ens-name";
 import { EmailVerification } from "../email/email-verification";
 import { FarcasterVerification } from "../farcaster/farcaster-verification";
 import { GithubVerification } from "../github/github-verification";
+import { DiscordVerification } from "../oauth/discord-verification";
 import { XVerification } from "../x/x-verification";
 import { CopyButton } from "./copy-button";
 import { NameAvatar } from "./name-avatar";
@@ -32,10 +33,12 @@ export function NameProfile({
   name,
   githubAttempt,
   xAttempt,
+  oauthAttempt,
 }: {
   name: string;
   githubAttempt?: string | undefined;
   xAttempt?: string | undefined;
+  oauthAttempt?: string | undefined;
 }) {
   const owner = useOwner({ name });
   const expiry = useExpiry({ name });
@@ -206,6 +209,7 @@ export function NameProfile({
           <GithubVerification name={name} owner={ownerAddress} attemptId={githubAttempt} />
           <FarcasterVerification key={name} name={name} owner={ownerAddress} />
           <XVerification name={name} owner={ownerAddress} attemptId={xAttempt} />
+          <DiscordVerification name={name} owner={ownerAddress} attemptId={oauthAttempt} />
         </section>
         <EmailVerification name={name} owner={ownerAddress} />
         <section className="mt-10" aria-labelledby="addresses-heading">

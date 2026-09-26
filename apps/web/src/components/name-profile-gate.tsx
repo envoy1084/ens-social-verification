@@ -12,10 +12,12 @@ export function NameProfileGate({
   name,
   githubAttempt,
   xAttempt,
+  oauthAttempt,
 }: {
   name: string;
   githubAttempt?: string | undefined;
   xAttempt?: string | undefined;
+  oauthAttempt?: string | undefined;
 }) {
   const state = useNameState({ name });
   const retry = useCallback(() => {
@@ -28,7 +30,14 @@ export function NameProfileGate({
     Boolean(state.data.owner);
 
   if (!state.isFailure && supported)
-    return <NameProfile name={name} githubAttempt={githubAttempt} xAttempt={xAttempt} />;
+    return (
+      <NameProfile
+        name={name}
+        githubAttempt={githubAttempt}
+        xAttempt={xAttempt}
+        oauthAttempt={oauthAttempt}
+      />
+    );
 
   return (
     <main className="min-h-screen bg-[#fafafa] pb-20">
