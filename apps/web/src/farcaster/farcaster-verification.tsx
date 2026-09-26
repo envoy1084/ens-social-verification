@@ -9,6 +9,7 @@ import { Tooltip } from "@thenamespace/uikit/tooltip";
 import { QRCodeSVG } from "qrcode.react";
 import { useAccount } from "wagmi";
 
+import { env } from "../env";
 import { useFarcasterVerification } from "./use-farcaster-verification";
 
 const phaseLabels = {
@@ -180,7 +181,12 @@ function FarcasterAccount({ name, owner }: { name: string; owner?: string | null
       {verified && verification.status.data?.proofUri ? (
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm">
           <a
-            href={verification.status.data.proofUri}
+            href={
+              import.meta.env.DEV &&
+              ["localhost", "127.0.0.1", "[::1]"].includes(new URL(env.serverUrl).hostname)
+                ? new URL(new URL(verification.status.data.proofUri).pathname, env.serverUrl).href
+                : verification.status.data.proofUri
+            }
             target="_blank"
             rel="noopener noreferrer"
             className="font-medium text-accent hover:underline"

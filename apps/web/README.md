@@ -27,6 +27,9 @@ Farcaster uses a QR/deep-link approval through Auth Client, a public owner-signe
 proof and the same atomic ENS write pattern. QR rendering uses `qrcode.react`;
 Optimism credentials and signature verification stay on the server. See
 [Farcaster flow](../../architecture/farcaster.md).
+During Vite development with a loopback `VITE_SERVER_URL`, the signed-proof link
+opens on that local API origin. The on-chain descriptor retains its public HTTPS URL;
+production builds link directly to that public URL.
 
 RainbowKit custom authentication is wired through `src/auth/`: `client.ts` uses the
 shared API contracts, `adapter.ts` coordinates sign-in/logout, and `provider.tsx`
