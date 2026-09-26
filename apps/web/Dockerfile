@@ -22,7 +22,9 @@ RUN --mount=type=cache,id=ens-social-pnpm,target=/pnpm/store \
     pnpm install --frozen-lockfile --offline --ignore-scripts
 ARG VITE_WALLETCONNECT_PROJECT_ID=""
 ARG VITE_SERVER_URL
+ARG VITE_SITE_URL
 RUN test -n "$VITE_SERVER_URL"
+RUN test -n "$VITE_SITE_URL"
 RUN pnpm exec turbo run build --filter=@ens-social-verification/web
 
 FROM nginxinc/nginx-unprivileged:stable-alpine AS runner

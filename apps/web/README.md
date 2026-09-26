@@ -1,7 +1,8 @@
 # Web
 
-Search queries only the Sepolia V2 indexer and does not synthesize unverified name
-suggestions. Profile routes check live name state before mounting record components;
+Search prioritizes exact matches from the Sepolia V2 indexer, with a cached live
+v2 name-state fallback for an exact name missing from the index. Prefix suggestions
+never trigger chain lookups. Profile routes check live name state before mounting record components;
 V1, reserved and inactive names show a fallback, while lookup failures offer retry.
 The ENSForge deployment excludes V1 fallback contracts.
 
@@ -31,7 +32,8 @@ During Vite development with a loopback `VITE_SERVER_URL`, the signed-proof link
 opens on that local API origin. The on-chain descriptor retains its public HTTPS URL;
 production builds link directly to that public URL.
 
-X uses OAuth followed by an explicit post preview and wallet signature. A public
+X explains read/write access and the persistent public post before starting OAuth,
+followed by an explicit post preview and wallet signature. A public
 post commits to the signed claim, and both ENS records are saved atomically.
 Published proofs can be reused after a rejected transaction while the attempt is
 unexpired. Owner removal optionally deletes the X post. See [X flow](../../architecture/x.md).
@@ -69,6 +71,24 @@ Search, profiles and named wallets share the same pattern. SVGs are generated lo
 without external image requests; this is not the official ENS avatar algorithm.
 
 Build the Nginx image from the repository root with
-`docker build -f apps/web/Dockerfile --build-arg VITE_SERVER_URL=https://api.example.com -t ens-social-web .`.
+`docker build -f apps/web/Dockerfile --build-arg VITE_SERVER_URL=https://api.example.com --build-arg VITE_SITE_URL=https://app.example.com -t ens-social-web .`.
 The API URL is baked into the static bundle; rebuild to change it. See
 [container deployment](../../architecture/platform/deployment.md).
+
+## Search And Sharing Metadata
+
+Set `VITE_SITE_URL` to the public HTTPS frontend origin at build time. Vite embeds
+the canonical URL, description, Open Graph and X large-image card metadata in the
+initial HTML, with WebSite JSON-LD. It also emits `robots.txt` and a homepage-only
+sitemap. Missing/local origins and non-production modes are non-indexable. Docker
+requires the origin explicitly; `.env.prod` is a deployment reference, not a Vite
+auto-loaded file. Copy its values into Dokploy build arguments.
+
+`public/og-image.png` is 1200x630. SVG/PNG favicons, Apple touch icon and manifest
+icons use the existing ENS mark; the 512px icon has a maskable safe area. Social
+previews and canonical metadata describe the app, not live per-name verification
+results. Dynamic profile-specific crawler previews would require prerendering or
+server rendering. OAuth callback responses carry `X-Robots-Tag: noindex, nofollow`
+in Nginx. Configure the same header on another static host. The keywords tag is
+descriptive only and does not improve Google rankings. No analytics, fabricated
+ratings or third-party tracking are added.

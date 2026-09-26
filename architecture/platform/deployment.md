@@ -6,7 +6,7 @@ excludes local env files, Git history, private research, and host dependencies.
 
 ```sh
 docker build -f apps/server/Dockerfile -t ens-social-server .
-docker build -f apps/web/Dockerfile --build-arg VITE_SERVER_URL=https://api.example.com -t ens-social-web .
+docker build -f apps/web/Dockerfile --build-arg VITE_SERVER_URL=https://api.example.com --build-arg VITE_SITE_URL=https://app.example.com -t ens-social-web .
 ```
 
 The optional web build argument `VITE_WALLETCONNECT_PROJECT_ID` is public browser
@@ -59,6 +59,11 @@ the backend image health check calls `/health`. Neither proves upstream readines
 the image when changing it. The browser calls this URL directly for RPC and
 auth requests. The auth client uses `credentials: "include"`. The backend permits
 credentialed CORS only from its configured `APP_ORIGIN` (never wildcard origins).
+
+Also set the required `VITE_SITE_URL` build argument to the HTTPS frontend origin
+(for this deployment, `https://ethtokyo.envoy1084.xyz`). It sets canonical/social
+URLs and the generated sitemap. Without an HTTPS origin, local builds are marked
+non-indexable. Keep it aligned with `APP_ORIGIN`; rebuild when the domain changes.
 
 Use same-site HTTPS hosts, for example frontend `https://app.example.com` and backend
 `https://api.example.com`. Set `APP_ORIGIN=https://app.example.com`. Existing host-only
