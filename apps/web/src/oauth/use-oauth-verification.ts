@@ -19,9 +19,10 @@ import { getAccount } from "wagmi/actions";
 import { authClient } from "../auth/client";
 import { wagmiConfig } from "../wallet";
 import { oauthClient } from "./client";
+import { oauthProviders, type OAuthProviderId } from "./providers";
 
 export function useOAuthVerification(
-  provider: string,
+  provider: OAuthProviderId,
   recordKey: string,
   name: string,
   attemptId?: string,
@@ -98,11 +99,13 @@ export function useOAuthVerification(
       const result = await oauthClient.start(provider, name);
       if (!mounted.current) return;
       const url = new URL(result.authorizeUrl);
-      // Each UI provider explicitly approves its authorization destination.
+      const expected = new URL(oauthProviders[provider].authorizationUrl);
       if (
-        provider !== "discord" ||
-        url.origin !== "https://discord.com" ||
-        url.pathname !== "/oauth2/authorize"
+        url.origin !== expected.origin ||
+        url.pathname !== expected.pathname ||
+        url.username ||
+        url.password ||
+        url.hash
       )
         throw new Error("Unexpected authorization destination.");
       window.location.assign(url.href);

@@ -36,6 +36,11 @@ post commits to the signed claim, and both ENS records are saved atomically.
 Published proofs can be reused after a rejected transaction while the attempt is
 unexpired. Owner removal optionally deletes the X post. See [X flow](../../architecture/x.md).
 
+Discord and Telegram share `OAuthVerification`, with provider-specific icons, record
+keys and authorization destinations. Both disclose attestor trust and public identity
+fields before signing, batch record updates, and revoke proofs after removal. Telegram
+requires a public username. See [OAuth flow](../../architecture/oauth.md).
+
 RainbowKit custom authentication is wired through `src/auth/`: `client.ts` uses the
 shared API contracts, `adapter.ts` coordinates sign-in/logout, and `provider.tsx`
 restores session state. Connecting a wallet prompts for the server-generated SIWE
