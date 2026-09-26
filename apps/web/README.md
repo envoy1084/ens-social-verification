@@ -23,6 +23,10 @@ Alchemy credentials belong only to the server. GitHub verification uses OAuth to
 a public wallet-signed gist, then ENSForge `useSendCalls` submits one resolver multicall
 for both text records. The badge requires live proof verification, not merely a receipt.
 See [GitHub flow and deployment](../../architecture/github.md).
+Farcaster uses a QR/deep-link approval through Auth Client, a public owner-signed
+proof and the same atomic ENS write pattern. QR rendering uses `qrcode.react`;
+Optimism credentials and signature verification stay on the server. See
+[Farcaster flow](../../architecture/farcaster.md).
 
 RainbowKit custom authentication is wired through `src/auth/`: `client.ts` uses the
 shared API contracts, `adapter.ts` coordinates sign-in/logout, and `provider.tsx`

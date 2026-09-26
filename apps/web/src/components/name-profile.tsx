@@ -21,6 +21,7 @@ import { Skeleton } from "@thenamespace/uikit/skeleton";
 import NetworkEthereum from "@web3icons/react/icons/networks/NetworkEthereum";
 
 import { formatEnsDate } from "../data/ens-name";
+import { FarcasterVerification } from "../farcaster/farcaster-verification";
 import { GithubVerification } from "../github/github-verification";
 import { CopyButton } from "./copy-button";
 import { NameAvatar } from "./name-avatar";
@@ -195,7 +196,13 @@ export function NameProfile({
           </div>
         </section>
 
-        <GithubVerification name={name} owner={ownerAddress} attemptId={githubAttempt} />
+        <section className="mt-12" aria-labelledby="social-heading">
+          <h2 id="social-heading" className="text-lg font-semibold">
+            Social accounts
+          </h2>
+          <GithubVerification name={name} owner={ownerAddress} attemptId={githubAttempt} />
+          <FarcasterVerification key={name} name={name} owner={ownerAddress} />
+        </section>
         {email.isInitial || (!email.isFailure && Boolean(email.data?.value?.trim())) ? (
           <section className="mt-12" aria-labelledby="contact-heading">
             <h2 id="contact-heading" className="text-lg font-semibold">
