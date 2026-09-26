@@ -1,7 +1,5 @@
 import { Link } from "@tanstack/react-router";
 
-import { HugeiconsIcon, FingerPrintIcon } from "@thenamespace/uikit/icons";
-
 import { EnsNameSearch } from "./ens-name-search";
 import { WalletButton } from "./wallet-button";
 
@@ -22,13 +20,6 @@ export function AppNavbar() {
           <EnsNameSearch compact />
         </div>
       </div>
-      <Link
-        to="/"
-        className="absolute left-1/2 top-8 hidden -translate-x-1/2 items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-semibold text-midnight min-[1400px]:flex"
-      >
-        <HugeiconsIcon icon={FingerPrintIcon} size={24} />
-        Social Verification
-      </Link>
       <div className="ml-auto rounded-2xl bg-white/95 p-2 shadow-sm sm:p-3 [&_.button]:!rounded-xl">
         <WalletButton />
       </div>
