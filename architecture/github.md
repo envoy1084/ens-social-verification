@@ -53,6 +53,18 @@ ID against a fixed `api.github.com/gists/{id}` endpoint, never the supplied URL 
 are capped at 128 KiB, and the proof file at 64 KiB. Public verification requires no
 local database row and can check a compatible gist created outside this server.
 
+## Multiple Names
+
+One GitHub account may verify multiple ENS names. Each attempt publishes a separate
+gist and each signature binds the exact name/node; reusing another name's envelope
+fails validation. GitHub IDs are not globally unique in our publication table.
+The reference spec's proof key is a deterministic discovery slot, not a signature
+or account-uniqueness rule. This method fetches one envelope from descriptor `u`,
+so it does not need a proof key. A future shared-gist method could select a file by
+proof key (domain, authority version/address, node, record type/key, method), with
+one independently signed envelope per name. That would require a versioned method
+and OAuth reauthorization for updates, not a change to existing gist proofs.
+
 ## Credentials And Recovery
 
 Use a GitHub **OAuth App** with `gist` permission. No repository or email scopes are
