@@ -112,7 +112,7 @@ export const OAuthConnectionRoutes = Layer.unwrap(
                 }).pipe(
                   Effect.as(
                     HttpServerResponse.redirect(
-                      `${config.origin}/oauth/callback?error=authorization`,
+                      `${config.origin}/oauth/callback?error=${Schema.is(OAuthError)(error) && error.code === "INVALID_PROOF" ? "identity" : "authorization"}`,
                     ),
                   ),
                 ),

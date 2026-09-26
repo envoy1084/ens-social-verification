@@ -10,7 +10,12 @@ const make = Effect.gen(function* () {
   const config = yield* OAuthConfig;
   const configuration = Effect.fn("OAuthProvider.configuration")(function* (id: string) {
     const provider = yield* oauthProvider(id);
-    if (!config.clientId || !Redacted.value(config.clientSecret) || !config.redirectUri)
+    const credentials = config.providers[id];
+    if (
+      !credentials?.clientId ||
+      !Redacted.value(credentials.clientSecret) ||
+      !credentials.redirectUri
+    )
       return yield* new OAuthError({
         code: "UNAVAILABLE",
         message: "OAuth verification is not configured.",
@@ -21,29 +26,41 @@ const make = Effect.gen(function* () {
         authorization_endpoint: provider.authorizationEndpoint,
         token_endpoint: provider.tokenEndpoint,
         code_challenge_methods_supported: ["S256"],
+        ...(provider.jwksUri
+          ? { jwks_uri: provider.jwksUri, id_token_signing_alg_values_supported: ["RS256"] }
+          : {}),
       },
-      config.clientId,
-      undefined,
-      client.ClientSecretPost(Redacted.value(config.clientSecret)),
+      credentials.clientId,
+      provider.jwksUri ? { id_token_signed_response_alg: "RS256" } : undefined,
+      provider.jwksUri
+        ? client.ClientSecretBasic(Redacted.value(credentials.clientSecret))
+        : client.ClientSecretPost(Redacted.value(credentials.clientSecret)),
     );
+    if (provider.jwksUri) client.enableNonRepudiationChecks(oauth);
     oauth.timeout = 10;
-    return { provider, oauth };
+    return { provider, oauth, credentials };
   });
   return {
     authorize: Effect.fn("OAuthProvider.authorize")(function* (
       id: string,
       state: string,
       challenge: string,
+      nonce?: string,
     ) {
-      const { provider, oauth } = yield* configuration(id);
+      const { provider, oauth, credentials } = yield* configuration(id);
+      if (provider.jwksUri && !nonce)
+        return yield* new OAuthError({
+          code: "INVALID_ATTEMPT",
+          message: "OIDC authorization requires a nonce.",
+        });
       return client.buildAuthorizationUrl(oauth, {
-        redirect_uri: config.redirectUri,
+        redirect_uri: credentials.redirectUri,
         response_type: "code",
         scope: provider.scopes.join(" "),
         state,
         code_challenge: challenge,
         code_challenge_method: "S256",
-        prompt: "consent",
+        ...(provider.jwksUri ? { nonce: nonce ?? "" } : { prompt: "consent" }),
       }).href;
     }),
     exchange: Effect.fn("OAuthProvider.exchange")(function* (
@@ -52,14 +69,20 @@ const make = Effect.gen(function* () {
       code: string,
       verifier: string,
     ) {
-      const { provider, oauth } = yield* configuration(id);
-      const callback = new URL(config.redirectUri);
+      const { provider, oauth, credentials } = yield* configuration(id);
+      const callback = new URL(credentials.redirectUri);
       callback.search = new URLSearchParams({ state, code }).toString();
       const tokens = yield* Effect.tryPromise({
-        try: () =>
+        try: async () =>
           client.authorizationCodeGrant(oauth, callback, {
             expectedState: state,
             pkceCodeVerifier: verifier,
+            ...(provider.jwksUri
+              ? {
+                  expectedNonce: await client.calculatePKCECodeChallenge(`oauth-nonce:${verifier}`),
+                  idTokenExpected: true,
+                }
+              : {}),
           }),
         catch: () =>
           new OAuthError({
@@ -68,17 +91,26 @@ const make = Effect.gen(function* () {
               "OAuth token exchange failed. Check the client credentials and callback URL, then reconnect.",
           }),
       });
-      if (provider.scopes.some((scope) => !tokens.scope?.split(" ").includes(scope)))
+      // OIDC permits omitted scope when unchanged; the required signed profile claims are checked below.
+      const grantedScopes = tokens.scope ?? (provider.jwksUri ? provider.scopes.join(" ") : "");
+      if (provider.scopes.some((scope) => !grantedScopes.split(" ").includes(scope)))
         return yield* new OAuthError({
           code: "INVALID_ATTEMPT",
           message: "Required identity access was not granted. Connect again.",
+        });
+      if (provider.jwksUri) return yield* provider.identity(tokens.claims());
+      const identityEndpoint = provider.identityEndpoint;
+      if (!identityEndpoint)
+        return yield* new OAuthError({
+          code: "UNAVAILABLE",
+          message: "Provider identity endpoint is not configured.",
         });
       const response = yield* Effect.tryPromise({
         try: async () => {
           const result = await client.fetchProtectedResource(
             oauth,
             tokens.access_token,
-            new URL(provider.identityEndpoint),
+            new URL(identityEndpoint),
             "GET",
           );
           if (!result.ok) throw new Error("Identity request failed");

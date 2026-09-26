@@ -12,6 +12,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vites
 
 import { responseCookie } from "../fixtures/auth.js";
 import { oauthFixture } from "../fixtures/oauth.js";
+import { telegramFixture } from "../fixtures/telegram.js";
 
 const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl || !new URL(databaseUrl).pathname.endsWith("_test"))
@@ -19,6 +20,7 @@ if (!databaseUrl || !new URL(databaseUrl).pathname.endsWith("_test"))
 const owner = privateKeyToAccount(generatePrivateKey());
 const stranger = privateKeyToAccount(generatePrivateKey());
 const app = oauthFixture(databaseUrl, owner.address, generatePrivateKey());
+const telegram = telegramFixture();
 let cookie = "";
 let tokenExchanges = 0;
 let grantedScope = "identify";
@@ -26,6 +28,16 @@ let grantedScope = "identify";
 beforeEach(() => {
   vi.spyOn(globalThis, "fetch").mockImplementation(async (input, init) => {
     const url = new URL(String(input));
+    if (url.href === "https://oauth.telegram.org/.well-known/jwks.json")
+      return Response.json({ keys: [telegram.jwk] });
+    if (url.href === "https://oauth.telegram.org/token") {
+      const form = new URLSearchParams(String(init?.body));
+      return Response.json({
+        access_token: "test-telegram-access",
+        token_type: "Bearer",
+        id_token: telegram.token(telegram.nonce(form.get("code_verifier") ?? "")),
+      });
+    }
     if (url.href === "https://discord.com/api/oauth2/token") {
       tokenExchanges++;
       const form = new URLSearchParams(String(init?.body));
@@ -74,22 +86,70 @@ afterAll(async () => {
   await app.auth.runtime.dispose();
 });
 
-async function start() {
-  const response = await app.request("discord/start", { cookie, body: { name: "alice.eth" } });
+async function start(provider = "discord") {
+  const response = await app.request(`${provider}/start`, { cookie, body: { name: "alice.eth" } });
   expect(response.status).toBe(200);
   const pending = Schema.decodeUnknownSync(OAuthStartResponse)(await response.json());
   const url = new URL(pending.authorizeUrl);
-  expect(url.origin).toBe("https://discord.com");
+  expect(url.origin).toBe(
+    provider === "telegram" ? "https://oauth.telegram.org" : "https://discord.com",
+  );
   expect(url.searchParams.get("code_challenge_method")).toBe("S256");
-  expect(url.searchParams.get("scope")).toBe("identify");
+  expect(url.searchParams.get("scope")).toBe(
+    provider === "telegram" ? "openid profile" : "identify",
+  );
+  if (provider === "telegram")
+    expect(url.searchParams.get("nonce")).toBe(
+      telegram.nonce(responseCookie(response, "ens-oauth=").slice("ens-oauth=".length)),
+    );
   return {
     ...pending,
     cookies: `${cookie}; ${responseCookie(response, "ens-oauth=")}`,
-    callback: `discord/callback?${new URLSearchParams({ state: url.searchParams.get("state") ?? "", code: "test-code" })}`,
+    callback: `${provider}/callback?${new URLSearchParams({ state: url.searchParams.get("state") ?? "", code: "test-code" })}`,
   };
 }
 
 describe("generic OAuth identity attestations", () => {
+  it("publishes and revokes Telegram attestations without mixing provider identities", async () => {
+    const pending = await start("telegram");
+    const mixed = await app.request(pending.callback.replace("telegram/", "discord/"), {
+      cookie: pending.cookies,
+    });
+    expect(mixed.headers.get("location")).toContain("error=authorization");
+    const callback = await app.request(pending.callback, { cookie: pending.cookies });
+    expect(callback.headers.get("location")).toContain(`oauthAttempt=${pending.id}`);
+    const ready = Schema.decodeUnknownSync(OAuthAttemptResponse)(
+      await (await app.request(`attempts/${pending.id}`, { cookie })).json(),
+    );
+    expect(ready.identity).toMatchObject({ provider: "telegram", value: "Alice" });
+    if (!ready.claim) throw new Error("Expected Telegram claim");
+    expect(ready.claim.recordKey).toBe("org.telegram");
+    const publication = Schema.decodeUnknownSync(OAuthPublication)(
+      await (
+        await app.request(`attempts/${pending.id}/publish`, {
+          cookie,
+          body: {
+            authoritySignature: await owner.signTypedData(getVerificationTypedData(ready.claim)),
+          },
+        })
+      ).json(),
+    );
+    app.records["org.telegram"] = publication.value;
+    app.records["verification[text][org.telegram]"] = publication.descriptor;
+    expect(await (await app.request("telegram/status?name=alice.eth")).json()).toMatchObject({
+      status: "verified",
+      value: "Alice",
+    });
+    const removal = { name: "alice.eth", proofUri: publication.proofUri };
+    expect((await app.request("discord/removal", { cookie, body: removal })).status).toBe(403);
+    expect((await app.request("telegram/removal", { cookie, body: removal })).status).toBe(400);
+    app.records["org.telegram"] = "";
+    app.records["verification[text][org.telegram]"] = "";
+    expect(await (await app.request("telegram/removal", { cookie, body: removal })).json()).toEqual(
+      { revoked: true },
+    );
+    expect((await app.request(`proofs/${pending.id}`)).status).toBe(400);
+  });
   it("requires a same-origin wallet session and name authority", async () => {
     const body = { name: "alice.eth" };
     expect((await app.request("discord/start", { body })).status).toBe(401);

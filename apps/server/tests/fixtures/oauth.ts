@@ -37,9 +37,18 @@ export function oauthFixture(databaseUrl: string, owner: Address, signingKey: He
     Layer.provideMerge(auth.auth),
     Layer.provide(
       Layer.succeed(OAuthConfig, {
-        clientId: "test-client",
-        clientSecret: Redacted.make("test-secret"),
-        redirectUri: "http://localhost:8080/verification/oauth/discord/callback",
+        providers: {
+          discord: {
+            clientId: "test-client",
+            clientSecret: Redacted.make("test-secret"),
+            redirectUri: "http://localhost:8080/verification/oauth/discord/callback",
+          },
+          telegram: {
+            clientId: "test-telegram",
+            clientSecret: Redacted.make("telegram-secret"),
+            redirectUri: "http://localhost:8080/verification/oauth/telegram/callback",
+          },
+        },
         proofOrigin: "https://api.example.com",
         signingKey: Redacted.make(signingKey),
       }),

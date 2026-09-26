@@ -21,6 +21,7 @@
         "GITHUB_*",
         "X_*",
         "DISCORD_*",
+        "TELEGRAM_*",
         "OAUTH_*",
         "RESEND_API_KEY",
         "EMAIL_VERIFICATION_RECIPIENT",

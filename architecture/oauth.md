@@ -2,10 +2,18 @@
 
 The shared OAuth engine uses `openid-client` for authorization code exchange with
 S256 PKCE, state checking, confidential-client authentication, and protected identity
-requests. Discord is the first allowlisted adapter; it requests only `identify`.
-No bot, server installation, email access, public post, or refresh token is required.
-This is an OAuth 2.1-style code flow, not a universal OIDC implementation: ID tokens
-and OIDC nonce validation are not implemented. Providers without PKCE are not supported.
+requests. Discord requests only `identify`. Telegram uses OIDC with `openid profile`;
+its bot represents the login app but does not need a running bot process or webhook.
+Neither integration requests messaging, phone, email, or refresh-token access.
+Providers without PKCE are not supported.
+
+Telegram identity comes from the ID token, not a UserInfo endpoint. `openid-client`
+validates issuer, client audience, expiry and nonce, with non-repudiation checks enabled
+to verify the RS256 signature against Telegram's fixed JWKS endpoint. Other algorithms
+are rejected. A domain-separated SHA-256 digest of the private PKCE verifier is the
+nonce, so it is bound to the existing session/attempt without a database migration.
+Missing tokens or missing public usernames fail closed. Tokens are never published
+or stored; public proofs contain only the selected identity and our attestation.
 
 ## Trust And Proof Format
 
@@ -15,8 +23,8 @@ to report the provider's authenticated identity correctly. OAuth access tokens a
 not public cryptographic identity proofs.
 
 The public envelope contains an ENSv2 claim, the authority's EIP-712 signature, and
-an attestor signature. The claim binds the ENS name, `com.discord`, exact username,
-provider, issuer, stable Discord user ID, attempt UUID, authority and expiry. The
+an attestor signature. The claim binds the ENS name, provider record key, exact username,
+provider, issuer, stable account subject, attempt UUID, authority and expiry. The
 attestor signs the claim digest and canonical proof URL. Consumers must independently
 configure the trusted signer; the address inside the proof is not a trust anchor.
 The server currently trusts one configured signer. Rotating its key invalidates old
@@ -24,7 +32,7 @@ attestations; a multi-key trust policy is deliberately outside the hackathon sco
 
 Verification checks live ENS records and ENSv2 authority, both signatures, lifetime,
 provider binding, canonical proof origin, and stored revocation status. The attestation
-describes the username at authorization time, not a continuously checked Discord handle.
+describes the username at authorization time, not a continuously checked social handle.
 Claims expire after seven days, capped by ENS authority expiry. Reconnect to renew.
 Copied proofs still require an online revocation check; removing a proof does not erase
 copies already downloaded or recorded in chain history.
@@ -41,8 +49,9 @@ copies already downloaded or recorded in chain history.
    the session and ENS authority before preparing an immutable claim.
 4. The frontend explains what becomes public. The wallet signs the claim; the backend
    validates it and publishes its signed attestation. Publication is idempotent.
-5. ENSForge `useSendCalls` submits one resolver `setTexts` call containing `com.discord`
-   and `verification[text][com.discord]`. Only the connected wallet sends transactions.
+5. ENSForge `useSendCalls` submits one resolver `setTexts` call containing the provider
+   record (`com.discord` or `org.telegram`) and its `verification[text][...]` companion.
+   Only the connected wallet sends transactions.
    A rejected transaction can reuse the publication while the attempt is still live.
 6. Removal clears both records in the wallet, then revokes the public attestation.
    Revocation can be retried without a second transaction and cannot be undone by
@@ -76,13 +85,23 @@ production uses `https://api.ethtokyo.envoy1084.xyz/verification/oauth/discord/c
 Register the exact callback in Discord. Proof descriptors retain the canonical HTTPS
 origin; development proof links open the equivalent localhost endpoint.
 
+For Telegram, set `TELEGRAM_CLIENT_ID`, `TELEGRAM_CLIENT_SECRET` and
+`TELEGRAM_REDIRECT_URI`. In BotFather's mini app, switch Login Widget to OpenID Connect
+Login, keep RS256, and register `/verification/oauth/telegram/callback` on the local
+or production backend origin as an exact Redirect URI. Use the OIDC client secret,
+not the bot API token. Trusted Origins are unnecessary for the server-side exchange.
+The existing attestor key signs both providers; no additional funded wallet is needed.
+
 To add another OAuth provider, register fixed HTTPS endpoints, issuer, scopes, record
 key and response decoder in `application/src/oauth/providers.ts`; add its own credentials
-to config and select them in the transport. Never reuse Discord credentials for it.
-Add its UI authorization-origin allowlist and card using the shared hook/removal dialog.
+to the config map. OIDC providers use a fixed JWKS URI; OAuth-only providers use a fixed
+identity endpoint. Add its presentation and authorization destination to the web provider
+registry and mount `OAuthVerification`. Never reuse another provider's credentials.
 No provider-specific database tables or new proof method are required. Arbitrary user-
 supplied endpoints and dynamic discovery are intentionally prohibited.
 
 Tests use real Postgres, wallet and attestor signatures, and the real `openid-client`
-exchange with mocked Discord HTTP responses. Live Discord consent and wallet transactions
-require a manual smoke test with the configured app.
+exchange with mocked provider HTTP responses. Telegram tests use real RSA signatures
+and reject forged signatures, wrong issuer/audience/nonce, expired tokens, missing tokens
+and missing usernames. Integration tests cover provider mixups, publication and removal.
+Live consent and wallet transactions require a manual smoke test with the configured apps.

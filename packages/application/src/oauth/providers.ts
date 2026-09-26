@@ -9,18 +9,49 @@ const DiscordAccount = Schema.Struct({
   bot: Schema.optional(Schema.Boolean),
 });
 
+const TelegramAccount = Schema.Struct({
+  sub: Schema.String.check(Schema.isMinLength(1), Schema.isMaxLength(255)),
+  preferred_username: Schema.String.check(Schema.isPattern(/^[a-zA-Z0-9_]{1,32}$/)),
+});
+
 export interface OAuthProviderDefinition {
   readonly id: string;
   readonly issuer: string;
   readonly recordKey: string;
   readonly authorizationEndpoint: string;
   readonly tokenEndpoint: string;
-  readonly identityEndpoint: string;
+  readonly identityEndpoint?: string;
+  readonly jwksUri?: string;
   readonly scopes: readonly string[];
   readonly identity: (response: unknown) => Effect.Effect<OAuthIdentity, OAuthError>;
 }
 
 const providers: Readonly<Record<string, OAuthProviderDefinition>> = {
+  telegram: {
+    id: "telegram",
+    issuer: "https://oauth.telegram.org",
+    recordKey: "org.telegram",
+    authorizationEndpoint: "https://oauth.telegram.org/auth",
+    tokenEndpoint: "https://oauth.telegram.org/token",
+    jwksUri: "https://oauth.telegram.org/.well-known/jwks.json",
+    scopes: ["openid", "profile"],
+    identity: (response) =>
+      Schema.decodeUnknownEffect(TelegramAccount)(response).pipe(
+        Effect.mapError(
+          () =>
+            new OAuthError({
+              code: "INVALID_PROOF",
+              message: "Set a public Telegram username in Telegram settings, then connect again.",
+            }),
+        ),
+        Effect.map((account) => ({
+          provider: "telegram",
+          issuer: "https://oauth.telegram.org",
+          subject: account.sub,
+          value: account.preferred_username,
+        })),
+      ),
+  },
   discord: {
     id: "discord",
     issuer: "https://discord.com",

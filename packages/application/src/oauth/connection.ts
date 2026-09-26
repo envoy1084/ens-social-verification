@@ -40,15 +40,16 @@ const make = Effect.gen(function* () {
     attempt,
     configuration: Effect.fn("OAuthConnection.configuration")(function* (id: string) {
       const definition = yield* oauthProvider(id);
+      const credentials = config.providers[id];
       return {
         provider: id,
         recordKey: definition.recordKey,
         attestor: attestor.address,
         enabled: Boolean(
           attestor.address &&
-          config.clientId &&
-          config.redirectUri &&
-          Redacted.value(config.clientSecret),
+          credentials?.clientId &&
+          credentials.redirectUri &&
+          Redacted.value(credentials.clientSecret),
         ),
       };
     }),
@@ -68,7 +69,9 @@ const make = Effect.gen(function* () {
       const state = Encoding.encodeBase64Url(yield* crypto.randomBytes(32));
       const verifier = Encoding.encodeBase64Url(yield* crypto.randomBytes(32));
       const pkceChallenge = Encoding.encodeBase64Url(yield* digest(verifier));
-      const authorizeUrl = yield* provider.authorize(providerId, state, pkceChallenge);
+      // Domain separation binds the OIDC nonce to the same private verifier without storing another secret.
+      const nonce = Encoding.encodeBase64Url(yield* digest(`oauth-nonce:${verifier}`));
+      const authorizeUrl = yield* provider.authorize(providerId, state, pkceChallenge, nonce);
       const id = yield* crypto.randomUUIDv4;
       const now = yield* Clock.currentTimeMillis;
       yield* attempts.create({
