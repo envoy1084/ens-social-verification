@@ -19,6 +19,25 @@ export async function telegramTokenResponse(response: Response) {
     if (nested && typeof nested === "object" && !Array.isArray(nested))
       diagnostic += `{${tokenFieldTypes(nested as Record<string, unknown>)}}`;
   }
+  if (typeof token.error === "string" && token.error) {
+    const knownErrors = [
+      "invalid_request",
+      "invalid_client",
+      "invalid_grant",
+      "unauthorized_client",
+      "unsupported_grant_type",
+      "invalid_scope",
+      "server_error",
+      "temporarily_unavailable",
+    ];
+    const providerError = knownErrors.includes(token.error) ? token.error : "unrecognized";
+    // Telegram can return OAuth errors with HTTP 200. Let openid-client process
+    // them as errors instead of interpreting the body as a successful token set.
+    return {
+      response: Response.json({ error: providerError }, { status: 400 }),
+      diagnostic: `provider-error:${providerError};${diagnostic}`,
+    };
+  }
   if (
     "error" in token ||
     typeof token.id_token !== "string" ||

@@ -85,6 +85,9 @@ export function oauthExchangeFailure(error: unknown) {
       return "OAuth client credentials were rejected. Use the provider's OAuth client ID and secret, not a bot API token.";
     if (error.error === "invalid_grant")
       return "OAuth code exchange was rejected. Check the exact redirect URI and start a new login attempt.";
+    if (error.error === "invalid_request")
+      return "OAuth token request was rejected as malformed. Check the required token request parameters.";
+    return "OAuth provider rejected the token request. No identity token was issued.";
   }
   if (error instanceof client.ClientError) {
     if (error.code === "OAUTH_TIMEOUT")

@@ -91,16 +91,23 @@ const make = Effect.gen(function* () {
       };
       const tokens = yield* Effect.tryPromise({
         try: async () =>
-          client.authorizationCodeGrant(oauth, callback, {
-            expectedState: state,
-            pkceCodeVerifier: verifier,
-            ...(provider.jwksUri
-              ? {
-                  expectedNonce: await client.calculatePKCECodeChallenge(`oauth-nonce:${verifier}`),
-                  idTokenExpected: true,
-                }
-              : {}),
-          }),
+          client.authorizationCodeGrant(
+            oauth,
+            callback,
+            {
+              expectedState: state,
+              pkceCodeVerifier: verifier,
+              ...(provider.jwksUri
+                ? {
+                    expectedNonce: await client.calculatePKCECodeChallenge(
+                      `oauth-nonce:${verifier}`,
+                    ),
+                    idTokenExpected: true,
+                  }
+                : {}),
+            },
+            id === "telegram" ? { client_id: credentials.clientId } : undefined,
+          ),
         catch: (error) =>
           new OAuthError({
             code: "UNAVAILABLE",

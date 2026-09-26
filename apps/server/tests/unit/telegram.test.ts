@@ -38,6 +38,7 @@ function mockToken(idToken: string | undefined, tokenFields: Record<string, unkn
         "test-telegram:telegram-secret",
       );
       const form = new URLSearchParams(String(init?.body));
+      expect(form.get("client_id")).toBe(config.providers.telegram.clientId);
       expect(form.get("code_verifier")).toBe(verifier);
       expect(form.get("redirect_uri")).toBe(config.providers.telegram.redirectUri);
       return Response.json({
@@ -187,6 +188,32 @@ describe("Telegram OIDC validation", () => {
       ),
     );
     await expect(exchange()).rejects.toThrow("OAuth client credentials were rejected.");
+  });
+  it.each([
+    ["invalid_client", "OAuth client credentials were rejected"],
+    ["invalid_grant", "OAuth code exchange was rejected"],
+    ["invalid_request", "OAuth token request was rejected as malformed"],
+    ["private-unknown-error", "OAuth provider rejected the token request"],
+  ])("reports a Telegram HTTP 200 error: %s", async (code, message) => {
+    const transport = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json({
+        error: code,
+        error_description: "private-provider-details",
+        id_token: "private-token",
+      }),
+    );
+    try {
+      await exchange();
+      expect.fail("Expected exchange failure");
+    } catch (error) {
+      expect(String(error)).toContain(message);
+      expect(String(error)).toContain("HTTP=200");
+      expect(String(error)).toContain(
+        `provider-error:${code.startsWith("private") ? "unrecognized" : code}`,
+      );
+      expect(String(error)).not.toContain("private-");
+    }
+    expect(transport).toHaveBeenCalledTimes(1);
   });
   it("identifies a rejected signing algorithm", async () => {
     const token = telegram.token(telegram.nonce(verifier)).split(".");
