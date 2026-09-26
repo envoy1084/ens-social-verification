@@ -11,7 +11,9 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 
 import { useNames, useNameState, useSearchNames } from "@ensforge/react";
+import { Button } from "@thenamespace/uikit/button";
 import { FieldError } from "@thenamespace/uikit/field-error";
+import { CornerDownLeftIcon, HugeiconsIcon } from "@thenamespace/uikit/icons";
 import { SearchField } from "@thenamespace/uikit/search-field";
 import { Spinner } from "@thenamespace/uikit/spinner";
 
@@ -114,6 +116,7 @@ export function EnsNameSearch({ compact = false }: { compact?: boolean }) {
     setOpen(value.trim().length >= 2);
   }, []);
   const handleFocus = useCallback(() => setOpen(input.trim().length >= 2), [input]);
+  const submitSearch = useCallback(() => openName(input), [input, openName]);
   const handleKeyDown = useCallback((event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Escape") setOpen(false);
     if (event.key === "ArrowDown") {
@@ -168,9 +171,26 @@ export function EnsNameSearch({ compact = false }: { compact?: boolean }) {
             onFocus={handleFocus}
             onKeyDown={handleKeyDown}
           />
-          <span className="mr-3 flex size-5 shrink-0 items-center justify-center">
+          <span className="flex size-5 shrink-0 items-center justify-center">
             {waiting ? <Spinner size="sm" /> : null}
           </span>
+          <Button
+            slot={null}
+            isIconOnly
+            type="button"
+            aria-label="Open ENS name"
+            isDisabled={!input.trim()}
+            onPress={submitSearch}
+            className="mr-2 flex size-11 shrink-0 items-center justify-center rounded-lg border-4 border-neutral-200 bg-neutral-600 p-0 text-white transition-colors hover:bg-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-default disabled:opacity-50"
+          >
+            <HugeiconsIcon
+              icon={CornerDownLeftIcon}
+              className="size-6! shrink-0"
+              size={24}
+              strokeWidth={2.5}
+              aria-hidden="true"
+            />
+          </Button>
         </SearchField.Group>
         <FieldError>Enter a valid ENS name.</FieldError>
       </SearchField>
