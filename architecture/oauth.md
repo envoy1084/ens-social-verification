@@ -93,6 +93,14 @@ For Telegram, set `TELEGRAM_CLIENT_ID`, `TELEGRAM_CLIENT_SECRET` and
 Login, keep RS256, and register `/verification/oauth/telegram/callback` on the local
 or production backend origin as an exact Redirect URI. Use the OIDC client secret,
 not the bot API token. Trusted Origins are unnecessary for the server-side exchange.
+Telegram deployments can return an ID token without a usable access token. A
+Telegram-only HTTP 200 adapter fills absent/empty access-token envelope fields with
+a non-credential parser sentinel before openid-client validates the ID token. It
+requires a nonempty ID token, preserves errors and unexpected field types, and never
+changes signed claims. Signature, RS256, issuer, audience, expiry and nonce checks
+remain mandatory. The Telegram branch returns identity claims only: no access-token
+storage or protected-resource requests. Discord is unchanged. This compatibility
+path differs from Telegram's documented full token envelope and has regression tests.
 Token-exchange diagnostics include the endpoint, HTTP status and allowlisted library
 error code. Malformed successful responses also identify known token fields or claim
 types using fixed messages, never raw provider bodies, JWTs or claim values. HTTP 200

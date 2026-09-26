@@ -88,7 +88,7 @@ describe("Telegram OIDC validation", () => {
     await expect(exchange()).rejects.toThrow("OIDC nonce is missing or mismatched");
   });
   it.each([
-    ["access_token", undefined],
+    ["access_token", 123],
     ["token_type", undefined],
     ["id_token", ""],
     ["scope", ["openid", "private-provider-value"]],
@@ -120,6 +120,38 @@ describe("Telegram OIDC validation", () => {
       expect(String(error)).not.toContain(token);
       expect(String(error)).not.toContain("123456");
     }
+  });
+  it.each([undefined, ""])(
+    "accepts a signed ID-token-only response with access_token=%s",
+    async (accessToken) => {
+      const transport = mockToken(telegram.token(telegram.nonce(verifier)), {
+        access_token: accessToken,
+        token_type: undefined,
+      });
+      await expect(exchange()).resolves.toMatchObject({ provider: "telegram", value: "Alice" });
+      expect(transport).toHaveBeenCalledTimes(2);
+    },
+  );
+  it.each([
+    { iss: "https://evil.test" },
+    { aud: "another-app" },
+    { exp: 1 },
+    { nonce: "wrong-nonce" },
+    { nonce: undefined },
+  ])("rejects invalid claims even without an access token: %j", async (overrides) => {
+    mockToken(telegram.token(telegram.nonce(verifier), overrides), {
+      access_token: "",
+      token_type: "",
+    });
+    await expect(exchange()).rejects.toThrow();
+  });
+  it("rejects an ID-token-only response with a forged signature", async () => {
+    mockToken(telegramFixture().token(telegram.nonce(verifier)), { access_token: "" });
+    await expect(exchange()).rejects.toThrow("signature failed verification");
+  });
+  it("rejects an empty token response instead of inventing an identity", async () => {
+    mockToken(undefined, { access_token: "", token_type: undefined });
+    await expect(exchange()).rejects.toThrow("access_token");
   });
   it("reports rejected credentials without leaking the provider error description", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(

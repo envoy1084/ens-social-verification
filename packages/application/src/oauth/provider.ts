@@ -6,6 +6,7 @@ import * as client from "openid-client";
 import { OAuthConfig } from "./config.js";
 import { oauthExchangeDiagnostic, oauthExchangeFailure } from "./exchange-error.js";
 import { oauthProvider } from "./providers.js";
+import { telegramTokenResponse } from "./telegram-token-response.js";
 
 const make = Effect.gen(function* () {
   const config = yield* OAuthConfig;
@@ -80,7 +81,9 @@ const make = Effect.gen(function* () {
         status = undefined;
         const response = await fetch(url, { ...options, body: options.body ?? null });
         status = response.status;
-        return response;
+        return id === "telegram" && String(url) === provider.tokenEndpoint
+          ? telegramTokenResponse(response)
+          : response;
       };
       const tokens = yield* Effect.tryPromise({
         try: async () =>
