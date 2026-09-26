@@ -9,12 +9,28 @@ import {
   GithubStartRequest,
   GithubStartResponse,
   GithubStatusResponse,
+  GithubRemovalRequest,
+  GithubRemovalOptions,
+  GithubRemovalResponse,
 } from "@ens-social-verification/protocol/dto";
 import { GithubAttemptId, GithubName } from "@ens-social-verification/protocol/schema";
 
 import { AuthErrors } from "../auth/errors.js";
 
 export const GithubApi = HttpApiGroup.make("github").add(
+  HttpApiEndpoint.post("removalOptions", "/verification/github/removal/options", {
+    payload: GithubRemovalRequest,
+    success: GithubRemovalOptions,
+    error: AuthErrors,
+  }),
+  HttpApiEndpoint.post("deleteGist", "/verification/github/removal/gist", {
+    payload: GithubRemovalRequest,
+    success: GithubRemovalResponse,
+    error: AuthErrors,
+  }).annotate(
+    OpenApi.Description,
+    "Deletes this app's proof gist using the initiating session's unexpired OAuth token, only after both ENS records are empty. Never uses the server API token.",
+  ),
   HttpApiEndpoint.get("configuration", "/verification/github/configuration", {
     success: GithubConfiguration,
     error: AuthErrors,

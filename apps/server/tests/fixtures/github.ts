@@ -8,6 +8,7 @@ import {
   GithubConfig,
   GithubOAuth,
   GithubProofs,
+  GithubRemoval,
   GithubProvider,
   GithubTokens,
   VerificationClient,
@@ -129,7 +130,12 @@ export function githubFixture(databaseUrl: string, owner: Address) {
     },
   };
   let creations = 0;
+  let deletions = 0;
   const provider = Layer.succeed(GithubProvider, {
+    deleteGist: () =>
+      Effect.sync(() => {
+        deletions++;
+      }),
     exchange: () => Effect.succeed({ identity, token: Redacted.make("test-github-token") }),
     currentUser: () => Effect.succeed(identity),
     lookup: () => Effect.succeed(identity),
@@ -153,7 +159,7 @@ export function githubFixture(databaseUrl: string, owner: Address) {
     tokenEncryptionKey: Redacted.make("34".repeat(32)),
     apiToken: Redacted.make(""),
   });
-  const services = GithubProofs.layer.pipe(
+  const services = Layer.merge(GithubProofs.layer, GithubRemoval.layer).pipe(
     Layer.provideMerge(GithubOAuth.layer),
     Layer.provide(Layer.mergeAll(GithubAuthority.layer, GithubTokens.layer)),
     Layer.provide(
@@ -186,5 +192,15 @@ export function githubFixture(databaseUrl: string, owner: Address) {
         ...(options.body ? { body: JSON.stringify(options.body) } : {}),
       }),
     );
-  return { auth, ...web, request, rpc, records, identity, gist, creations: () => creations };
+  return {
+    auth,
+    ...web,
+    request,
+    rpc,
+    records,
+    identity,
+    gist,
+    creations: () => creations,
+    deletions: () => deletions,
+  };
 }

@@ -12,6 +12,7 @@ import {
   GithubConfig,
   GithubOAuth,
   GithubProofs,
+  GithubRemoval,
   GithubProvider,
   GithubTokens,
 } from "@ens-social-verification/application";
@@ -86,7 +87,11 @@ const GithubCleanup = Layer.effectDiscard(
   }),
 );
 
-export const GithubLive = Layer.merge(GithubProofs.layer, GithubCleanup).pipe(
+export const GithubLive = Layer.mergeAll(
+  GithubProofs.layer,
+  GithubRemoval.layer,
+  GithubCleanup,
+).pipe(
   Layer.provideMerge(GithubOAuth.layer),
   Layer.provide(Layer.mergeAll(GithubAuthority.layer, GithubProvider.layer, GithubTokens.layer)),
   Layer.provide(

@@ -188,9 +188,53 @@ describe("GitHub signed gist workflow", () => {
         const row = (yield* db.select().from(githubAttempts)).find(
           (attempt) => attempt.id === pending.id,
         );
-        expect(row?.encryptedToken).toBeNull();
+        expect(row?.encryptedToken).toBeTruthy();
       }),
     );
+    const removal = { name: "alice.eth", proofUri: publication.proofUri };
+    expect((await app.request("removal/gist", { body: removal })).status).toBe(401);
+    expect(
+      (
+        await app.request("removal/gist", {
+          body: removal,
+          cookie: sessionCookie,
+          origin: "https://evil.test",
+        })
+      ).status,
+    ).toBe(403);
+    expect(
+      await (await app.request("removal/options", { body: removal, cookie: sessionCookie })).json(),
+    ).toEqual({ canDeleteGist: true });
+    expect(
+      (await app.request("removal/gist", { body: removal, cookie: sessionCookie })).status,
+    ).toBe(400);
+    app.records["com.github"] = "";
+    expect(
+      (await app.request("removal/gist", { body: removal, cookie: sessionCookie })).status,
+    ).toBe(400);
+    app.records["verification[text][com.github]"] = "";
+    app.rpc.owner = stranger.address;
+    expect(
+      (await app.request("removal/gist", { body: removal, cookie: sessionCookie })).status,
+    ).toBe(403);
+    app.rpc.owner = owner.address;
+    app.gist.owner.id = 456;
+    expect(
+      await (await app.request("removal/gist", { body: removal, cookie: sessionCookie })).json(),
+    ).toMatchObject({ deleted: false });
+    expect(app.deletions()).toBe(0);
+    app.gist.owner.id = 123;
+    expect(
+      await (await app.request("removal/gist", { body: removal, cookie: sessionCookie })).json(),
+    ).toMatchObject({ deleted: true });
+    expect(app.deletions()).toBe(1);
+    expect(
+      await (await app.request("removal/options", { body: removal, cookie: sessionCookie })).json(),
+    ).toEqual({ canDeleteGist: false });
+    expect(
+      await (await app.request("removal/gist", { body: removal, cookie: sessionCookie })).json(),
+    ).toMatchObject({ deleted: false });
+    expect(app.deletions()).toBe(1);
   });
   it("rejects expired attempts before issuing a gist", async () => {
     const pending = await start();

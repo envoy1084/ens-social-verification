@@ -34,3 +34,12 @@ export const GithubStatusResponse = Schema.Struct({
 export const GithubConfiguration = Schema.Struct({
   enabled: Schema.Boolean,
 });
+export const GithubRemovalRequest = Schema.Struct({
+  name: GithubName,
+  proofUri: Schema.String.check(Schema.isMaxLength(256)),
+});
+export const GithubRemovalOptions = Schema.Struct({ canDeleteGist: Schema.Boolean });
+export const GithubRemovalResponse = Schema.Struct({
+  deleted: Schema.Boolean,
+  message: Schema.String,
+});

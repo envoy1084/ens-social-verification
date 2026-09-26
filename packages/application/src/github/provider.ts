@@ -75,6 +75,7 @@ const requestJson = Effect.fn("Github.requestJson")(function* (url: string, init
             "GitHub's API rate limit was reached. Wait before checking again; no ENS transaction is needed.",
         });
       }
+      if (response.status === 204) return undefined;
       if (!response.ok || !response.body) {
         await response.body?.cancel();
         throw new Error("GitHub request failed");
@@ -125,6 +126,10 @@ export class GithubProvider extends Context.Service<
       envelope: GithubEnvelope,
     ) => Effect.Effect<Gist, GithubError>;
     readonly readGist: (id: string) => Effect.Effect<Gist, GithubError>;
+    readonly deleteGist: (
+      id: string,
+      token: Redacted.Redacted<string>,
+    ) => Effect.Effect<void, GithubError>;
   }
 >()("application/GithubProvider") {
   static readonly layer = Layer.effect(
@@ -157,6 +162,12 @@ export class GithubProvider extends Context.Service<
       });
       return {
         currentUser,
+        deleteGist: Effect.fn("GithubProvider.deleteGist")(function* (id, token) {
+          yield* requestJson(`https://api.github.com/gists/${encodeURIComponent(id)}`, {
+            method: "DELETE",
+            headers: { authorization: `Bearer ${Redacted.value(token)}` },
+          });
+        }),
         exchange: Effect.fn("GithubProvider.exchange")(function* (code, verifier) {
           const response = yield* requestJson("https://github.com/login/oauth/access_token", {
             method: "POST",

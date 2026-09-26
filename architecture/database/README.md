@@ -43,7 +43,9 @@ digests, PKCE challenge, status, GitHub identity, prepared claim, encrypted temp
 OAuth token, creation time and 15-minute expiry. State digests are unique; expiry is
 indexed. The `ready` CHECK requires identity, claim and encrypted token. Conditional
 updates enforce `pending -> processing -> ready -> publishing`; only one callback
-and one gist creation can win. Expired encrypted tokens are cleared each minute.
+and one gist creation can win. Publication retains its encrypted token only for
+optional gist cleanup in the initiating session, until the original 15-minute expiry.
+Successful deletion clears it immediately; expired tokens are cleared each minute.
 
 `github_publications` stores one immutable result per attempt (UUID foreign key,
 name, login, unique gist ID, creation time). It does not store OAuth tokens or declare

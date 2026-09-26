@@ -103,7 +103,7 @@ const make = Effect.gen(function* () {
       const db = yield* transactionOrDatabase(database);
       const [row] = yield* db
         .update(githubAttempts)
-        .set({ status: "publishing", encryptedToken: null })
+        .set({ status: "publishing" })
         .where(
           and(
             eq(githubAttempts.id, id),
@@ -120,6 +120,16 @@ const make = Effect.gen(function* () {
             "Publication is already running or has expired. Check the profile before trying again.",
         });
     }),
+    clearToken: Effect.fn("GithubAttemptRepository.clearToken")(
+      function* (id: string) {
+        const db = yield* transactionOrDatabase(database);
+        yield* db
+          .update(githubAttempts)
+          .set({ encryptedToken: null, status: "publishing" })
+          .where(eq(githubAttempts.id, id));
+      },
+      Effect.mapError(() => new DatabaseError()),
+    ),
     clearExpiredTokens: Effect.fn("GithubAttemptRepository.clearExpiredTokens")(
       function* () {
         const db = yield* transactionOrDatabase(database);

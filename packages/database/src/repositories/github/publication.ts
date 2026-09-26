@@ -11,6 +11,17 @@ import { githubPublications } from "../../schema/github/publication.js";
 const make = Effect.gen(function* () {
   const database = yield* Database;
   return {
+    findByGist: Effect.fn("GithubPublicationRepository.findByGist")(
+      function* (gistId: string) {
+        const db = yield* transactionOrDatabase(database);
+        const [row] = yield* db
+          .select()
+          .from(githubPublications)
+          .where(eq(githubPublications.gistId, gistId));
+        return row ? yield* Schema.decodeUnknownEffect(GithubPublication)(row) : null;
+      },
+      Effect.mapError(() => new DatabaseError()),
+    ),
     find: Effect.fn("GithubPublicationRepository.find")(
       function* (id: string) {
         const db = yield* transactionOrDatabase(database);

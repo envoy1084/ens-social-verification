@@ -71,7 +71,8 @@ Use a GitHub **OAuth App** with `gist` permission. No repository or email scopes
 requested. OAuth tokens are AES-256-GCM encrypted with attempt-bound authenticated
 data while waiting for the wallet signature. The key is `GITHUB_TOKEN_ENCRYPTION_KEY`,
 32 random bytes as lowercase hex; it is not an Ethereum signing key. Token ciphertext
-is cleared when publication is reserved, or within one minute of attempt expiry.
+is retained after publication only until the original attempt expiry, then cleared
+within one minute. This allows optional gist deletion in the initiating session.
 Access tokens never appear in frontend responses, logs or public proofs. Discarding
 the token does not revoke the user's GitHub OAuth grant; users can revoke it in GitHub.
 
@@ -97,6 +98,22 @@ never creates gists; publication always uses the user's temporary OAuth token.
 Rate limits are reported explicitly and do not require resending ENS transactions.
 The frontend compares both live records to the published proof, skips already-saved
 writes, and keeps retrying verification separate from sending another transaction.
+
+## Removal
+
+Only the connected ENS owner can open the Verified badge's removal dialog. The
+wallet clears `com.github` and `verification[text][com.github]` in one resolver
+multicall. Rejected transactions leave both the proof and records intact.
+Gist deletion is a separate, optional action after confirmed record removal.
+`POST /verification/github/removal/options` checks session-bound token availability;
+`POST /verification/github/removal/gist` rechecks the authenticated owner, both empty
+records at a pinned block, publication ownership, GitHub identity and proof contents.
+Only this app's single-proof gist can be deleted; changed/multi-file gists are kept.
+The public-read API token is never used for deletion. Expired/missing OAuth access
+leaves the gist untouched with a manual link. A cleanup failure does not undo ENS
+removal, and the UI must report that partial success without resending a transaction.
+Clearing records is not permanent cryptographic revocation: restoring the same records
+can reactivate a still-valid public proof if its gist remains available.
 
 ## Deployment
 

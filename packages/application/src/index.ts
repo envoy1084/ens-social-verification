@@ -8,3 +8,4 @@ export * from "./github/oauth.js";
 export * from "./github/proofs.js";
 export * from "./github/provider.js";
 export * from "./github/token.js";
+export * from "./github/removal.js";
