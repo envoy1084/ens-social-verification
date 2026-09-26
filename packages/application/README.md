@@ -17,3 +17,6 @@ See [record verification](../../architecture/verification.md).
 GitHub services coordinate OAuth/PKCE, short-lived encrypted tokens, signed public
 gist publication and live proof verification. No operator attestation or backend ENS
 transaction is created. The server composes provider, repository and crypto Layers.
+Email verification uses Resend only to retrieve original received messages. Mailauth
+validates DKIM evidence independently; wallet signatures authorize publication.
+See [the email trust model and flow](../../architecture/email.md).

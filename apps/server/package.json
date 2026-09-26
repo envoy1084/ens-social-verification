@@ -24,6 +24,7 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "klarity": "catalog:",
+    "mailauth": "catalog:",
     "oxlint": "catalog:",
     "tsdown": "catalog:",
     "tsx": "catalog:",

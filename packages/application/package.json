@@ -22,6 +22,8 @@
     "@ensforge/sdk": "catalog:",
     "@farcaster/auth-client": "catalog:",
     "effect": "catalog:",
+    "mailauth": "catalog:",
+    "resend": "catalog:",
     "viem": "catalog:"
   },
   "devDependencies": {
