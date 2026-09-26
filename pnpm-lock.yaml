@@ -134,6 +134,8 @@ overrides:
   use-sync-external-store: 1.7.0
   '@ensforge/react>@effect/atom-react': 4.0.0-rc.117
 
+packageExtensionsChecksum: sha256-rS2QBfR9Wsaur4baAvu8mwaFj1w6q6h074kZmO6xIUA=
+
 patchedDependencies:
   drizzle-orm@1.0.0-rc.4: 1566adf2bdae96497887f6464c2b8539b7a12b1b4487b1336598ecda4f22e847
 
@@ -223,6 +225,9 @@ importers:
       '@ens-social-verification/protocol':
         specifier: workspace:*
         version: link:../../packages/protocol
+      '@ensforge/contracts':
+        specifier: 'catalog:'
+        version: 0.5.0(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)
       '@ensforge/react':
         specifier: 'catalog:'
         version: 0.5.0(bufferutil@4.1.0)(effect@4.0.0-rc.117)(react@19.2.8)(scheduler@0.27.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)
@@ -3430,11 +3435,8 @@ packages:
     resolution: {integrity: sha512-ZeiI6h3GnW06uYDLx0etQtX/p8E24UaHHBj57RSjK7YBFe7iuVn07EDpOeP451D06sF27VOz9JJPlIKJmXgkEg==}
     peerDependencies:
       typescript: '>=5.0.4'
-      zod: ^3 >=3.22.0
     peerDependenciesMeta:
       typescript:
-        optional: true
-      zod:
         optional: true
 
   abitype@1.2.3:
@@ -10979,16 +10981,11 @@ snapshots:
       typescript: 7.0.2
       zod: 3.25.76
 
-  abitype@1.0.8(typescript@7.0.2)(zod@3.25.76):
-    optionalDependencies:
-      typescript: 7.0.2
+  abitype@1.0.8(typescript@7.0.2):
+    dependencies:
       zod: 3.25.76
-
-  abitype@1.0.8(typescript@7.0.2)(zod@4.6.5):
     optionalDependencies:
       typescript: 7.0.2
-      zod: 4.6.5
-    optional: true
 
   abitype@1.2.3(typescript@7.0.2)(zod@3.22.4):
     optionalDependencies:
@@ -13915,7 +13912,7 @@ snapshots:
       '@noble/hashes': 1.7.1
       '@scure/bip32': 1.6.2
       '@scure/bip39': 1.5.4
-      abitype: 1.0.8(typescript@7.0.2)(zod@3.25.76)
+      abitype: 1.0.8(typescript@7.0.2)
       isows: 1.0.6(ws@8.18.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))
       ox: 0.6.7(typescript@7.0.2)(zod@3.25.76)
       ws: 8.18.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
@@ -13932,7 +13929,7 @@ snapshots:
       '@noble/hashes': 1.7.1
       '@scure/bip32': 1.6.2
       '@scure/bip39': 1.5.4
-      abitype: 1.0.8(typescript@7.0.2)(zod@4.6.5)
+      abitype: 1.0.8(typescript@7.0.2)
       isows: 1.0.6(ws@8.18.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))
       ox: 0.6.7(typescript@7.0.2)(zod@4.6.5)
       ws: 8.18.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)

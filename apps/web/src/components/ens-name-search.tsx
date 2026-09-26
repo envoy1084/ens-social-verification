@@ -34,22 +34,20 @@ export function EnsNameSearch({ compact = false }: { compact?: boolean }) {
     enabled: query.length >= 2,
     field: "name",
     mode: "starts-with",
+    filter: { protocol: "v2", includeUnreachable: false },
     pageSize: 6,
     order: { field: "name", direction: "asc" },
     atom: { swr: { staleTime: "1 minute" } },
   });
-  let exactName: string | undefined;
-  try {
-    if (input.trim()) exactName = normalizeEnsInput(input);
-  } catch {
-    /* Invalid input is reported on submit. */
-  }
   const suggestions = new Set<string>();
-  if (exactName) suggestions.add(exactName);
   if (query === input.trim())
     for (const domain of search.data?.items ?? []) {
       try {
-        if (domain.name.kind === "normalized")
+        if (
+          domain.protocol === "v2" &&
+          domain.owner !== "0x0000000000000000000000000000000000000000" &&
+          domain.name.kind === "normalized"
+        )
           suggestions.add(normalizeEnsInput(domain.name.value));
       } catch {
         /* Ignore invalid index entries. */
@@ -138,7 +136,7 @@ export function EnsNameSearch({ compact = false }: { compact?: boolean }) {
         </SearchField.Group>
         <FieldError>Enter a valid ENS name.</FieldError>
       </SearchField>
-      {open && names.length > 0 ? (
+      {open ? (
         <div
           aria-label="ENS name results"
           className="border-border bg-surface absolute top-[calc(100%+0.625rem)] z-20 max-h-80 w-full overflow-y-auto rounded-lg border p-2 text-left shadow-[0_20px_60px_rgb(1_26_37/0.16)]"
@@ -162,6 +160,12 @@ export function EnsNameSearch({ compact = false }: { compact?: boolean }) {
           ))}
           {search.isFailure ? (
             <output className="text-muted block px-3 py-2 text-sm">Suggestions unavailable</output>
+          ) : names.length === 0 ? (
+            <output className="text-muted block px-3 py-3 text-sm">
+              {search.isWaiting || query !== input.trim()
+                ? "Searching ENSv2 names..."
+                : "No ENSv2 names found"}
+            </output>
           ) : null}
         </div>
       ) : null}

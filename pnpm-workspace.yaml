@@ -57,6 +57,11 @@ patchedDependencies:
   # RC.4 still calls TaggedErrorClass; Effect RC.117 renamed it to TaggedError.
   drizzle-orm@1.0.0-rc.4: patches/drizzle-orm@1.0.0-rc.4.patch
 strictPeerDependencies: true
+packageExtensions:
+  # Satisfy the older parser's optional peer locally instead of inheriting Zod 4.
+  "abitype@1.0.8":
+    dependencies:
+      zod: 3.25.76
 overrides:
   use-sync-external-store: 1.7.0
   # Keep ENSForge's atom adapter on the same Effect RC as the application.

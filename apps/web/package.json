@@ -12,6 +12,7 @@
   "dependencies": {
     "@ens-social-verification/api": "workspace:*",
     "@ens-social-verification/protocol": "workspace:*",
+    "@ensforge/contracts": "catalog:",
     "@ensforge/react": "catalog:",
     "@fontsource-variable/manrope": "catalog:",
     "@fontsource/instrument-serif": "catalog:",

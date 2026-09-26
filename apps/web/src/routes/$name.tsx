@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-import { NameProfile } from "../components/name-profile";
+import { NameProfileGate } from "../components/name-profile-gate";
 import { normalizeEnsInput } from "../data/ens-name";
 
 export const Route = createFileRoute("/$name")({
@@ -13,5 +13,5 @@ export const Route = createFileRoute("/$name")({
 
 function NamePage() {
   const { name } = Route.useParams();
-  return <NameProfile key={name} name={name} />;
+  return <NameProfileGate key={name} name={name} />;
 }

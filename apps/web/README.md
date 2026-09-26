@@ -1,5 +1,10 @@
 # Web
 
+Search queries only the Sepolia V2 indexer and does not synthesize unverified name
+suggestions. Profile routes check live name state before mounting record components;
+V1, reserved and inactive names show a fallback, while lookup failures offer retry.
+The ENSForge deployment excludes V1 fallback contracts.
+
 TanStack Router + Vite, Namespace UIKit, ENSForge and RainbowKit.
 Run `pnpm --filter @ens-social-verification/web dev` on port 3000 with the server on 8080.
 Set `VITE_SERVER_URL=http://localhost:8080` locally. The browser calls that API origin
