@@ -31,6 +31,7 @@ export const requestJson = Effect.fn("X.requestJson")(function* (url: string, in
         await response.body?.cancel();
         throw new XError({
           code: "UNAVAILABLE",
+          reason: "rate_limit",
           message:
             "X's API rate limit was reached. Wait before checking again; no ENS transaction is needed.",
         });
@@ -39,11 +40,30 @@ export const requestJson = Effect.fn("X.requestJson")(function* (url: string, in
         await response.body?.cancel();
         throw new XError({
           code: "UNAVAILABLE",
+          reason: "billing",
           message:
             "X API billing is not enabled or credits are exhausted. No ENS transaction is needed.",
         });
       }
       if (response.status === 204) return undefined;
+      if ([400, 401, 403].includes(response.status)) {
+        await response.body?.cancel();
+        throw new XError({
+          code: "UNAVAILABLE",
+          reason:
+            response.status === 403
+              ? "api_access"
+              : response.status === 401
+                ? "credentials"
+                : "token_exchange",
+          message:
+            response.status === 403
+              ? "X denied API access. Check the app's project enrollment, API access and permissions."
+              : response.status === 401
+                ? "X rejected the configured credentials or access token."
+                : "X rejected the request. Start a fresh connection and check the callback configuration.",
+        });
+      }
       if (!response.ok || !response.body) {
         await response.body?.cancel();
         throw new Error("X request failed");
@@ -70,6 +90,7 @@ export const requestJson = Effect.fn("X.requestJson")(function* (url: string, in
         ? error
         : new XError({
             code: "UNAVAILABLE",
+            reason: "upstream",
             message: "X could not be reached. Please try again.",
           }),
   });

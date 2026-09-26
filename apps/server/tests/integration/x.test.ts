@@ -103,6 +103,19 @@ describe("X signed post workflow", () => {
     expect(body).not.toContain("test-x-token");
     expect(body).not.toContain("encryptedToken");
   });
+  it("redirects provider failures with a safe reason, never upstream content", async () => {
+    const pending = await start();
+    app.failure.exchange = true;
+    try {
+      const response = await app.request(pending.callback, { cookie: pending.cookie });
+      const location = response.headers.get("location");
+      expect(location).toContain("/x/callback?error=api_access");
+      expect(location).not.toContain("private");
+      expect(response.headers.get("set-cookie")).toContain("ens-x=");
+    } finally {
+      app.failure.exchange = false;
+    }
+  });
   it("rejects bad signatures, creates one post under races, and rechecks live evidence", async () => {
     const pending = await start();
     await app.request(pending.callback, { cookie: pending.cookie });

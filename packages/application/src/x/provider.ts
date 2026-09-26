@@ -74,6 +74,7 @@ export class XProvider extends Context.Service<
               new XError({
                 code: "INVALID_PROOF",
                 message: "X identity is unavailable or incomplete.",
+                reason: "identity",
               }),
           ),
         );
@@ -81,6 +82,7 @@ export class XProvider extends Context.Service<
           return yield* new XError({
             code: "INVALID_PROOF",
             message: "A public X account is required for public verification.",
+            reason: "identity",
           });
         return { id: data.id, login: data.username.toLowerCase() };
       });
@@ -115,6 +117,7 @@ export class XProvider extends Context.Service<
                 new XError({
                   code: "INVALID_ATTEMPT",
                   message: "X authorization failed. Connect again.",
+                  reason: "token_exchange",
                 }),
             ),
           );
@@ -128,6 +131,7 @@ export class XProvider extends Context.Service<
             return yield* new XError({
               code: "INVALID_ATTEMPT",
               message: "X read and post permissions are required.",
+              reason: "permissions",
             });
           const token = Redacted.make(credential.access_token);
           return { identity: yield* currentUser(token), token };

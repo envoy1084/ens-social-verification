@@ -81,6 +81,10 @@ Production callback: `https://api.ethtokyo.envoy1084.xyz/verification/x/callback
 Local View proof links use the loopback `VITE_SERVER_URL`; descriptors keep HTTPS.
 API credit/billing failures are unavailable errors. No `offline.access`, refresh
 token, email, direct-message permission or OAuth 1.0a key is needed.
+Callback failures redirect with a fixed, allowlisted reason for API access,
+credentials, billing, rate limits, token exchange, identity or permissions. The
+server logs only that reason, never provider bodies, OAuth codes or credentials.
+An API-access 403 is not treated as proof that the credit balance is empty.
 Temporary token ciphertext is cleared within one minute of the 15-minute expiry.
 Expired attempts and public proofs remain until maintenance. Loss of tokens does
 not revoke the X OAuth grant; users manage that grant in X settings.

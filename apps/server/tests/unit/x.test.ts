@@ -116,7 +116,7 @@ describe("X proof and provider boundaries", () => {
       }).pipe(Effect.provide(XProvider.layer.pipe(Layer.provide(config)))),
     );
   });
-  it.each([402, 429])(
+  it.each([400, 401, 402, 403, 429])(
     "reports billing/rate-limit failures without leaking credentials (%s)",
     async (status) => {
       const fetchMock = vi
@@ -128,6 +128,15 @@ describe("X proof and provider boundaries", () => {
           const provider = yield* XProvider;
           const error = yield* provider.readPost("123").pipe(Effect.flip);
           expect(error.code).toBe("UNAVAILABLE");
+          expect(error.reason).toBe(
+            {
+              400: "token_exchange",
+              401: "credentials",
+              402: "billing",
+              403: "api_access",
+              429: "rate_limit",
+            }[status],
+          );
           expect(error.message).not.toContain("secret");
         }).pipe(Effect.provide(XProvider.layer.pipe(Layer.provide(config)))),
       );

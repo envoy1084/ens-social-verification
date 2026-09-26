@@ -32,13 +32,22 @@ export function xFixture(databaseUrl: string, owner: Address) {
   };
   let creations = 0;
   let deletions = 0;
-  const failure = { unavailable: false, ambiguous: false };
+  const failure = { unavailable: false, ambiguous: false, exchange: false };
   const provider = Layer.succeed(XProvider, {
     deletePost: () =>
       Effect.sync(() => {
         deletions++;
       }),
-    exchange: () => Effect.succeed({ identity, token: Redacted.make("test-x-token") }),
+    exchange: () =>
+      failure.exchange
+        ? Effect.fail(
+            new XError({
+              code: "UNAVAILABLE",
+              reason: "api_access",
+              message: "private upstream response",
+            }),
+          )
+        : Effect.succeed({ identity, token: Redacted.make("test-x-token") }),
     currentUser: () => Effect.succeed(identity),
     lookup: () => Effect.succeed(identity),
     createPost: (_token, text) =>

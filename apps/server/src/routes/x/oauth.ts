@@ -3,6 +3,7 @@ import { HttpRouter, HttpServerResponse } from "effect/unstable/http";
 
 import { AuthConfig, XConfig, XOAuth } from "@ens-social-verification/application";
 import { XStartRequest } from "@ens-social-verification/protocol/dto";
+import { XError } from "@ens-social-verification/protocol/errors";
 import { XAttemptId } from "@ens-social-verification/protocol/schema";
 
 import { AuthHttpError, readAuthBody } from "../../helpers/auth-body.js";
@@ -103,10 +104,15 @@ export const XOAuthRoutes = Layer.unwrap(
                 `${config.origin}/${encodeURIComponent(attempt.name)}?xAttempt=${attempt.id}`,
               );
             }).pipe(
-              Effect.catch(() =>
-                Effect.succeed(
-                  HttpServerResponse.redirect(`${config.origin}/x/callback?error=authorization`),
-                ),
+              Effect.catch((error) =>
+                Effect.gen(function* () {
+                  const reason = Schema.is(XError)(error)
+                    ? (error.reason ?? "authorization")
+                    : "authorization";
+                  // Never log callback parameters, credentials or upstream response bodies.
+                  yield* Effect.logWarning("X callback failed", { reason });
+                  return HttpServerResponse.redirect(`${config.origin}/x/callback?error=${reason}`);
+                }),
               ),
               Effect.map((response) =>
                 response.pipe(
