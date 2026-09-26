@@ -6,6 +6,8 @@ import {
   AuthConfig,
   SepoliaClient,
   SignatureVerifier,
+  VerificationClient,
+  createVerificationClient,
 } from "@ens-social-verification/application";
 import {
   ChallengeRepository,
@@ -31,6 +33,24 @@ const SepoliaClientLive = Layer.effect(
         timeout: 10_000,
       }),
     });
+  }),
+);
+
+export const RecordVerificationLive = Layer.effect(
+  VerificationClient,
+  Effect.gen(function* () {
+    const config = yield* ServerConfig;
+    const key = Redacted.value(config.alchemyKey).trim();
+    return createVerificationClient(
+      createPublicClient({
+        chain: sepolia,
+        ccipRead: false,
+        transport: http(`https://eth-sepolia.g.alchemy.com/v2/${encodeURIComponent(key)}`, {
+          retryCount: 0,
+          timeout: 10_000,
+        }),
+      }),
+    );
   }),
 );
 

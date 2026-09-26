@@ -10,10 +10,12 @@ commands; these documents explain cross-package flows, persistence, and security
 3. [Wallet authentication](auth/README.md): SIWE flow, cookies, transactions, and failure behavior.
 4. [Database catalog](database/README.md): tables, indexes, and lifecycle invariants.
 5. [Container deployment](platform/deployment.md): Node backend and Nginx frontend images.
+6. [Record verification](verification.md): experimental ENSv2 authority and claim helpers.
 
 The web app reads ENSv2 names on Sepolia. The authentication backend verifies wallet
-control and issues browser sessions. Social-provider verification, ENS record write
-authorization, and RainbowKit adapter wiring are separate future work.
+control and issues browser sessions through the RainbowKit adapter. Read-only record
+verification helpers validate ENSv2 authority and claims; social evidence and ENS
+record-update UI remain future work.
 
 ## Documentation Contract
 

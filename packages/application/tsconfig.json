@@ -1,6 +1,7 @@
 {
   "extends": "klarity/tsconfig/library",
   "compilerOptions": {
+    "lib": ["ES2024"],
     "types": ["node"],
     "noEmit": true,
     "customConditions": ["workspace-source"]

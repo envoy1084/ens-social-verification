@@ -6,3 +6,8 @@ supports EOAs and deployed ERC-1271 contracts on Sepolia through the injected cl
 
 Live database, cryptography, configuration, and RPC Layers are composed in the server.
 HTTP cookies and transport policy stay outside this package.
+
+The read-only verification helpers use ENSForge with a V2-only Sepolia deployment,
+block-pinned authority/record reads, and EIP-712 owner-signature validation.
+`validateRecordAuthority` checks only ENS approval, not social provider evidence.
+See [record verification](../../architecture/verification.md).
