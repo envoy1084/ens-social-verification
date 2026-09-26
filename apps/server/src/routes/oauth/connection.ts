@@ -91,10 +91,17 @@ export const OAuthConnectionRoutes = Layer.unwrap(
                 !/^[a-zA-Z0-9_-]{43}$/.test(state) ||
                 !/^[a-zA-Z0-9._~-]{1,1024}$/.test(code) ||
                 !/^[a-zA-Z0-9_-]{43}$/.test(verifier)
-              )
+              ) {
+                yield* Effect.logWarning("OAuth callback rejected before exchange", {
+                  provider,
+                  providerDenied: query.has("error"),
+                  verifierCookiePresent: Boolean(verifier),
+                  sessionCookiePresent: Boolean(request.cookies[cookies.session]),
+                });
                 return HttpServerResponse.redirect(
                   `${config.origin}/oauth/callback?error=authorization`,
                 );
+              }
               const attempt = yield* connection.callback(
                 provider,
                 { state, code, verifier },

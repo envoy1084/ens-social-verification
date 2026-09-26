@@ -82,4 +82,20 @@ describe("Telegram OIDC validation", () => {
     mockToken(undefined);
     await expect(exchange()).rejects.toThrow();
   });
+  it("identifies a missing nonce without exposing token claims", async () => {
+    mockToken(telegram.token(telegram.nonce(verifier), { nonce: undefined }));
+    await expect(exchange()).rejects.toThrow("OIDC nonce is missing or mismatched");
+  });
+  it("reports rejected credentials without leaking the provider error description", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json(
+        {
+          error: "invalid_client",
+          error_description: "private-secret-do-not-log",
+        },
+        { status: 401 },
+      ),
+    );
+    await expect(exchange()).rejects.toThrow("OAuth client credentials were rejected.");
+  });
 });

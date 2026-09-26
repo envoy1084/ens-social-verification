@@ -4,6 +4,7 @@ import { OAuthError } from "@ens-social-verification/protocol/errors";
 import * as client from "openid-client";
 
 import { OAuthConfig } from "./config.js";
+import { oauthExchangeFailure } from "./exchange-error.js";
 import { oauthProvider } from "./providers.js";
 
 const make = Effect.gen(function* () {
@@ -84,11 +85,10 @@ const make = Effect.gen(function* () {
                 }
               : {}),
           }),
-        catch: () =>
+        catch: (error) =>
           new OAuthError({
             code: "UNAVAILABLE",
-            message:
-              "OAuth token exchange failed. Check the client credentials and callback URL, then reconnect.",
+            message: oauthExchangeFailure(error),
           }),
       });
       // OIDC permits omitted scope when unchanged; the required signed profile claims are checked below.

@@ -108,3 +108,6 @@ exchange with mocked provider HTTP responses. Telegram tests use real RSA signat
 and reject forged signatures, wrong issuer/audience/nonce, expired tokens, missing tokens
 and missing usernames. Integration tests cover provider mixups, publication and removal.
 Live consent and wallet transactions require a manual smoke test with the configured apps.
+Callback diagnostics log cookie-presence flags for pre-exchange rejection and fixed,
+sanitized credential/code/ID-token failure messages after exchange. Provider response
+descriptions, authorization codes, tokens, cookies and private claims are never logged.
