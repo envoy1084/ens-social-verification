@@ -4,8 +4,10 @@ import { HttpClient, HttpClientResponse, HttpRouter, HttpServer } from "effect/u
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { ServerConfig } from "../src/config.js";
-import { Routes } from "../src/routes/index.js";
+import { ServerConfig } from "../../src/config.js";
+import { HealthRoutes } from "../../src/routes/health.js";
+import { ReferenceRoutes } from "../../src/routes/reference.js";
+import { RpcRoutes } from "../../src/routes/rpc.js";
 
 const disposals: Array<() => Promise<void>> = [];
 afterEach(async () => {
@@ -24,7 +26,7 @@ function setup(key = "test-key", status = 200) {
     }),
   );
   const web = HttpRouter.toWebHandler(
-    Routes.pipe(
+    Layer.mergeAll(HealthRoutes, ReferenceRoutes, RpcRoutes).pipe(
       Layer.provide([
         Layer.succeed(ServerConfig, {
           host: "127.0.0.1",
@@ -59,6 +61,9 @@ describe("server routes", () => {
     expect(spec).toHaveProperty(["paths", "/rpc/{chainId}"]);
     expect(spec).toHaveProperty(["paths", "/health"]);
     expect(spec).toHaveProperty(["paths", "/health/ready"]);
+    for (const path of ["nonce", "message", "verify", "session", "logout"]) {
+      expect(spec).toHaveProperty(["paths", `/auth/${path}`]);
+    }
     expect(await (await app.handler(new Request("http://localhost/openapi.json"))).json()).toEqual(
       spec,
     );
