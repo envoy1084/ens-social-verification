@@ -11,7 +11,6 @@ import { RpcPayload } from "@ens-social-verification/api";
 
 import { ServerConfig } from "../config.js";
 const alchemyNetworks: Readonly<Record<string, string>> = {
-  "1": "eth-mainnet",
   "11155111": "eth-sepolia",
 };
 

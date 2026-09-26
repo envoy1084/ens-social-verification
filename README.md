@@ -1,6 +1,7 @@
 # ENS Social Verification
 
 ENS social record verification, built on an Effect-oriented pnpm/Turborepo workspace.
+Sepolia only (chain ID 11155111).
 
 ## Setup
 

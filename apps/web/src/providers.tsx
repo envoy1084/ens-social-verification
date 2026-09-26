@@ -10,7 +10,7 @@ import { env } from "./env";
 import { rainbowKitTheme, wagmiConfig } from "./wallet";
 
 const ensforgeConfig = {
-  network: "mainnet" as const,
+  network: "sepolia" as const,
   wagmiConfig,
   indexer: {
     ...(env.subgraphUrl ? { endpoints: { v1: env.subgraphUrl } } : {}),

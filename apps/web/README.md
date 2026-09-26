@@ -8,7 +8,8 @@ Production hosting must route `/rpc/*` to the server and other unknown paths to 
 Injected browser wallets work without configuration. Optional settings are listed
 in `.env.example`: WalletConnect project ID and a public ENS subgraph endpoint.
 Search uses ENSForge's `useSearchNames`; registration dates use `useIndexedName`.
-Set `VITE_ENS_SUBGRAPH_URL` to override ENSForge's default mainnet indexer endpoint.
+ENSForge and wallets use Sepolia only (11155111). Set `VITE_ENS_SUBGRAPH_URL` only
+to a Sepolia endpoint to override ENSForge's default Sepolia v1 indexer.
 If the indexer is unavailable, exact-name navigation still works.
 Alchemy credentials belong only to the server. No social verification is implemented yet.
 

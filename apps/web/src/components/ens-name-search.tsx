@@ -155,7 +155,7 @@ export function EnsNameSearch({ compact = false }: { compact?: boolean }) {
             >
               <NameAvatar
                 name={name}
-                src={`https://metadata.ens.domains/mainnet/avatar/${encodeURIComponent(name)}`}
+                src={`https://metadata.ens.domains/sepolia/avatar/${encodeURIComponent(name)}`}
               />
               <span className="min-w-0 truncate font-semibold">{name}</span>
             </button>

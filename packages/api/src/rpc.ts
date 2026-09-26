@@ -31,7 +31,7 @@ export const RpcPayload = Schema.Union([
 
 export const RpcApi = HttpApiGroup.make("rpc").add(
   HttpApiEndpoint.post("forward", "/rpc/:chainId", {
-    params: { chainId: Schema.Literals(["1", "11155111"]) },
+    params: { chainId: Schema.Literal("11155111") },
     payload: RpcPayload,
     success: Schema.Unknown,
     error: [
@@ -44,6 +44,6 @@ export const RpcApi = HttpApiGroup.make("rpc").add(
     ],
   }).annotate(
     OpenApi.Description,
-    "Read-only Alchemy JSON-RPC proxy. Ethereum and Sepolia; up to 20 requests per batch. Upstream JSON-RPC errors preserve their response envelope.",
+    "Read-only Alchemy JSON-RPC proxy for Sepolia only (11155111); up to 20 requests per batch. Upstream JSON-RPC errors preserve their response envelope.",
   ),
 );

@@ -7,7 +7,7 @@ Set `ALCHEMY_API_KEY` in `.env`; `HOST` defaults to `127.0.0.1`, `PORT` to `8080
 - `GET /` and `GET /openapi.json`: generated OpenAPI specification.
 - `GET /reference`: bundled Scalar API reference.
 - `GET /health/ready`: configuration readiness, not an Alchemy connectivity probe.
-- `POST /rpc/:chainId`: Alchemy JSON-RPC proxy for Ethereum (1) and Sepolia (11155111).
+- `POST /rpc/:chainId`: Alchemy JSON-RPC proxy for Sepolia (11155111) only. Mainnet is rejected.
 
 The proxy accepts read/estimation methods, batches of up to 20, 64 KiB requests and
 2 MiB responses. Transaction signing/sending belongs to the connected wallet.

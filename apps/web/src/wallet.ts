@@ -1,19 +1,19 @@
 import { getDefaultConfig, lightTheme } from "@rainbow-me/rainbowkit";
 import { createConfig, http } from "wagmi";
-import { mainnet } from "wagmi/chains";
+import { sepolia } from "wagmi/chains";
 import { injected } from "wagmi/connectors";
 
 import { env } from "./env";
 
-const transports = { [mainnet.id]: http(`${window.location.origin}/rpc/1`) };
+const transports = { [sepolia.id]: http(`${window.location.origin}/rpc/${sepolia.id}`) };
 export const wagmiConfig = env.walletConnectProjectId
   ? getDefaultConfig({
       appName: "ENS Social Verification",
       projectId: env.walletConnectProjectId,
-      chains: [mainnet],
+      chains: [sepolia],
       transports,
     })
-  : createConfig({ chains: [mainnet], connectors: [injected()], transports });
+  : createConfig({ chains: [sepolia], connectors: [injected()], transports });
 
 const theme = lightTheme({
   accentColor: "#0080bc",

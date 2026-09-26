@@ -19,7 +19,7 @@ function setup(key = "test-key", status = 200) {
       upstream(request);
       return HttpClientResponse.fromWeb(
         request,
-        new Response(JSON.stringify({ jsonrpc: "2.0", id: 7, result: "0x1" }), { status }),
+        new Response(JSON.stringify({ jsonrpc: "2.0", id: 7, result: "0xaa36a7" }), { status }),
       );
     }),
   );
@@ -38,7 +38,7 @@ function setup(key = "test-key", status = 200) {
     { disableLogger: true },
   );
   disposals.push(web.dispose);
-  const post = (body: unknown, chain = "1") =>
+  const post = (body: unknown, chain = "11155111") =>
     web.handler(
       new Request(`http://localhost/rpc/${chain}`, {
         method: "POST",
@@ -82,16 +82,15 @@ describe("server routes", () => {
     const app = setup();
     const response = await app.post(call);
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ jsonrpc: "2.0", id: 7, result: "0x1" });
+    expect(await response.json()).toEqual({ jsonrpc: "2.0", id: 7, result: "0xaa36a7" });
     expect(response.headers.get("cache-control")).toBe("no-store");
-    expect(app.upstream).toHaveReturnedWith("https://eth-mainnet.g.alchemy.com/v2/test-key");
     await app.post([call], "11155111");
     expect(app.upstream).toHaveReturnedWith("https://eth-sepolia.g.alchemy.com/v2/test-key");
   });
 
   it("rejects unknown chains, writes, invalid versions and oversized batches", async () => {
     const app = setup();
-    for (const chain of ["01", "0", "137", "constructor", "9007199254740993"]) {
+    for (const chain of ["1", "01", "0", "137", "constructor", "9007199254740993"]) {
       expect((await app.post(call, chain)).status).toBe(400);
     }
     for (const body of [
@@ -108,7 +107,7 @@ describe("server routes", () => {
   it("rejects malformed JSON and unsupported content types", async () => {
     const app = setup();
     const response = await app.handler(
-      new Request("http://localhost/rpc/1", {
+      new Request("http://localhost/rpc/11155111", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: "{",
@@ -116,8 +115,11 @@ describe("server routes", () => {
     );
     expect(response.status).toBe(400);
     expect(
-      (await app.handler(new Request("http://localhost/rpc/1", { method: "POST", body: "{}" })))
-        .status,
+      (
+        await app.handler(
+          new Request("http://localhost/rpc/11155111", { method: "POST", body: "{}" }),
+        )
+      ).status,
     ).toBe(415);
   });
 
