@@ -92,3 +92,9 @@ server rendering. OAuth callback responses carry `X-Robots-Tag: noindex, nofollo
 in Nginx. Configure the same header on another static host. The keywords tag is
 descriptive only and does not improve Google rankings. No analytics, fabricated
 ratings or third-party tracking are added.
+
+## Homepage
+
+The home route uses a single name search and a responsive service list. Entrance
+animations respect `prefers-reduced-motion`; profile navigation remains unchanged.
+`public/home-mosaic.webp` is original AI-generated artwork optimized to 23 KB.

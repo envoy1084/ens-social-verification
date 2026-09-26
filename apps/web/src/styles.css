@@ -77,24 +77,6 @@
   .font-display {
     font-family: "Instrument Serif", ui-serif, Georgia, serif;
   }
-  .hero-field {
-    background: #fafafa url("/bg.svg") repeat;
-    background-size: 48px 48px;
-  }
-  .hero-title {
-    font-size: 3rem;
-    line-height: 1.08;
-  }
-  @media (min-width: 640px) {
-    .hero-title {
-      font-size: 5rem;
-    }
-  }
-  @media (min-width: 1024px) {
-    .hero-title {
-      font-size: 6rem;
-    }
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
