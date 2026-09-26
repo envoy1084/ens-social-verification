@@ -55,6 +55,17 @@ metadata and publication rows are retained; token ciphertext is not.
 
 See [signed GitHub gists](../github.md) for the remote-write failure boundary.
 
+## Farcaster Verification
+
+`farcaster_attempts` stores a UUID, session digest, public intent, nullable evidence,
+claim and published envelope, creation timestamp and 15-minute attempt expiry.
+Evidence and claim must be set together; publication requires a claim. Conditional
+updates make completion and publication immutable and session-bound. The envelope
+remains publicly readable after the attempt expires; claim expiry and live provider
+checks, not database presence, determine verification. No Farcaster credentials are
+persisted. Expired pending rows and public envelopes remain until maintenance; do
+not purge valid published proofs. See [Farcaster](../farcaster.md).
+
 ## Transactions And Lifecycle
 
 `TransactionService.run` installs a private transaction client in Effect context.
