@@ -79,6 +79,14 @@ publication, public proof retrieval and live status. Set `PUBLIC_SERVER_URL` to 
 public HTTPS API origin and enable Optimism Mainnet for `ALCHEMY_API_KEY`. The
 browser RPC proxy remains Sepolia-only. See [Farcaster](../../architecture/farcaster.md).
 
+## X
+
+X routes under `/verification/x/` support OAuth/PKCE, signed-proof publication,
+public proof retrieval, live status and optional post deletion. Set the OAuth 2.0
+`X_CLIENT_ID`, `X_CLIENT_SECRET`, `X_BEARER_TOKEN`, `X_REDIRECT_URI` and
+`X_TOKEN_ENCRYPTION_KEY`. No OAuth 1.0a credentials are used.
+See [X configuration and failure boundaries](../../architecture/x.md).
+
 ## Database Tests
 
 Override `DATABASE_URL` for test commands with a separate database ending in `_test`.
