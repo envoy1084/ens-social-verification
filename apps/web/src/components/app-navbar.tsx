@@ -4,23 +4,16 @@ import { EnsNameSearch } from "./ens-name-search";
 import { WalletButton } from "./wallet-button";
 
 export function AppNavbar() {
-  const home = useRouterState({ select: (state) => state.location.pathname === "/" });
+  const namePage = useRouterState({
+    select: (state) => state.matches.some((match) => match.routeId === "/$name"),
+  });
+  if (!namePage) return null;
   return (
     <nav
       aria-label="Main navigation"
-      className={
-        home
-          ? "home-navbar"
-          : "absolute inset-x-0 top-0 z-40 flex flex-wrap items-start justify-between gap-3 p-3 sm:p-5"
-      }
+      className="absolute inset-x-0 top-0 z-40 flex flex-wrap items-start justify-between gap-3 p-3 sm:p-5"
     >
-      <div
-        className={
-          home
-            ? "home-brand"
-            : "flex w-full min-w-0 items-center gap-4 rounded-2xl bg-white/95 p-3 shadow-sm sm:w-auto sm:max-w-[calc(100%-180px)]"
-        }
-      >
+      <div className="flex w-full min-w-0 items-center gap-4 rounded-2xl bg-white/95 p-3 shadow-sm sm:w-auto sm:max-w-[calc(100%-180px)]">
         <Link
           aria-label="ENS Social Verification home"
           className="flex h-12 shrink-0 flex-col items-center justify-center gap-1 rounded-sm px-1"
@@ -31,19 +24,11 @@ export function AppNavbar() {
             Social Verification
           </span>
         </Link>
-        {!home ? (
-          <div className="min-w-0 flex-1 sm:w-80 lg:w-96">
-            <EnsNameSearch compact />
-          </div>
-        ) : null}
+        <div className="min-w-0 flex-1 sm:w-80 lg:w-96">
+          <EnsNameSearch compact />
+        </div>
       </div>
-      <div
-        className={
-          home
-            ? "home-wallet"
-            : "ml-auto rounded-2xl bg-white/95 p-2 shadow-sm sm:p-3 [&_.button]:!rounded-xl"
-        }
-      >
+      <div className="ml-auto rounded-2xl bg-white/95 p-2 shadow-sm sm:p-3 [&_.button]:!rounded-xl">
         <WalletButton />
       </div>
     </nav>

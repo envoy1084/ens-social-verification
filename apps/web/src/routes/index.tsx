@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+
 import { createFileRoute } from "@tanstack/react-router";
 
 import { DiscordIcon, HugeiconsIcon, Mail01Icon, TelegramIcon } from "@thenamespace/uikit/icons";
@@ -8,19 +10,57 @@ import "../home.css";
 
 export const Route = createFileRoute("/")({ component: Home });
 function Home() {
+  const heroRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const hero = heroRef.current;
+    if (!hero) return;
+    const motion = window.matchMedia(
+      "(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)",
+    );
+    const labels = [...hero.querySelectorAll<HTMLElement>(".home-service")];
+    let frame = 0;
+    const reset = () => {
+      cancelAnimationFrame(frame);
+      for (const label of labels) label.style.translate = "0px 0px";
+    };
+    const move = (event: PointerEvent) => {
+      if (!motion.matches || event.pointerType !== "mouse") return;
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const offsets = labels.map((label) => {
+          const rect = label.getBoundingClientRect();
+          const dx = event.clientX - (rect.left + rect.width / 2);
+          const dy = event.clientY - (rect.top + rect.height / 2);
+          const pull = Math.max(0, 1 - Math.hypot(dx, dy) / 240) * 0.18;
+          return `${dx * pull}px ${dy * pull}px`;
+        });
+        labels.forEach((label, index) => {
+          label.style.translate = offsets[index] ?? "0px 0px";
+        });
+      });
+    };
+    hero.addEventListener("pointermove", move);
+    hero.addEventListener("pointerleave", reset);
+    motion.addEventListener("change", reset);
+    return () => {
+      reset();
+      hero.removeEventListener("pointermove", move);
+      hero.removeEventListener("pointerleave", reset);
+      motion.removeEventListener("change", reset);
+    };
+  }, []);
   return (
     <main className="home-page">
-      <section className="home-hero" aria-labelledby="home-title">
+      <section ref={heroRef} className="home-hero" aria-labelledby="home-title">
         <img
           className="home-art"
-          src="/home-mosaic.webp"
+          src="/home-mosaic-hd.png"
           alt=""
-          width="1536"
-          height="1024"
+          width="1672"
+          height="941"
           fetchPriority="high"
         />
         <div className="home-content">
-          <p className="home-eyebrow">YOUR IDENTITY, CONNECTED</p>
           <h1 id="home-title" className="home-title">
             ENS Verification
           </h1>
@@ -33,9 +73,6 @@ function Home() {
           <div className="home-search">
             <EnsNameSearch />
           </div>
-          <p className="home-network">
-            Built on ENSv2 <span aria-hidden="true">/</span> Sepolia testnet
-          </p>
         </div>
         <ul className="home-services" aria-label="Supported accounts">
           <li className="home-service home-service-github">
@@ -63,12 +100,6 @@ function Home() {
           </li>
         </ul>
       </section>
-      <footer className="home-footer">
-        <p>Your name. Your connections.</p>
-        <a href="https://github.com/envoy1084/ens-social-verification">
-          View source <span aria-hidden="true">↗</span>
-        </a>
-      </footer>
     </main>
   );
 }
