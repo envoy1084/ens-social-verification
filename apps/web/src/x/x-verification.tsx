@@ -85,7 +85,7 @@ function XAccount({
   }, [check]);
 
   return (
-    <article className="record-card mt-4 flex min-h-28 max-w-2xl flex-col justify-center">
+    <article className="record-card mt-4 flex min-h-28 w-full flex-col justify-center">
       <div className="flex items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3">
           <img src="/brands/x.svg" alt="" width={32} height={32} className="size-8 shrink-0" />
