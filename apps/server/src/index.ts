@@ -1,22 +1,6 @@
-import { createServer } from "node:http";
-
-import * as NodeHttpClient from "@effect/platform-node/NodeHttpClient";
-import * as NodeHttpServer from "@effect/platform-node/NodeHttpServer";
 import * as NodeRuntime from "@effect/platform-node/NodeRuntime";
-import { Effect, Layer } from "effect";
-import { HttpRouter } from "effect/unstable/http";
+import { Layer } from "effect";
 
-import { ServerConfig } from "./config.js";
-import { Routes } from "./routes/index.js";
-
-const ServerLive = Layer.unwrap(
-  Effect.gen(function* () {
-    const config = yield* ServerConfig;
-    return HttpRouter.serve(Routes, { disableLogger: true }).pipe(
-      Layer.provide(NodeHttpClient.layerUndici),
-      Layer.provide(NodeHttpServer.layer(createServer, { host: config.host, port: config.port })),
-    );
-  }),
-).pipe(Layer.provide(ServerConfig.layer));
+import { ServerLive } from "./layers/index.js";
 
 Layer.launch(ServerLive).pipe(NodeRuntime.runMain);
