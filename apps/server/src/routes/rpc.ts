@@ -14,12 +14,15 @@ const alchemyNetworks: Readonly<Record<string, string>> = {
   "11155111": "eth-sepolia",
 };
 
-const failure = (status: number, message: string) =>
+const failure = (status: number, message: string, retryAfter?: number) =>
   HttpServerResponse.jsonUnsafe(
     { error: message },
     {
       status,
-      headers: { "cache-control": "no-store" },
+      headers: {
+        "cache-control": "no-store",
+        ...(retryAfter === undefined ? {} : { "retry-after": String(retryAfter) }),
+      },
     },
   );
 
@@ -48,7 +51,13 @@ export const RpcRoutes = Layer.unwrap(
           windowStart = now;
           requests = 0;
         }
-        if (requests >= 120 || active >= 10) return failure(429, "RPC request limit reached");
+        if (requests >= 120)
+          return failure(
+            429,
+            "RPC request limit reached",
+            Math.max(1, Math.ceil((windowStart + 60_000 - now) / 1000)),
+          );
+        if (active >= 10) return failure(429, "RPC request limit reached", 1);
         requests++;
         active++;
 

@@ -40,6 +40,8 @@ database or upstream connectivity probe.
 Auth request policy lives in `middlewares/auth.ts`; route files only decode payloads,
 apply cookies, and call application operations. Auth and RPC have separate in-process
 request budgets. Raw Alchemy/database errors, cookies, and signatures are not logged.
+Frontend RPC reads are batched (up to 20 calls per request). RPC throttling returns
+`Retry-After`, exposed through CORS so viem can wait for the rate window to reset.
 
 ## Verification
 

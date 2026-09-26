@@ -144,7 +144,10 @@ describe("server routes", () => {
   it("limits public requests per process", async () => {
     const app = setup();
     for (let index = 0; index < 120; index++) await app.post(call);
-    expect((await app.post(call)).status).toBe(429);
+    const limited = await app.post(call);
+    expect(limited.status).toBe(429);
+    expect(Number(limited.headers.get("retry-after"))).toBeGreaterThan(0);
+    expect(Number(limited.headers.get("retry-after"))).toBeLessThanOrEqual(60);
     expect(app.upstream).toHaveBeenCalledTimes(120);
   });
 });

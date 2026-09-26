@@ -18,6 +18,8 @@ in `routes/`. See [runtime architecture](../../architecture/platform/runtime.md)
 The proxy accepts read/estimation methods, batches of up to 20, 64 KiB requests and
 2 MiB responses. Transaction signing/sending belongs to the connected wallet.
 Limits are per-process: 120 HTTP requests/minute and 10 concurrent requests.
+The browser coalesces concurrent reads into batches of up to 20 with a 16 ms window.
+Rate-limit responses include `Retry-After` so clients can wait for capacity.
 Before public deployment add gateway rate limits; CORS is not access control.
 The browser calls this server directly through `VITE_SERVER_URL`. No browser Alchemy key is required.
 

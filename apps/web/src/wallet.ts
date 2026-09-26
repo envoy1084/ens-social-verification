@@ -5,7 +5,12 @@ import { injected } from "wagmi/connectors";
 
 import { env } from "./env";
 
-const transports = { [sepolia.id]: http(`${env.serverUrl}/rpc/${sepolia.id}`) };
+const transports = {
+  [sepolia.id]: http(`${env.serverUrl}/rpc/${sepolia.id}`, {
+    // Match the proxy's 20-call limit and coalesce concurrent profile/HCA reads.
+    batch: { batchSize: 20, wait: 16 },
+  }),
+};
 export const wagmiConfig = env.walletConnectProjectId
   ? getDefaultConfig({
       appName: "ENS Social Verification",

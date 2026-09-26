@@ -10,6 +10,7 @@ export const Cors = Layer.unwrap(
       allowedOrigins: [config.origin],
       allowedMethods: ["GET", "POST", "OPTIONS"],
       allowedHeaders: ["Content-Type", "b3", "traceparent"],
+      exposedHeaders: ["Retry-After"],
       credentials: true,
       maxAge: 600,
     });
