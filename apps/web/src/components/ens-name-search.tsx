@@ -162,9 +162,7 @@ export function EnsNameSearch({ compact = false }: { compact?: boolean }) {
             <output className="text-muted block px-3 py-2 text-sm">Suggestions unavailable</output>
           ) : names.length === 0 ? (
             <output className="text-muted block px-3 py-3 text-sm">
-              {search.isWaiting || query !== input.trim()
-                ? "Searching ENSv2 names..."
-                : "No ENSv2 names found"}
+              {search.isWaiting || query !== input.trim() ? "Searching names..." : "No names found"}
             </output>
           ) : null}
         </div>
