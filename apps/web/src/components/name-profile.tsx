@@ -15,12 +15,12 @@ import {
   Clock01Icon,
   HugeiconsIcon,
   Key01Icon,
-  Mail01Icon,
 } from "@thenamespace/uikit/icons";
 import { Skeleton } from "@thenamespace/uikit/skeleton";
 import NetworkEthereum from "@web3icons/react/icons/networks/NetworkEthereum";
 
 import { formatEnsDate } from "../data/ens-name";
+import { EmailVerification } from "../email/email-verification";
 import { FarcasterVerification } from "../farcaster/farcaster-verification";
 import { GithubVerification } from "../github/github-verification";
 import { XVerification } from "../x/x-verification";
@@ -207,29 +207,7 @@ export function NameProfile({
           <FarcasterVerification key={name} name={name} owner={ownerAddress} />
           <XVerification name={name} owner={ownerAddress} attemptId={xAttempt} />
         </section>
-        {email.isInitial || (!email.isFailure && Boolean(email.data?.value?.trim())) ? (
-          <section className="mt-12" aria-labelledby="contact-heading">
-            <h2 id="contact-heading" className="text-lg font-semibold">
-              Contact
-            </h2>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <article className="record-card">
-                <div className="flex items-center justify-between">
-                  <HugeiconsIcon icon={Mail01Icon} size={25} className="text-accent" />
-                  {email.data?.value ? (
-                    <CopyButton value={email.data.value} label="Copy email address" />
-                  ) : null}
-                </div>
-                <h3 className="mt-5 text-sm text-muted">Email address</h3>
-                {email.isInitial ? (
-                  <Skeleton className="mt-3 h-5 w-4/5" />
-                ) : (
-                  <p className="mt-2 break-all font-medium">{email.data?.value}</p>
-                )}
-              </article>
-            </div>
-          </section>
-        ) : null}
+        <EmailVerification name={name} owner={ownerAddress} />
         <section className="mt-10" aria-labelledby="addresses-heading">
           <h2 id="addresses-heading" className="text-lg font-semibold">
             Addresses
