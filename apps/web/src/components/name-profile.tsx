@@ -112,11 +112,7 @@ export function NameProfile({ name }: { name: string }) {
               ) : !details.data ? (
                 "Not indexed yet"
               ) : (
-                formatEnsDate(
-                  details.data?.protocol === "v1"
-                    ? details.data.registration?.registeredAt
-                    : details.data?.registeredAt,
-                )
+                formatEnsDate(details.data.protocol === "v2" ? details.data.registeredAt : null)
               )}
             </dd>
           </div>

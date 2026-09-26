@@ -9,8 +9,9 @@ Injected browser wallets work without configuration. Optional settings are liste
 in `.env.example`: WalletConnect project ID and a public ENS subgraph endpoint.
 Search uses ENSForge's `useSearchNames`; registration dates use `useIndexedName`.
 ENSForge and wallets use Sepolia only (11155111). Set `VITE_ENS_SUBGRAPH_URL` only
-to a Sepolia endpoint to override ENSForge's default Sepolia v1 indexer.
-The separate v2 staging indexer is disabled for these v1 registry profiles.
+to a Sepolia v2 endpoint to override ENSForge's default v2 staging indexer.
+The v1 indexer is disabled. The indexer fetch adapter removes Effect's `b3` and
+`traceparent` headers because the public endpoint's CORS policy does not allow them.
 If the indexer is unavailable, exact-name navigation still works.
 Alchemy credentials belong only to the server. No social verification is implemented yet.
 

@@ -13,8 +13,14 @@ const ensforgeConfig = {
   network: "sepolia" as const,
   wagmiConfig,
   indexer: {
-    // Current profiles use the Sepolia v1 registry, not the v2 staging deployment.
-    endpoints: { v2: null, ...(env.subgraphUrl ? { v1: env.subgraphUrl } : {}) },
+    endpoints: { v1: null, ...(env.subgraphUrl ? { v2: env.subgraphUrl } : {}) },
+    fetch: ((input, init) => {
+      const request = new Request(input, init);
+      // The public indexer permits Content-Type/Authorization, not Effect's tracing headers.
+      request.headers.delete("b3");
+      request.headers.delete("traceparent");
+      return fetch(request);
+    }) satisfies typeof fetch,
     timeout: 10_000,
     retry: { attempts: 1 },
   },
