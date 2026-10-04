@@ -1,4 +1,5 @@
-import { Clock, Context, Crypto, Effect, Encoding, Layer } from "effect";
+import { Clock, Context, Crypto, Effect, Layer } from "effect";
+import { Base64Url, Hex } from "effect/encoding";
 
 import {
   ChallengeRepository,
@@ -28,14 +29,14 @@ const make = Effect.gen(function* () {
     (kind: "nonce" | "browser" | "session", value: string) =>
       crypto
         .digest("SHA-256", new TextEncoder().encode(`${kind}:${value}`))
-        .pipe(Effect.map(Encoding.encodeHex)),
+        .pipe(Effect.map(Hex.encode)),
   );
 
   return {
     nonce: Effect.fn("Auth.nonce")(function* () {
       const now = yield* Clock.currentTimeMillis;
-      const nonce = Encoding.encodeHex(yield* crypto.randomBytes(32));
-      const browserToken = Encoding.encodeBase64Url(yield* crypto.randomBytes(32));
+      const nonce = Hex.encode(yield* crypto.randomBytes(32));
+      const browserToken = Base64Url.encode(yield* crypto.randomBytes(32));
 
       yield* challenges.create({
         id: yield* crypto.randomUUIDv4,
@@ -114,7 +115,7 @@ const make = Effect.gen(function* () {
       yield* signatures.verify(parsed.address, input.message, input.signature);
 
       const issuedAt = yield* Clock.currentTimeMillis;
-      const token = Encoding.encodeBase64Url(yield* crypto.randomBytes(32));
+      const token = Base64Url.encode(yield* crypto.randomBytes(32));
       const expiresAt = parsed.expirationTime;
 
       const session = {

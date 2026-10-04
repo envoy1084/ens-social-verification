@@ -20,5 +20,7 @@ Commit generated migrations; do not use schema push.
 The local Compose service binds only to `127.0.0.1:5432` and has its own persistent volume.
 
 `patches/drizzle-orm@1.0.0-rc.4.patch` carries Namera's compatibility fix for Effect's
-`TaggedErrorClass` to `TaggedError` rename. Remove it when upgrading to a compatible release.
+`TaggedErrorClass` to `TaggedError` rename and updates PostgreSQL declarations from
+`effect/unstable/sql` to `effect/sql` for Effect 4.0.0. Remove it when upgrading to a
+compatible Drizzle release.
 The `pg` dependency provides the dedicated migration connection; Effect SQL owns runtime queries.

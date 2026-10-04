@@ -13,26 +13,26 @@ catalogs:
       specifier: 21.2.3
       version: 21.2.3
     '@effect/platform-node':
-      specifier: 4.0.0-rc.117
-      version: 4.0.0-rc.117
+      specifier: 4.0.0
+      version: 4.0.0
     '@effect/sql-pg':
-      specifier: 4.0.0-rc.117
-      version: 4.0.0-rc.117
+      specifier: 4.0.0
+      version: 4.0.0
     '@ensforge/contracts':
-      specifier: 0.5.0
-      version: 0.5.0
+      specifier: 0.6.0
+      version: 0.6.0
     '@ensforge/core':
-      specifier: 0.5.0
-      version: 0.5.0
+      specifier: 0.6.0
+      version: 0.6.0
     '@ensforge/hca':
-      specifier: 0.5.0
-      version: 0.5.0
+      specifier: 0.6.0
+      version: 0.6.0
     '@ensforge/react':
-      specifier: 0.5.0
-      version: 0.5.0
+      specifier: 0.6.0
+      version: 0.6.0
     '@ensforge/sdk':
-      specifier: 0.5.0
-      version: 0.5.0
+      specifier: 0.6.0
+      version: 0.6.0
     '@farcaster/auth-client':
       specifier: 0.7.1
       version: 0.7.1
@@ -85,8 +85,8 @@ catalogs:
       specifier: 1.0.0-rc.4
       version: 1.0.0-rc.4
     effect:
-      specifier: 4.0.0-rc.117
-      version: 4.0.0-rc.117
+      specifier: 4.0.0
+      version: 4.0.0
     klarity:
       specifier: 0.2.0
       version: 0.2.0
@@ -159,12 +159,11 @@ catalogs:
 
 overrides:
   use-sync-external-store: 1.7.0
-  '@ensforge/react>@effect/atom-react': 4.0.0-rc.117
 
 packageExtensionsChecksum: sha256-rS2QBfR9Wsaur4baAvu8mwaFj1w6q6h074kZmO6xIUA=
 
 patchedDependencies:
-  drizzle-orm@1.0.0-rc.4: 1566adf2bdae96497887f6464c2b8539b7a12b1b4487b1336598ecda4f22e847
+  drizzle-orm@1.0.0-rc.4: fcd5dd4795d3d2ec878bd3a960ef4d18f3885ae3edee87c71545172a13a567ca
 
 importers:
 
@@ -202,7 +201,7 @@ importers:
     dependencies:
       '@effect/platform-node':
         specifier: 'catalog:'
-        version: 4.0.0-rc.117(bufferutil@4.1.0)(effect@4.0.0-rc.117)(utf-8-validate@5.0.10)
+        version: 4.0.0(bufferutil@4.1.0)(effect@4.0.0)(utf-8-validate@5.0.10)
       '@ens-social-verification/api':
         specifier: workspace:*
         version: link:../../packages/api
@@ -220,7 +219,7 @@ importers:
         version: 0.7.1(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5)
       effect:
         specifier: 'catalog:'
-        version: 4.0.0-rc.117
+        version: 4.0.0
       viem:
         specifier: 'catalog:'
         version: 2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5)
@@ -260,13 +259,13 @@ importers:
         version: link:../../packages/protocol
       '@ensforge/contracts':
         specifier: 'catalog:'
-        version: 0.5.0(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)
+        version: 0.6.0(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)
       '@ensforge/hca':
         specifier: 'catalog:'
-        version: 0.5.0(bufferutil@4.1.0)(effect@4.0.0-rc.117)(permissionless@0.4.0(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)))(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)
+        version: 0.6.0(bufferutil@4.1.0)(effect@4.0.0)(permissionless@0.4.0(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)))(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)
       '@ensforge/react':
         specifier: 'catalog:'
-        version: 0.5.0(bufferutil@4.1.0)(effect@4.0.0-rc.117)(react@19.2.8)(scheduler@0.27.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)
+        version: 0.6.0(bufferutil@4.1.0)(effect@4.0.0)(react@19.2.8)(scheduler@0.27.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)
       '@farcaster/auth-client':
         specifier: 'catalog:'
         version: 0.7.1(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)
@@ -314,7 +313,7 @@ importers:
         version: 4.1.22(react@19.2.8)
       effect:
         specifier: 'catalog:'
-        version: 4.0.0-rc.117
+        version: 4.0.0
       permissionless:
         specifier: 'catalog:'
         version: 0.4.0(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))
@@ -390,7 +389,7 @@ importers:
         version: link:../protocol
       effect:
         specifier: 'catalog:'
-        version: 4.0.0-rc.117
+        version: 4.0.0
     devDependencies:
       klarity:
         specifier: 'catalog:'
@@ -415,19 +414,19 @@ importers:
         version: link:../protocol
       '@ensforge/contracts':
         specifier: 'catalog:'
-        version: 0.5.0(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5)
+        version: 0.6.0(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5)
       '@ensforge/core':
         specifier: 'catalog:'
-        version: 0.5.0(bufferutil@4.1.0)(effect@4.0.0-rc.117)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(zod@4.6.5))(zod@4.6.5)
+        version: 0.6.0(bufferutil@4.1.0)(effect@4.0.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(zod@4.6.5))(zod@4.6.5)
       '@ensforge/sdk':
         specifier: 'catalog:'
-        version: 0.5.0(bufferutil@4.1.0)(effect@4.0.0-rc.117)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(zod@4.6.5))(zod@4.6.5)
+        version: 0.6.0(bufferutil@4.1.0)(effect@4.0.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(zod@4.6.5))(zod@4.6.5)
       '@farcaster/auth-client':
         specifier: 'catalog:'
         version: 0.7.1(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5)
       effect:
         specifier: 'catalog:'
-        version: 4.0.0-rc.117
+        version: 4.0.0
       mailauth:
         specifier: 'catalog:'
         version: 6.0.0
@@ -461,16 +460,16 @@ importers:
     dependencies:
       '@effect/sql-pg':
         specifier: 'catalog:'
-        version: 4.0.0-rc.117(effect@4.0.0-rc.117)
+        version: 4.0.0(effect@4.0.0)
       '@ens-social-verification/protocol':
         specifier: workspace:*
         version: link:../protocol
       drizzle-orm:
         specifier: 'catalog:'
-        version: 1.0.0-rc.4(patch_hash=1566adf2bdae96497887f6464c2b8539b7a12b1b4487b1336598ecda4f22e847)(@effect/sql-pg@4.0.0-rc.117(effect@4.0.0-rc.117))(@types/pg@8.23.1)(effect@4.0.0-rc.117)(pg@8.23.0)(zod@4.6.5)
+        version: 1.0.0-rc.4(patch_hash=fcd5dd4795d3d2ec878bd3a960ef4d18f3885ae3edee87c71545172a13a567ca)(@effect/sql-pg@4.0.0(effect@4.0.0))(@types/pg@8.23.1)(effect@4.0.0)(pg@8.23.0)(zod@4.6.5)
       effect:
         specifier: 'catalog:'
-        version: 4.0.0-rc.117
+        version: 4.0.0
       pg:
         specifier: 'catalog:'
         version: 8.23.0
@@ -504,10 +503,10 @@ importers:
     dependencies:
       '@ensforge/core':
         specifier: 'catalog:'
-        version: 0.5.0(bufferutil@4.1.0)(effect@4.0.0-rc.117)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(zod@4.6.5))(zod@4.6.5)
+        version: 0.6.0(bufferutil@4.1.0)(effect@4.0.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(zod@4.6.5))(zod@4.6.5)
       effect:
         specifier: 'catalog:'
-        version: 4.0.0-rc.117
+        version: 4.0.0
       viem:
         specifier: 'catalog:'
         version: 2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5)
@@ -739,30 +738,30 @@ packages:
     peerDependencies:
       '@noble/ciphers': ^1.0.0
 
-  '@effect/atom-react@4.0.0-rc.117':
-    resolution: {integrity: sha512-e6swZzC+2sPY9LfICB1YQBdn6DvnNmS1p4KwppzfHjT9lv+fyDVI9IxymUQ/Oduc58rOV/4jBhZv1tu7vgx47w==}
+  '@effect/atom-react@4.0.0':
+    resolution: {integrity: sha512-VPP2oOjj56iwOpL5aIGbu7Qhb4+1sFNdU16aI5of3JqToqWWX9eJPBfeiPyQ1eTYof1hnNX1auyRiTORSfLT6g==}
     peerDependencies:
-      effect: ^4.0.0-rc.117
+      effect: ^4.0.0
       react: '>=19.0.0 <20.0.0'
       scheduler: '>=0.25.0 <0.28.0'
 
-  '@effect/platform-node-shared@4.0.0-rc.117':
-    resolution: {integrity: sha512-GyRkEfLBG49MwJe+/XDPiXYcQ44RA9p2z0AurlsWhR1cd1PqOUMEZU1pORL+/R5hR8aH6ZuqoJYD8lAc6h+wlA==}
+  '@effect/platform-node-shared@4.0.0':
+    resolution: {integrity: sha512-VBXHJU9UXVZPdQGGDRjGXpo+TpOzRwZuMrdKAtIxi1qwcRftmacZ1zTgIrzBa0Z2RA2KVkoOecQUsTlt/nJZhw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      effect: ^4.0.0-rc.117
+      effect: ^4.0.0
 
-  '@effect/platform-node@4.0.0-rc.117':
-    resolution: {integrity: sha512-WbPcvQDkqXFnCeG6LohJ9eVNapCDhZbCpezhYKxm0IsZEk7swakRh7RkC1t2CXzd3hGmszTv2k9e/pXyZuL+wQ==}
+  '@effect/platform-node@4.0.0':
+    resolution: {integrity: sha512-/L+4MUbl8FejPKLHLROYSOebvHnfixkP8KiblSD/DE5uH5xENZBHaux4nH6XMnRP+lr8ajpEJFS8sUrmmxFJeQ==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      effect: ^4.0.0-rc.117
+      effect: ^4.0.0
       redis: '>=5.0.0 <7.0.0'
 
-  '@effect/sql-pg@4.0.0-rc.117':
-    resolution: {integrity: sha512-UQwKoulwVUQ5w4/lMonKf02VbMqZTrhgZXEreOWlTNNNVPYjlBZKBJNJmLPKZMHPMlHHltKjoi504uT/N9S2aQ==}
+  '@effect/sql-pg@4.0.0':
+    resolution: {integrity: sha512-w0sRMA08Tgz73aReYpFSxD+nz2LUKYhH/4zaRpo4G5b5YG+eqiAL7XYhqIjvGZ8MZacazbG71Jhprv6ccz9HDg==}
     peerDependencies:
-      effect: ^4.0.0-rc.117
+      effect: ^4.0.0
 
   '@emotion/hash@0.9.2':
     resolution: {integrity: sha512-MyqliTZGuOm3+5ZRSaaBGP3USLw6+EGykkwZns2EPC5g8jJ4z9OrdZY9apkl3+UP9+sdz76YYkwCKP5gh8iY3g==}
@@ -774,24 +773,24 @@ packages:
     resolution: {integrity: sha512-BKB3BtAtfDkSX3DOYsnnTlzAeM55bI0ze7UJhk8TzoxO5/4iHjgPoEHDzjgzCTYJoCOkpFPEDah+gl62e7HJjA==}
     engines: {node: '>=18'}
 
-  '@ensforge/contracts@0.5.0':
-    resolution: {integrity: sha512-0oNE+8pGN7rCKCH/dHMIZ5CxoVCkcHfk5yVkTn3way+LAk6UEBfPZNYzBB7LFneNJxbqlLhiov1sJUKiX+7rsQ==}
+  '@ensforge/contracts@0.6.0':
+    resolution: {integrity: sha512-MhGj+eRjVcqacGxhoI5u7XG/knUR/aZYyX7x998KHv/+ZF0vIbe33zRu+CwR5K3KNqGr7bCtfZXN8382emVgEA==}
 
-  '@ensforge/core@0.5.0':
-    resolution: {integrity: sha512-9ssBNrUU4b5eZpEr/+/3RbvrC7s1fsVJ1cCHztFK3qQy0BjR4UvAjC6GdW7MdzJ2ZP07eTr9Ph8jNGPmUSbyDQ==}
+  '@ensforge/core@0.6.0':
+    resolution: {integrity: sha512-BWvgHf/c67LMKf4dIDLAuict8HsaSGTh30R8d5C4Mvz+/GOQ3LXaPoGikpSN7UR81kViZTeL3nGKJ84++ytjPQ==}
     peerDependencies:
-      effect: ^4.0.0-rc.112
+      effect: ^4.0.0
       viem: ^2.56.0
       wagmi: '>=2.19.0 <4.0.0'
     peerDependenciesMeta:
       wagmi:
         optional: true
 
-  '@ensforge/hca@0.5.0':
-    resolution: {integrity: sha512-R+K4YSw8PZsZ1OWrv/jXAd3Ny27vr1JmF+XtN3O2YBCJi8ud9Smv8Zq4dEq7+usuI/X0R3m3Fa5sEzMI+B3jbA==}
+  '@ensforge/hca@0.6.0':
+    resolution: {integrity: sha512-YetcX+w2PL/44Icg+okzi6bCQyw82JVgLOQpyp0hLgBzWs8R+5bBASZoiSmtttCgxIo4MzSA91zk+3wStTpp7Q==}
     peerDependencies:
       '@rhinestone/sdk': 1.8.0
-      effect: ^4.0.0-rc.112
+      effect: ^4.0.0
       permissionless: ^0.4.0
       viem: ^2.56.0
     peerDependenciesMeta:
@@ -800,19 +799,19 @@ packages:
       permissionless:
         optional: true
 
-  '@ensforge/react@0.5.0':
-    resolution: {integrity: sha512-3r524cFJF3Qg8+iYm8YIDw0hJKPk9a0wGq8YaMnzQbuwXcTw/2QMycFWsO7yvcHnSQMP/iX4Gz9y42CTTYEclQ==}
+  '@ensforge/react@0.6.0':
+    resolution: {integrity: sha512-2dg80gVFJD/EGO5UpF7XT78WZllRr5VNS30+CIfKAFUI2A2WLgi/qxs5Iir01FeexTyJ7oxf3zHiZpzAb6ZXBQ==}
     peerDependencies:
-      effect: ^4.0.0-rc.112
+      effect: ^4.0.0
       react: '>=19.0.0 <20.0.0'
       scheduler: '>=0.25.0 <0.28.0'
       viem: ^2.56.0
       wagmi: '>=2.19.0 <4.0.0'
 
-  '@ensforge/sdk@0.5.0':
-    resolution: {integrity: sha512-78982Noawa3r/QZXEP3ESfrbzI30YIHC8UiJjlMRMFDV3qZ9Pic3wWEBxCHEIYTFlwyjPr++7beokaCSGCRhCg==}
+  '@ensforge/sdk@0.6.0':
+    resolution: {integrity: sha512-m4QQbXx5kPljEkpatbzuDU4ig/Yad2ghwBZheSsIJaGAYS4cHpBeuGi2OGy2VCTk9SwN9+oNeUZetmAPnjYFsA==}
     peerDependencies:
-      effect: ^4.0.0-rc.112
+      effect: ^4.0.0
       viem: ^2.56.0
       wagmi: '>=2.19.0 <4.0.0'
     peerDependenciesMeta:
@@ -4209,8 +4208,8 @@ packages:
     resolution: {integrity: sha512-wG99Zcfcys9fZux7Cft8BAX/YrOJLJSZ3jyYPfhZHqN2E+Ffx+QXBDsv3gubEgPtV6dTzJMSQUwk1H98/t/0wQ==}
     engines: {bun: '>=1', deno: '>=2', node: '>=16'}
 
-  effect@4.0.0-rc.117:
-    resolution: {integrity: sha512-UUyi9QiOW4nySFIBM3KnYbNMd9EZliOdKfBcyLD0mPMPheO2fkuXS5y0opjWc9oqzlJxPQICEGm8gGw3kh9j/w==}
+  effect@4.0.0:
+    resolution: {integrity: sha512-ooc1TG5t+FfzgYnFz2ff6BBKyZ7EwBRVXC7c4RhQUAD6/TZ2gTXXMeb4WX7a19ozQo4J73/QW+S00YAIresoMQ==}
 
   electron-to-chromium@1.5.439:
     resolution: {integrity: sha512-qu6QIPXhsb+CRcAiTMNjR4A1y/7tCYKkKjr5CZXRVih6qkDf79peZ2BpEU3qoDBNCRrcy3Mra3X9nG5oruuA7Q==}
@@ -6666,6 +6665,18 @@ packages:
       utf-8-validate:
         optional: true
 
+  ws@8.22.0:
+    resolution: {integrity: sha512-Ydggc987+RO0AnWtZ/7Wq9FtNvcrL1b/RO0ud9mWjUPgDrsAAwQSF51sm2hm1XofbU/4jkpGEsLFsZZxU+1DOg==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+
   xml-naming@0.3.0:
     resolution: {integrity: sha512-ghig2TBE/H11aOVgmahA3MhimvkBr6JIYknH/Dhdk10nXwdbIqBJsbfMxpvFPG8bAw77gN29aQWvKpmVoPlvPQ==}
     engines: {node: '>=16.0.0'}
@@ -7172,33 +7183,33 @@ snapshots:
     dependencies:
       '@noble/ciphers': 1.3.0
 
-  '@effect/atom-react@4.0.0-rc.117(effect@4.0.0-rc.117)(react@19.2.8)(scheduler@0.27.0)':
+  '@effect/atom-react@4.0.0(effect@4.0.0)(react@19.2.8)(scheduler@0.27.0)':
     dependencies:
-      effect: 4.0.0-rc.117
+      effect: 4.0.0
       react: 19.2.8
       scheduler: 0.27.0
 
-  '@effect/platform-node-shared@4.0.0-rc.117(bufferutil@4.1.0)(effect@4.0.0-rc.117)(utf-8-validate@5.0.10)':
+  '@effect/platform-node-shared@4.0.0(bufferutil@4.1.0)(effect@4.0.0)(utf-8-validate@5.0.10)':
     dependencies:
       '@types/ws': 8.18.1
-      effect: 4.0.0-rc.117
-      ws: 8.21.3(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      effect: 4.0.0
+      ws: 8.22.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
 
-  '@effect/platform-node@4.0.0-rc.117(bufferutil@4.1.0)(effect@4.0.0-rc.117)(utf-8-validate@5.0.10)':
+  '@effect/platform-node@4.0.0(bufferutil@4.1.0)(effect@4.0.0)(utf-8-validate@5.0.10)':
     dependencies:
-      '@effect/platform-node-shared': 4.0.0-rc.117(bufferutil@4.1.0)(effect@4.0.0-rc.117)(utf-8-validate@5.0.10)
-      effect: 4.0.0-rc.117
+      '@effect/platform-node-shared': 4.0.0(bufferutil@4.1.0)(effect@4.0.0)(utf-8-validate@5.0.10)
+      effect: 4.0.0
       undici: 8.11.2
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
 
-  '@effect/sql-pg@4.0.0-rc.117(effect@4.0.0-rc.117)':
+  '@effect/sql-pg@4.0.0(effect@4.0.0)':
     dependencies:
-      effect: 4.0.0-rc.117
+      effect: 4.0.0
 
   '@emotion/hash@0.9.2': {}
 
@@ -7213,7 +7224,7 @@ snapshots:
       '@multiformats/sha3': 4.0.0
       multiformats: 13.4.2
 
-  '@ensforge/contracts@0.5.0(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)':
+  '@ensforge/contracts@0.6.0(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)':
     dependencies:
       viem: 2.56.0(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)
     transitivePeerDependencies:
@@ -7222,7 +7233,7 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@ensforge/contracts@0.5.0(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5)':
+  '@ensforge/contracts@0.6.0(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5)':
     dependencies:
       viem: 2.56.0(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5)
     transitivePeerDependencies:
@@ -7231,13 +7242,13 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@ensforge/core@0.5.0(bufferutil@4.1.0)(effect@4.0.0-rc.117)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)':
+  '@ensforge/core@0.6.0(bufferutil@4.1.0)(effect@4.0.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)':
     dependencies:
       '@ensdomains/address-encoder': 1.1.4
       '@ensdomains/content-hash': 3.1.1
-      '@ensforge/contracts': 0.5.0(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)
+      '@ensforge/contracts': 0.6.0(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)
       cborg: 6.1.1
-      effect: 4.0.0-rc.117
+      effect: 4.0.0
       fflate: 0.8.3
       viem: 2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)
     optionalDependencies:
@@ -7248,13 +7259,13 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@ensforge/core@0.5.0(bufferutil@4.1.0)(effect@4.0.0-rc.117)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(zod@4.6.5))(zod@4.6.5)':
+  '@ensforge/core@0.6.0(bufferutil@4.1.0)(effect@4.0.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(zod@4.6.5))(zod@4.6.5)':
     dependencies:
       '@ensdomains/address-encoder': 1.1.4
       '@ensdomains/content-hash': 3.1.1
-      '@ensforge/contracts': 0.5.0(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5)
+      '@ensforge/contracts': 0.6.0(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5)
       cborg: 6.1.1
-      effect: 4.0.0-rc.117
+      effect: 4.0.0
       fflate: 0.8.3
       viem: 2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5)
     optionalDependencies:
@@ -7265,11 +7276,11 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@ensforge/hca@0.5.0(bufferutil@4.1.0)(effect@4.0.0-rc.117)(permissionless@0.4.0(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)))(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)':
+  '@ensforge/hca@0.6.0(bufferutil@4.1.0)(effect@4.0.0)(permissionless@0.4.0(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)))(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)':
     dependencies:
-      '@ensforge/contracts': 0.5.0(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)
-      '@ensforge/core': 0.5.0(bufferutil@4.1.0)(effect@4.0.0-rc.117)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)
-      effect: 4.0.0-rc.117
+      '@ensforge/contracts': 0.6.0(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)
+      '@ensforge/core': 0.6.0(bufferutil@4.1.0)(effect@4.0.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)
+      effect: 4.0.0
       viem: 2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)
     optionalDependencies:
       permissionless: 0.4.0(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))
@@ -7280,12 +7291,12 @@ snapshots:
       - wagmi
       - zod
 
-  '@ensforge/react@0.5.0(bufferutil@4.1.0)(effect@4.0.0-rc.117)(react@19.2.8)(scheduler@0.27.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)':
+  '@ensforge/react@0.6.0(bufferutil@4.1.0)(effect@4.0.0)(react@19.2.8)(scheduler@0.27.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)':
     dependencies:
-      '@effect/atom-react': 4.0.0-rc.117(effect@4.0.0-rc.117)(react@19.2.8)(scheduler@0.27.0)
-      '@ensforge/core': 0.5.0(bufferutil@4.1.0)(effect@4.0.0-rc.117)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)
-      '@ensforge/sdk': 0.5.0(bufferutil@4.1.0)(effect@4.0.0-rc.117)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)
-      effect: 4.0.0-rc.117
+      '@effect/atom-react': 4.0.0(effect@4.0.0)(react@19.2.8)(scheduler@0.27.0)
+      '@ensforge/core': 0.6.0(bufferutil@4.1.0)(effect@4.0.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)
+      '@ensforge/sdk': 0.6.0(bufferutil@4.1.0)(effect@4.0.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)
+      effect: 4.0.0
       react: 19.2.8
       scheduler: 0.27.0
       viem: 2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)
@@ -7296,10 +7307,10 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@ensforge/sdk@0.5.0(bufferutil@4.1.0)(effect@4.0.0-rc.117)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)':
+  '@ensforge/sdk@0.6.0(bufferutil@4.1.0)(effect@4.0.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)':
     dependencies:
-      '@ensforge/core': 0.5.0(bufferutil@4.1.0)(effect@4.0.0-rc.117)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)
-      effect: 4.0.0-rc.117
+      '@ensforge/core': 0.6.0(bufferutil@4.1.0)(effect@4.0.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))(zod@3.25.76)
+      effect: 4.0.0
       viem: 2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76)
     optionalDependencies:
       wagmi: 2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(@types/react@19.3.0)(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76)
@@ -7309,10 +7320,10 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@ensforge/sdk@0.5.0(bufferutil@4.1.0)(effect@4.0.0-rc.117)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(zod@4.6.5))(zod@4.6.5)':
+  '@ensforge/sdk@0.6.0(bufferutil@4.1.0)(effect@4.0.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(zod@4.6.5))(zod@4.6.5)':
     dependencies:
-      '@ensforge/core': 0.5.0(bufferutil@4.1.0)(effect@4.0.0-rc.117)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(zod@4.6.5))(zod@4.6.5)
-      effect: 4.0.0-rc.117
+      '@ensforge/core': 0.6.0(bufferutil@4.1.0)(effect@4.0.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(wagmi@2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(zod@4.6.5))(zod@4.6.5)
+      effect: 4.0.0
       viem: 2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5)
     optionalDependencies:
       wagmi: 2.19.5(@tanstack/query-core@5.104.0)(@tanstack/react-query@5.104.0(react@19.2.8))(bufferutil@4.1.0)(immer@11.1.18)(react@19.2.8)(typescript@7.0.2)(utf-8-validate@5.0.10)(viem@2.56.9(bufferutil@4.1.0)(typescript@7.0.2)(utf-8-validate@5.0.10)(zod@4.6.5))(zod@4.6.5)
@@ -11767,11 +11778,11 @@ snapshots:
       get-tsconfig: 4.14.3
       jiti: 2.7.0
 
-  drizzle-orm@1.0.0-rc.4(patch_hash=1566adf2bdae96497887f6464c2b8539b7a12b1b4487b1336598ecda4f22e847)(@effect/sql-pg@4.0.0-rc.117(effect@4.0.0-rc.117))(@types/pg@8.23.1)(effect@4.0.0-rc.117)(pg@8.23.0)(zod@4.6.5):
+  drizzle-orm@1.0.0-rc.4(patch_hash=fcd5dd4795d3d2ec878bd3a960ef4d18f3885ae3edee87c71545172a13a567ca)(@effect/sql-pg@4.0.0(effect@4.0.0))(@types/pg@8.23.1)(effect@4.0.0)(pg@8.23.0)(zod@4.6.5):
     optionalDependencies:
-      '@effect/sql-pg': 4.0.0-rc.117(effect@4.0.0-rc.117)
+      '@effect/sql-pg': 4.0.0(effect@4.0.0)
       '@types/pg': 8.23.1
-      effect: 4.0.0-rc.117
+      effect: 4.0.0
       pg: 8.23.0
       zod: 4.6.5
 
@@ -11799,7 +11810,7 @@ snapshots:
       '@noble/curves': 1.9.7
       '@noble/hashes': 1.8.0
 
-  effect@4.0.0-rc.117: {}
+  effect@4.0.0: {}
 
   electron-to-chromium@1.5.439: {}
 
@@ -14726,6 +14737,11 @@ snapshots:
       utf-8-validate: 5.0.10
 
   ws@8.21.3(bufferutil@4.1.0)(utf-8-validate@5.0.10):
+    optionalDependencies:
+      bufferutil: 4.1.0
+      utf-8-validate: 5.0.10
+
+  ws@8.22.0(bufferutil@4.1.0)(utf-8-validate@5.0.10):
     optionalDependencies:
       bufferutil: 4.1.0
       utf-8-validate: 5.0.10

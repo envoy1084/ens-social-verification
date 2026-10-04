@@ -1,4 +1,4 @@
-import { HttpApi, OpenApi } from "effect/unstable/httpapi";
+import { HttpApi, OpenApi } from "effect/http-api";
 
 import { EmailApi } from "./routes/email/index.js";
 import { FarcasterApi } from "./routes/farcaster/index.js";

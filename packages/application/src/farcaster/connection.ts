@@ -1,4 +1,5 @@
-import { Clock, Context, Crypto, Effect, Encoding, Layer, Schema } from "effect";
+import { Clock, Context, Crypto, Effect, Layer, Schema } from "effect";
+import { Hex } from "effect/encoding";
 
 import { FarcasterAttemptRepository } from "@ens-social-verification/database";
 import {
@@ -27,7 +28,7 @@ const make = Effect.gen(function* () {
   const binding = Effect.fn("FarcasterConnection.binding")(function* (token: string | undefined) {
     const session = yield* auth.session(token);
     if (!token) return yield* new Unauthenticated();
-    const sessionHash = Encoding.encodeHex(
+    const sessionHash = Hex.encode(
       yield* crypto.digest("SHA-256", new TextEncoder().encode(`farcaster-session:${token}`)),
     );
     return { session, sessionHash };

@@ -1,5 +1,5 @@
 import { Schema } from "effect";
-import { HttpApiSchema } from "effect/unstable/httpapi";
+import { HttpApiSchema } from "effect/http-api";
 
 export const AuthErrors = [
   Schema.Struct({ error: Schema.String }).pipe(HttpApiSchema.status(400)),

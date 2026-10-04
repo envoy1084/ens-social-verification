@@ -1,5 +1,5 @@
 import { Context, Effect, Layer, Option } from "effect";
-import { SqlError } from "effect/unstable/sql";
+import { SqlError } from "effect/sql";
 
 import { DatabaseError } from "@ens-social-verification/protocol/errors";
 

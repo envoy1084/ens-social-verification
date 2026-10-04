@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop -- Sequential requests exercise the rate window without hitting concurrency limits. */
 import { Effect, Layer, Redacted } from "effect";
-import { HttpClient, HttpClientResponse, HttpRouter, HttpServer } from "effect/unstable/http";
+import { HttpClient, HttpClientResponse, HttpRouter, HttpServer } from "effect/http";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 

@@ -1,4 +1,5 @@
-import { Clock, Context, Crypto, Effect, Encoding, Layer } from "effect";
+import { Clock, Context, Crypto, Effect, Layer } from "effect";
+import { Hex } from "effect/encoding";
 
 import { EmailAttemptRepository } from "@ens-social-verification/database";
 import { emailClaim, emailSubject } from "@ens-social-verification/protocol";
@@ -19,7 +20,7 @@ const make = Effect.gen(function* () {
   const binding = Effect.fn("EmailConnection.binding")(function* (token: string | undefined) {
     const session = yield* auth.session(token);
     if (!token) return yield* new Unauthenticated();
-    const sessionHash = Encoding.encodeHex(
+    const sessionHash = Hex.encode(
       yield* crypto.digest("SHA-256", new TextEncoder().encode(`email-session:${token}`)),
     );
     return { session, sessionHash };

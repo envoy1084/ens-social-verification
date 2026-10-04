@@ -1,4 +1,5 @@
-import { Clock, Context, Crypto, Effect, Encoding, Layer, Redacted } from "effect";
+import { Clock, Context, Crypto, Effect, Layer, Redacted } from "effect";
+import { Base64Url, Hex } from "effect/encoding";
 
 import { GithubAttemptRepository } from "@ens-social-verification/database";
 import {
@@ -27,7 +28,7 @@ const make = Effect.gen(function* () {
   const binding = Effect.fn("GithubOAuth.binding")(function* (token: string | undefined) {
     const session = yield* auth.session(token);
     if (!token) return yield* new Unauthenticated();
-    return { session, sessionHash: Encoding.encodeHex(yield* digest(`github-session:${token}`)) };
+    return { session, sessionHash: Hex.encode(yield* digest(`github-session:${token}`)) };
   });
   const attempt = Effect.fn("GithubOAuth.attempt")(function* (
     id: string,
@@ -47,9 +48,9 @@ const make = Effect.gen(function* () {
         });
       const { session, sessionHash } = yield* binding(token);
       const owner = yield* authority.check(name, session.address);
-      const state = Encoding.encodeBase64Url(yield* crypto.randomBytes(32));
-      const verifier = Encoding.encodeBase64Url(yield* crypto.randomBytes(32));
-      const pkceChallenge = Encoding.encodeBase64Url(yield* digest(verifier));
+      const state = Base64Url.encode(yield* crypto.randomBytes(32));
+      const verifier = Base64Url.encode(yield* crypto.randomBytes(32));
+      const pkceChallenge = Base64Url.encode(yield* digest(verifier));
       const id = yield* crypto.randomUUIDv4;
       const now = yield* Clock.currentTimeMillis;
       yield* attempts.clearExpiredTokens();
@@ -58,7 +59,7 @@ const make = Effect.gen(function* () {
         name: owner.name,
         walletAddress: session.address,
         sessionHash,
-        stateHash: Encoding.encodeHex(yield* digest(`github-state:${state}`)),
+        stateHash: Hex.encode(yield* digest(`github-state:${state}`)),
         pkceChallenge,
         status: "pending",
         identity: null,
@@ -91,9 +92,9 @@ const make = Effect.gen(function* () {
         });
       const { session, sessionHash } = yield* binding(token);
       const pending = yield* attempts.consume(
-        Encoding.encodeHex(yield* digest(`github-state:${input.state}`)),
+        Hex.encode(yield* digest(`github-state:${input.state}`)),
         sessionHash,
-        Encoding.encodeBase64Url(yield* digest(input.verifier)),
+        Base64Url.encode(yield* digest(input.verifier)),
       );
       const { identity, token: githubToken } = yield* provider.exchange(input.code, input.verifier);
       // Recheck the session and owner after the external OAuth exchange.

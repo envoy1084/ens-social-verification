@@ -31,8 +31,10 @@ verification. The GitHub method enforces an exact canonical JSON encoding for th
 
 Only exact second-level `.eth` names are supported. The client omits V1 deployment
 configuration, disables indexers, and forbids offchain gateways. The deployment is
-ENSForge contracts 0.5.0's Sepolia beta manifest, contracts-v2 revision
-`71a3b7339dbc55ab47667abdfe8303bac4f4c24e`.
+ENSForge contracts 0.6.0's October 1, 2026 Sepolia manifest, contracts-v2 revision
+`07e55a056f5b6a9c90119f501bdd05714e67dddd`. Both the frontend and authority client
+use this manifest; registrations and resolver permissions on the previous deployment
+are not carried over automatically.
 
 Normalize the name, authenticate root -> .eth against the configured registry,
 read the exact label's state, require REGISTERED and unexpired ownership, then read

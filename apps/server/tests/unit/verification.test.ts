@@ -73,6 +73,7 @@ function fixture() {
     "function isValidSignature(bytes32 hash, bytes signature) view returns (bytes4)",
   ]);
   const calls: string[] = [];
+  const targets: string[] = [];
   const client = createPublicClient({
     chain: sepolia,
     transport: custom(
@@ -86,6 +87,7 @@ function fixture() {
           if (method === "eth_call") {
             const [call, block] = params as [{ data: string; to: string }, string];
             calls.push(block);
+            targets.push(call.to.toLowerCase());
             const selector = call.data.slice(0, 10);
             if (selector === toFunctionSelector("getSubregistry(string)"))
               return encodeFunctionResult({
@@ -114,7 +116,7 @@ function fixture() {
     ),
   });
   const sdk = createVerificationClient(client);
-  return { rpc, calls, sdk };
+  return { rpc, calls, targets, sdk };
 }
 
 describe("record verification protocol", () => {
@@ -191,7 +193,7 @@ describe("record verification protocol", () => {
 
 describe("experimental ENSv2 authority 2", () => {
   it("uses a V2-only deployment and pins current token ownership reads", async () => {
-    const { sdk, calls } = fixture();
+    const { sdk, calls, targets } = fixture();
     expect(sdk.config.deployments.v1).toBeUndefined();
     const result = await Effect.runPromise(
       resolveEnsV2Authority("alice.eth", snapshot).pipe(
@@ -201,6 +203,11 @@ describe("experimental ENSv2 authority 2", () => {
     expect(result.authority).toBe(owner.address);
     expect(result.tokenId).toBe(42n);
     expect(calls).toEqual(["0x64", "0x64", "0x64"]);
+    expect(targets).toEqual([
+      verificationDeployment.contracts.rootRegistry.toLowerCase(),
+      verificationDeployment.contracts.ethRegistry.toLowerCase(),
+      verificationDeployment.contracts.ethRegistry.toLowerCase(),
+    ]);
   });
   it.each(["reserved", "expired", "route", "owner", "reorg"] as const)(
     "rejects %s state",

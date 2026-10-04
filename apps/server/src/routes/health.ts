@@ -1,5 +1,5 @@
 import { Effect, Layer, Redacted } from "effect";
-import { HttpRouter, HttpServerResponse } from "effect/unstable/http";
+import { HttpRouter, HttpServerResponse } from "effect/http";
 
 import { ServerConfig } from "../config.js";
 

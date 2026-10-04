@@ -4,22 +4,22 @@ packages:
 
 catalog:
   usehooks-ts: 3.1.1
-  "@ensforge/hca": 0.5.0
+  "@ensforge/hca": 0.6.0
   permissionless: 0.4.0
   openid-client: 6.8.8
   mailauth: 6.0.0
   resend: 6.30.0
   "@farcaster/auth-client": 0.7.1
   qrcode.react: 4.2.0
-  "@effect/sql-pg": 4.0.0-rc.117
+  "@effect/sql-pg": 4.0.0
   drizzle-orm: 1.0.0-rc.4
   drizzle-kit: 1.0.0-rc.4
   pg: 8.23.0
   "@types/pg": 8.23.1
-  "@ensforge/react": 0.5.0
-  "@ensforge/sdk": 0.5.0
-  "@ensforge/core": 0.5.0
-  "@ensforge/contracts": 0.5.0
+  "@ensforge/react": 0.6.0
+  "@ensforge/sdk": 0.6.0
+  "@ensforge/core": 0.6.0
+  "@ensforge/contracts": 0.6.0
   "@fontsource-variable/manrope": 5.3.0
   "@fontsource/instrument-serif": 5.3.0
   "@rainbow-me/rainbowkit": 2.2.11
@@ -39,8 +39,8 @@ catalog:
   vite: 8.3.1
   viem: 2.56.9
   wagmi: 2.19.5
-  "@effect/platform-node": 4.0.0-rc.117
-  effect: 4.0.0-rc.117
+  "@effect/platform-node": 4.0.0
+  effect: 4.0.0
   tsdown: 0.23.0
   tsx: 4.23.15
   vitest: 4.1.11
@@ -63,7 +63,7 @@ allowBuilds:
 
 autoInstallPeers: false
 patchedDependencies:
-  # RC.4 still calls TaggedErrorClass; Effect RC.117 renamed it to TaggedError.
+  # RC.4 needs TaggedError and PostgreSQL SQL import compatibility for Effect 4 stable.
   drizzle-orm@1.0.0-rc.4: patches/drizzle-orm@1.0.0-rc.4.patch
 strictPeerDependencies: true
 packageExtensions:
@@ -73,8 +73,6 @@ packageExtensions:
       zod: 3.25.76
 overrides:
   use-sync-external-store: 1.7.0
-  # Keep ENSForge's atom adapter on the same Effect RC as the application.
-  "@ensforge/react>@effect/atom-react": 4.0.0-rc.117
 peerDependencyRules:
   allowedVersions:
     # Wallet connectors include Solana types with a stale compiler peer range.
@@ -83,12 +81,12 @@ peerDependencyRules:
   ignoreMissing:
     - redis
 minimumReleaseAgeExclude:
-  - "@ensforge/hca@0.5.0"
+  - "@ensforge/hca@0.6.0"
   - "@types/node@24.19.0"
-  - "@ensforge/contracts@0.5.0"
-  - "@ensforge/core@0.5.0"
-  - "@ensforge/react@0.5.0"
-  - "@ensforge/sdk@0.5.0"
+  - "@ensforge/contracts@0.6.0"
+  - "@ensforge/core@0.6.0"
+  - "@ensforge/react@0.6.0"
+  - "@ensforge/sdk@0.6.0"
   - "@tanstack/query-core@5.104.0"
   - "@tanstack/react-query@5.104.0"
   - mailauth@6.0.0

@@ -1,5 +1,5 @@
 import { Clock, Context, Effect, Layer, Schema } from "effect";
-import { type HttpServerRequest, HttpServerResponse } from "effect/unstable/http";
+import { type HttpServerRequest, HttpServerResponse } from "effect/http";
 
 import { AuthConfig } from "@ens-social-verification/application";
 import {

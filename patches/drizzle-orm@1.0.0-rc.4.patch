@@ -1,5 +1,5 @@
 diff --git a/cache/core/cache-effect.cjs b/cache/core/cache-effect.cjs
-index 695cb9579ce1f040f1c931428fd6c6a59f49cc96..27a98172d6a323eb189298459e2597b7be4dad95 100644
+index 695cb9579ce1f040f1c931428fd6c6a59f49cc96..b89b9383b47ebd9c10eb683c384cd6db19aefff8 100644
 --- a/cache/core/cache-effect.cjs
 +++ b/cache/core/cache-effect.cjs
 @@ -100,7 +100,7 @@ function make(cache) {
@@ -12,7 +12,7 @@ index 695cb9579ce1f040f1c931428fd6c6a59f49cc96..27a98172d6a323eb189298459e2597b7
  };
  
 diff --git a/cache/core/cache-effect.js b/cache/core/cache-effect.js
-index f778fffdda7a4545285498f655018a1478741436..f49663e85a6ea54a6543ae904a323adc1f17de17 100644
+index f778fffdda7a4545285498f655018a1478741436..0e671ef4216bb80bde1a3d4fe2f69edb32e8f053 100644
 --- a/cache/core/cache-effect.js
 +++ b/cache/core/cache-effect.js
 @@ -94,7 +94,7 @@ function make(cache) {
@@ -25,7 +25,7 @@ index f778fffdda7a4545285498f655018a1478741436..f49663e85a6ea54a6543ae904a323adc
  };
  
 diff --git a/effect-core/errors.cjs b/effect-core/errors.cjs
-index 9ec5bab6a265fbdb694e4fffa639ebea7be3a6cc..e012a2244705550ad4281496c690a9086244e6f1 100644
+index 9ec5bab6a265fbdb694e4fffa639ebea7be3a6cc..657ff333dbd8453ae8219d6e5c3d6af65587f93b 100644
 --- a/effect-core/errors.cjs
 +++ b/effect-core/errors.cjs
 @@ -5,13 +5,13 @@ let effect_Schema = require("effect/Schema");
@@ -59,7 +59,7 @@ index 9ec5bab6a265fbdb694e4fffa639ebea7be3a6cc..e012a2244705550ad4281496c690a908
  };
  
 diff --git a/effect-core/errors.js b/effect-core/errors.js
-index 290da3a291c8919c16f1092c74e0a7f4a5feaf53..25f33b5473c016649c9370b681dc216697eb80a1 100644
+index 290da3a291c8919c16f1092c74e0a7f4a5feaf53..82ca43e630749baa622cc2e2afe5b84eeb936cbb 100644
 --- a/effect-core/errors.js
 +++ b/effect-core/errors.js
 @@ -2,13 +2,13 @@ import { entityKind } from "../entity.js";
@@ -92,3 +92,107 @@ index 290da3a291c8919c16f1092c74e0a7f4a5feaf53..25f33b5473c016649c9370b681dc2166
  	static [entityKind] = "MigratorInitError";
  };
  
+diff --git a/effect-postgres/migrator.d.cts b/effect-postgres/migrator.d.cts
+index a86d21826ae60833cb93e667e822427b564662ef..53f69e12edc4ad1c1314de0913484c3fdfa173a8 100644
+--- a/effect-postgres/migrator.d.cts
++++ b/effect-postgres/migrator.d.cts
+@@ -3,7 +3,7 @@ import { EffectPgDatabase } from "./driver.cjs";
+ import { MigrationConfig } from "../migrator.cjs";
+ import { AnyRelations } from "../relations.cjs";
+ import * as effect_Effect0 from "effect/Effect";
+-import * as effect_unstable_sql_SqlError0 from "effect/unstable/sql/SqlError";
++import * as effect_unstable_sql_SqlError0 from "effect/sql/SqlError";
+ 
+ //#region src/effect-postgres/migrator.d.ts
+ declare function migrate<TRelations extends AnyRelations>(db: EffectPgDatabase<TRelations>, config: MigrationConfig): effect_Effect0.Effect<undefined, MigratorInitError | EffectDrizzleQueryError | effect_unstable_sql_SqlError0.SqlError, never>;
+diff --git a/effect-postgres/migrator.d.ts b/effect-postgres/migrator.d.ts
+index eea591bc6c0d80e997a5f9dd07375db2f1a93ab5..e3aea8f8c4d8866168df9659ec468b1fa6598202 100644
+--- a/effect-postgres/migrator.d.ts
++++ b/effect-postgres/migrator.d.ts
+@@ -3,7 +3,7 @@ import { EffectPgDatabase } from "./driver.js";
+ import { MigrationConfig } from "../migrator.js";
+ import * as effect_Effect0 from "effect/Effect";
+ import { AnyRelations } from "../relations.js";
+-import * as effect_unstable_sql_SqlError0 from "effect/unstable/sql/SqlError";
++import * as effect_unstable_sql_SqlError0 from "effect/sql/SqlError";
+ 
+ //#region src/effect-postgres/migrator.d.ts
+ declare function migrate<TRelations extends AnyRelations>(db: EffectPgDatabase<TRelations>, config: MigrationConfig): effect_Effect0.Effect<undefined, MigratorInitError | EffectDrizzleQueryError | effect_unstable_sql_SqlError0.SqlError, never>;
+diff --git a/effect-postgres/session.d.cts b/effect-postgres/session.d.cts
+index 0eebb3e23209eba709cdb9fa39d89fcf859de61a..85d26442d16660ff60790995371cf4f2d7885f28 100644
+--- a/effect-postgres/session.d.cts
++++ b/effect-postgres/session.d.cts
+@@ -7,7 +7,7 @@ import { PgDialect } from "../pg-core/dialect.cjs";
+ import { PgQueryResultHKT, PreparedQueryConfig } from "../pg-core/session.cjs";
+ import * as Effect from "effect/Effect";
+ import { EffectCacheShape } from "../cache/core/cache-effect.cjs";
+-import { SqlError } from "effect/unstable/sql/SqlError";
++import { SqlError } from "effect/sql/SqlError";
+ import { EffectDrizzleQueryError } from "../effect-core/errors.cjs";
+ import { EffectLoggerShape } from "../effect-core/logger.cjs";
+ import { QueryEffectHKTBase } from "../effect-core/query-effect.cjs";
+diff --git a/effect-postgres/session.d.ts b/effect-postgres/session.d.ts
+index cc5696137920c1e08d79508b8eb459ff543a26b1..8662fdcfaf6765101bacb947b5a609b4d955114c 100644
+--- a/effect-postgres/session.d.ts
++++ b/effect-postgres/session.d.ts
+@@ -11,7 +11,7 @@ import { PgClient } from "@effect/sql-pg/PgClient";
+ import { PgEffectPreparedQuery, PgEffectSession, PgEffectTransaction } from "../pg-core/effect/session.js";
+ import { WithCacheConfig } from "../cache/core/types.js";
+ import { PgQueryResultHKT, PreparedQueryConfig } from "../pg-core/session.js";
+-import { SqlError } from "effect/unstable/sql/SqlError";
++import { SqlError } from "effect/sql/SqlError";
+ import { EffectLoggerShape } from "../effect-core/logger.js";
+ 
+ //#region src/effect-postgres/session.d.ts
+diff --git a/pg-core/effect/db.d.cts b/pg-core/effect/db.d.cts
+index 39194869128146f82d749c7e377a6367ba0a6175..7dc76403f304f846327c3a9311210b4e5327de89 100644
+--- a/pg-core/effect/db.d.cts
++++ b/pg-core/effect/db.d.cts
+@@ -19,7 +19,7 @@ import { PgViewBase } from "../view-base.cjs";
+ import { PgDialect } from "../dialect.cjs";
+ import { Effect } from "effect";
+ import { EffectCacheShape } from "../../cache/core/cache-effect.cjs";
+-import { SqlError } from "effect/unstable/sql/SqlError";
++import { SqlError } from "effect/sql/SqlError";
+ import { QueryEffectHKTBase } from "../../effect-core/query-effect.cjs";
+ import { PgEffectCountBuilder } from "./count.cjs";
+ import { PgEffectInsertHKT } from "./insert.cjs";
+diff --git a/pg-core/effect/db.d.ts b/pg-core/effect/db.d.ts
+index 720878cd3f183790088df7f6f5ceb4349d3bae04..7aef8a4329626a0b73278b17e05ba2b1421a7128 100644
+--- a/pg-core/effect/db.d.ts
++++ b/pg-core/effect/db.d.ts
+@@ -25,7 +25,7 @@ import { PgEffectInsertHKT } from "./insert.js";
+ import { PgEffectSelectBuilder } from "./select.js";
+ import { PgInsertBuilder } from "../query-builders/insert.js";
+ import { RelationalQueryBuilder } from "../query-builders/query.js";
+-import { SqlError } from "effect/unstable/sql/SqlError";
++import { SqlError } from "effect/sql/SqlError";
+ 
+ //#region src/pg-core/effect/db.d.ts
+ declare class PgEffectDatabase<TEffectHKT extends QueryEffectHKTBase, TQueryResult extends PgQueryResultHKT, TRelations extends AnyRelations = EmptyRelations> {
+diff --git a/pg-core/effect/session.d.cts b/pg-core/effect/session.d.cts
+index c8652feef873a4a4647c77f70b27a8777ad7542e..5b94d7739475f6be5c3b29533029e9e936b2fcce 100644
+--- a/pg-core/effect/session.d.cts
++++ b/pg-core/effect/session.d.cts
+@@ -8,7 +8,7 @@ import { AnyRelations, EmptyRelations } from "../../relations.cjs";
+ import { WithCacheConfig } from "../../cache/core/types.cjs";
+ import * as Effect from "effect/Effect";
+ import { EffectCacheShape } from "../../cache/core/cache-effect.cjs";
+-import { SqlError } from "effect/unstable/sql/SqlError";
++import { SqlError } from "effect/sql/SqlError";
+ import { EffectTransactionRollbackError, MigratorInitError } from "../../effect-core/errors.cjs";
+ import { EffectLoggerShape } from "../../effect-core/logger.cjs";
+ import { QueryEffectHKTBase, QueryEffectKind } from "../../effect-core/query-effect.cjs";
+diff --git a/pg-core/effect/session.d.ts b/pg-core/effect/session.d.ts
+index 877f9efa7d4f8e4e893f99034d8bb309b88ed63e..597ee7fd98b961c03e010cf2fa0334048d00c4c5 100644
+--- a/pg-core/effect/session.d.ts
++++ b/pg-core/effect/session.d.ts
+@@ -10,7 +10,7 @@ import { AnyRelations, EmptyRelations } from "../../relations.js";
+ import { QueryEffectHKTBase, QueryEffectKind } from "../../effect-core/query-effect.js";
+ import { EffectTransactionRollbackError, MigratorInitError } from "../../effect-core/errors.js";
+ import { WithCacheConfig } from "../../cache/core/types.js";
+-import { SqlError } from "effect/unstable/sql/SqlError";
++import { SqlError } from "effect/sql/SqlError";
+ import { EffectLoggerShape } from "../../effect-core/logger.js";
+ 
+ //#region src/pg-core/effect/session.d.ts

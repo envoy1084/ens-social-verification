@@ -3,7 +3,11 @@
 The frontend uses ENSForge's pinned HCA deployment with a direct permissionless/Pimlico
 UserOperation flow on Sepolia. ENSForge prepares resolver calls and handles setup;
 the high-level HCA execution adapter is not used for record submission.
-The canonical salt-zero HCA is derived from the connected owner. Existing canonical
+ENSForge 0.6.0 selects the October 1, 2026 factory and account generation
+`ens-standalone-hca-1.1.0-07e55a0`. The canonical salt-zero HCA is derived from the
+connected owner. Accounts and permissions from the previous factory need setup
+against this deployment. Existing pending-operation journals remain guarded and
+reconciled against the unchanged EntryPoint 0.7 before any new submission. Existing canonical
 accounts are reused; arbitrary salts and other smart-account implementations are not
 automatically discovered. Social proofs are still signed by the owner, not the HCA.
 

@@ -1,5 +1,10 @@
 # Server Runtime
 
+The workspace pins Effect, `@effect/platform-node`, `@effect/sql-pg`, and ENSForge's
+React Atom adapter to 4.0.0 stable. HTTP contracts and clients use `effect/http` and
+`effect/http-api`; SQL uses `effect/sql`. Credential digests and OAuth PKCE use
+`Hex` and `Base64Url` from `effect/encoding`, preserving their existing byte formats.
+
 [Entry point](../../apps/server/src/index.ts) launches the
 [server Layer](../../apps/server/src/layers/server.ts). The
 [services Layer](../../apps/server/src/layers/services.ts) composes Node cryptography,
@@ -58,4 +63,5 @@ RPC substitution stays at the transport boundary; EOA signing/recovery is real.
 
 Production ingress limits, database readiness monitoring, automatic expired-row
 cleanup, and distributed rate limiting are not implemented. The RC.4 Drizzle patch
-must be reviewed when upgrading Effect/Drizzle; it only fixes the TaggedError rename.
+must be reviewed when upgrading Effect/Drizzle; it fixes the TaggedError rename
+and PostgreSQL declarations that still import the prerelease SQL paths.

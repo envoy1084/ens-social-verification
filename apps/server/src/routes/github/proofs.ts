@@ -1,5 +1,5 @@
 import { Effect, Layer, Schema } from "effect";
-import { HttpRouter, HttpServerResponse } from "effect/unstable/http";
+import { HttpRouter, HttpServerResponse } from "effect/http";
 
 import { AuthConfig, GithubProofs } from "@ens-social-verification/application";
 import { GithubFinalizeRequest } from "@ens-social-verification/protocol/dto";

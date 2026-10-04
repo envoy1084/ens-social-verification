@@ -1,5 +1,5 @@
 import { ByteSize, Effect, Schema, Stream } from "effect";
-import { HttpIncomingMessage, type HttpServerRequest } from "effect/unstable/http";
+import { HttpIncomingMessage, type HttpServerRequest } from "effect/http";
 
 export class AuthHttpError extends Schema.TaggedError<AuthHttpError>()("AuthHttpError", {
   status: Schema.Number,

@@ -1,4 +1,5 @@
-import { Clock, Context, Crypto, Effect, Encoding, Layer, Redacted } from "effect";
+import { Clock, Context, Crypto, Effect, Layer, Redacted } from "effect";
+import { Base64Url, Hex } from "effect/encoding";
 
 import { XAttemptRepository } from "@ens-social-verification/database";
 import { createVerificationClaim, xMethod, xRecordKey } from "@ens-social-verification/protocol";
@@ -23,7 +24,7 @@ const make = Effect.gen(function* () {
   const binding = Effect.fn("XOAuth.binding")(function* (token: string | undefined) {
     const session = yield* auth.session(token);
     if (!token) return yield* new Unauthenticated();
-    return { session, sessionHash: Encoding.encodeHex(yield* digest(`x-session:${token}`)) };
+    return { session, sessionHash: Hex.encode(yield* digest(`x-session:${token}`)) };
   });
   const attempt = Effect.fn("XOAuth.attempt")(function* (id: string, token: string | undefined) {
     const { sessionHash } = yield* binding(token);
@@ -40,9 +41,9 @@ const make = Effect.gen(function* () {
         });
       const { session, sessionHash } = yield* binding(token);
       const owner = yield* authority.check(name, session.address);
-      const state = Encoding.encodeBase64Url(yield* crypto.randomBytes(32));
-      const verifier = Encoding.encodeBase64Url(yield* crypto.randomBytes(32));
-      const pkceChallenge = Encoding.encodeBase64Url(yield* digest(verifier));
+      const state = Base64Url.encode(yield* crypto.randomBytes(32));
+      const verifier = Base64Url.encode(yield* crypto.randomBytes(32));
+      const pkceChallenge = Base64Url.encode(yield* digest(verifier));
       const id = yield* crypto.randomUUIDv4;
       const now = yield* Clock.currentTimeMillis;
       yield* attempts.clearExpiredTokens();
@@ -51,7 +52,7 @@ const make = Effect.gen(function* () {
         name: owner.name,
         walletAddress: session.address,
         sessionHash,
-        stateHash: Encoding.encodeHex(yield* digest(`x-state:${state}`)),
+        stateHash: Hex.encode(yield* digest(`x-state:${state}`)),
         pkceChallenge,
         status: "pending",
         identity: null,
@@ -84,9 +85,9 @@ const make = Effect.gen(function* () {
         });
       const { session, sessionHash } = yield* binding(token);
       const pending = yield* attempts.consume(
-        Encoding.encodeHex(yield* digest(`x-state:${input.state}`)),
+        Hex.encode(yield* digest(`x-state:${input.state}`)),
         sessionHash,
-        Encoding.encodeBase64Url(yield* digest(input.verifier)),
+        Base64Url.encode(yield* digest(input.verifier)),
       );
       const { identity, token: xToken } = yield* provider.exchange(input.code, input.verifier);
       // Recheck the session and owner after the external OAuth exchange.

@@ -5,7 +5,7 @@ import {
   HttpIncomingMessage,
   HttpRouter,
   HttpServerResponse,
-} from "effect/unstable/http";
+} from "effect/http";
 
 import { RpcPayload } from "@ens-social-verification/api";
 

@@ -1,6 +1,6 @@
 import { Effect, Schema } from "effect";
-import { FetchHttpClient } from "effect/unstable/http";
-import { HttpApiClient } from "effect/unstable/httpapi";
+import { FetchHttpClient } from "effect/http";
+import { HttpApiClient } from "effect/http-api";
 
 import { Api } from "@ens-social-verification/api";
 import { VerificationSignature } from "@ens-social-verification/protocol/schema";

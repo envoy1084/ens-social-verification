@@ -1,4 +1,5 @@
-import { Clock, Context, Crypto, Effect, Encoding, Layer, Redacted } from "effect";
+import { Clock, Context, Crypto, Effect, Layer, Redacted } from "effect";
+import { Base64Url, Hex } from "effect/encoding";
 
 import { OAuthAttemptRepository } from "@ens-social-verification/database";
 import {
@@ -27,7 +28,7 @@ const make = Effect.gen(function* () {
   const binding = Effect.fn("OAuthConnection.binding")(function* (token: string | undefined) {
     const session = yield* auth.session(token);
     if (!token) return yield* new Unauthenticated();
-    return { session, sessionHash: Encoding.encodeHex(yield* digest(`oauth-session:${token}`)) };
+    return { session, sessionHash: Hex.encode(yield* digest(`oauth-session:${token}`)) };
   });
   const attempt = Effect.fn("OAuthConnection.attempt")(function* (
     id: string,
@@ -66,11 +67,11 @@ const make = Effect.gen(function* () {
         });
       const { session, sessionHash } = yield* binding(token);
       const owner = yield* authority.check(name, session.address);
-      const state = Encoding.encodeBase64Url(yield* crypto.randomBytes(32));
-      const verifier = Encoding.encodeBase64Url(yield* crypto.randomBytes(32));
-      const pkceChallenge = Encoding.encodeBase64Url(yield* digest(verifier));
+      const state = Base64Url.encode(yield* crypto.randomBytes(32));
+      const verifier = Base64Url.encode(yield* crypto.randomBytes(32));
+      const pkceChallenge = Base64Url.encode(yield* digest(verifier));
       // Domain separation binds the OIDC nonce to the same private verifier without storing another secret.
-      const nonce = Encoding.encodeBase64Url(yield* digest(`oauth-nonce:${verifier}`));
+      const nonce = Base64Url.encode(yield* digest(`oauth-nonce:${verifier}`));
       const authorizeUrl = yield* provider.authorize(providerId, state, pkceChallenge, nonce);
       const id = yield* crypto.randomUUIDv4;
       const now = yield* Clock.currentTimeMillis;
@@ -80,7 +81,7 @@ const make = Effect.gen(function* () {
         name: owner.name,
         walletAddress: session.address,
         sessionHash,
-        stateHash: Encoding.encodeHex(yield* digest(`oauth-state:${state}`)),
+        stateHash: Hex.encode(yield* digest(`oauth-state:${state}`)),
         pkceChallenge,
         status: "pending",
         identity: null,
@@ -99,9 +100,9 @@ const make = Effect.gen(function* () {
       const { session, sessionHash } = yield* binding(token);
       const pending = yield* attempts.consume(
         providerId,
-        Encoding.encodeHex(yield* digest(`oauth-state:${input.state}`)),
+        Hex.encode(yield* digest(`oauth-state:${input.state}`)),
         sessionHash,
-        Encoding.encodeBase64Url(yield* digest(input.verifier)),
+        Base64Url.encode(yield* digest(input.verifier)),
       );
       const identity = yield* provider.exchange(
         providerId,
